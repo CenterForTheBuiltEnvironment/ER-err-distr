@@ -43,6 +43,34 @@ perform_mean_est <- function(df_pre, df_post, building) {
   0.5 * (sum(df_pre[[building]], na.rm = T) + sum(df_post[[building]], na.rm = T))
 }
 
+process_csv <- function(file) {
+
+  part_a <- read_csv(file) %>% 
+    slice(1:5)
+  
+  part_b <- read_csv(file, skip = 5)
+  
+  gea <- part_a %>% pull(gea) %>% .[1]
+  scenario <- part_a %>% pull(Scenario) %>% .[1]
+  year <- as.numeric(part_a %>% pull(t) %>% .[1])
+  
+  # Add the extracted value as a new column to Part B (or manipulate Part B as needed)
+  part_b <- part_b %>% 
+    mutate(gea = gea, 
+           year = year, 
+           scenario = scenario, 
+           datetime = as.POSIXct(timestamp_local, format = "%m/%d/%y %H:%M")) %>% 
+    select(scenario, 
+           gea, 
+           year, 
+           datetime, 
+           aer = aer_load_co2e)
+  
+  # Combine Part B with the extracted value added back in
+  return(part_b)
+}
+
+
 #### READ DATA ####
 data_path <- "../../../Genome/buds-lab-building-data-genome-project-2/data/meters/cleaned/"
 meta_path <- "../../../Genome/buds-lab-building-data-genome-project-2/data/metadata/"
@@ -100,7 +128,7 @@ mean_est <- sapply(buildings, function(building) {
 })
 
 # electricity intensity
-eui_max <- 750
+eui_max <- 500
 
 results <- data.frame(Building = buildings, P_Value = p_values, Dev = mean_diff, mean = mean_est) %>% 
   filter(Dev < 25) %>% 
@@ -134,6 +162,51 @@ df_weather <- df_weather %>%
 
 
 
+#### Cambium ####
+data_path <- "../../Cambium/"
+df_annual <- list.files(path = data_path, pattern = "annual", full.names = TRUE) %>% 
+  map_dfr(~ read_csv(.x, skip = 5)) %>% 
+  select(scenario, 
+         gea, 
+         year = t, 
+         aer = aer_load_co2e)
+
+df_month_hour <- list.files(path = data_path, pattern = "month-hour", full.names = TRUE) %>% 
+  map_dfr(~ read_csv(.x, skip = 5)) %>% 
+  select(scenario, 
+         gea, 
+         year = t, 
+         aer = aer_load_co2e)
+
+df_tod <- list.files(path = data_path, pattern = "tod", full.names = TRUE) %>% 
+  map_dfr(~ read_csv(.x, skip = 5)) %>% 
+  select(scenario, 
+         gea, 
+         year = t, 
+         aer = aer_load_co2e)
+
+# hourly Cambium dataset
+subfolder_list <- list.dirs(path = paste0(data_path, "hourly"), recursive = FALSE)
+
+s <- 1
+for (subfolder in subfolder_list) {
+  name <- paste0("df_s", s, "_hourly")
+  file_list <- list.files(path = subfolder, pattern = "\\.csv$", full.names = TRUE)
+  
+  subfolder_data <- file_list %>%
+    map_dfr(process_csv)
+  
+  assign(name, subfolder_data)
+  
+  s <- s + 1
+  
+}
+
+
+
+
+
+
 #### OUTPUT ####
 df_energy <- df_elec %>% 
   pivot_longer(c(-timestamp), names_to = "buildings", values_to = "eload") %>% 
@@ -144,3 +217,15 @@ df_energy <- df_elec %>%
 write_rds(df_energy, paste0(output_path, "df_energy.rds"), compress = "gz")
 write_rds(df_meta, paste0(output_path, "df_meta.rds"), compress = "gz")
 write_rds(df_weather, paste0(output_path, "df_weather.rds"), compress = "gz")
+
+write_rds(df_annual, paste0(output_path, "df_annual.rds"), compress = "gz")
+write_rds(df_month_hour, paste0(output_path, "df_month_hour.rds"), compress = "gz")
+write_rds(df_tod, paste0(output_path, "df_tod.rds"), compress = "gz")
+write_rds(df_s1_hourly, paste0(output_path, "df_s1_hourly.rds"), compress = "gz")
+write_rds(df_s2_hourly, paste0(output_path, "df_s2_hourly.rds"), compress = "gz")
+write_rds(df_s3_hourly, paste0(output_path, "df_s3_hourly.rds"), compress = "gz")
+write_rds(df_s4_hourly, paste0(output_path, "df_s4_hourly.rds"), compress = "gz")
+write_rds(df_s5_hourly, paste0(output_path, "df_s5_hourly.rds"), compress = "gz")
+write_rds(df_s6_hourly, paste0(output_path, "df_s6_hourly.rds"), compress = "gz")
+write_rds(df_s7_hourly, paste0(output_path, "df_s7_hourly.rds"), compress = "gz")
+
