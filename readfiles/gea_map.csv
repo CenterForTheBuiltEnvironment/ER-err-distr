@@ -1,0 +1,8 @@
+site,site_name,location,climate,gea,gea_name
+Panther,Univ. of Central Florida (UCF),Orlando,2A,FRCC,FRCC
+Fox,Arizona State Univ. (ASU),Tempe,2B,WECC,WestConnect_South
+Rat,Washington DC - City Buildings,Washington DC,4A,PJM,PJM_East
+Bear,Univ. of California - Berkeley,Berkeley,3C,CAISO,CAISO
+Bull,Univ. of Texas - Austin,Austin,2A,ERCOT,ERCOT
+Peacock,Princeton University,Princeton,5A,PJM,PJM_East
+Cockatoo,Cornell University,Cornell,6A,NYISO,NYISO

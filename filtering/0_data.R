@@ -87,11 +87,11 @@ df_weather <- read_csv(paste0(weather_path, "weather.csv"))
 #### FILTER ####
 # Focus
 remove_type <- c()
-remove_site <- c("Eagle", "Bobcat", "Swan", "Hog", "Gator", "Robin", "Lamb", "Moose", "Wolf", "Shrew", "Mouse")
+remove_site <- c("Eagle", "Bobcat", "Swan", "Hog", "Gator", "Robin", "Lamb", "Moose", "Wolf", "Shrew", "Mouse", "Crow")
 
 # NAs
 na_counts <- sapply(df_elec[-1], function(x) sum(is.na(x)))
-cols_to_keep <- names(na_counts[na_counts <= 1000])
+cols_to_keep <- names(na_counts[na_counts <= 1440])
 cols_to_keep <- c("timestamp", cols_to_keep)
 
 df_elec <- df_elec[, cols_to_keep]
@@ -176,6 +176,8 @@ df_month_hour <- list.files(path = data_path, pattern = "month-hour", full.names
   select(scenario, 
          gea, 
          year = t, 
+         month = month, 
+         hour = hour, 
          aer = aer_load_co2e)
 
 df_tod <- list.files(path = data_path, pattern = "tod", full.names = TRUE) %>% 
@@ -183,6 +185,7 @@ df_tod <- list.files(path = data_path, pattern = "tod", full.names = TRUE) %>%
   select(scenario, 
          gea, 
          year = t, 
+         hour = hour, 
          aer = aer_load_co2e)
 
 # hourly Cambium dataset
@@ -228,4 +231,5 @@ write_rds(df_s4_hourly, paste0(output_path, "df_s4_hourly.rds"), compress = "gz"
 write_rds(df_s5_hourly, paste0(output_path, "df_s5_hourly.rds"), compress = "gz")
 write_rds(df_s6_hourly, paste0(output_path, "df_s6_hourly.rds"), compress = "gz")
 write_rds(df_s7_hourly, paste0(output_path, "df_s7_hourly.rds"), compress = "gz")
+write_rds(df_s8_hourly, paste0(output_path, "df_s8_hourly.rds"), compress = "gz")
 
