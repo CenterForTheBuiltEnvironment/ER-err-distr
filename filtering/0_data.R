@@ -59,7 +59,7 @@ process_csv <- function(file) {
     mutate(gea = gea, 
            year = year, 
            scenario = scenario, 
-           datetime = as.POSIXct(timestamp_local, format = "%m/%d/%y %H:%M")) %>% 
+           datetime = as.POSIXct(timestamp_local, format = "%m/%d/%y %H:%M", tz = "UTC")) %>% 
     select(scenario, 
            gea, 
            year, 

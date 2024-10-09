@@ -36,7 +36,6 @@ theme_update(plot.title = element_text(size = 14, color = "grey20", face = "bold
 #### READ ####
 # genome dataset
 readfile_path <- "../readfiles/"
-figs_path <- "../figs/"
 output_path <- paste0(readfile_path, "results/")
 
 df_energy <- read_rds(paste0(readfile_path, "df_energy.rds")) %>% 
@@ -113,7 +112,7 @@ for (s in all_sites$site){
   
   result <- as.data.frame(t(as.matrix(df_hourly)) %*% as.matrix(aer_annual) / 1000)
   
-  write_rds(result, str_glue(paste0(output_path, "{s}/", "annual_result.rds")), compress = "gz")
+  write_rds(result, str_glue(paste0(output_path, "{s}/", "annual.rds")), compress = "gz")
   
   # Month-hour average rate
   month_days <- c(31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
@@ -135,7 +134,7 @@ for (s in all_sites$site){
     
   result <- as.data.frame(t(as.matrix(df_hourly)) %*% as.matrix(aer_month_hour) / 1000)
   
-  write_rds(result, str_glue(paste0(output_path, "{s}/", "month_hour_result.rds")), compress = "gz")
+  write_rds(result, str_glue(paste0(output_path, "{s}/", "month_hour.rds")), compress = "gz")
   
   # Time-of-day average rate
   aer_tod <- year_hours %>%
@@ -146,12 +145,15 @@ for (s in all_sites$site){
     arrange(month, day, hour) %>% 
     select(-c(month, day, hour, gea))
   
-  result <- as.data.frame(t(as.matrix(df_hourly)) %*% as.matrix(aer_month_hour) / 1000)
+  result <- as.data.frame(t(as.matrix(df_hourly)) %*% as.matrix(aer_tod) / 1000)
   
-  write_rds(result, str_glue(paste0(output_path, "{s}/", "tod_result.rds")), compress = "gz")
+  write_rds(result, str_glue(paste0(output_path, "{s}/", "tod.rds")), compress = "gz")
   
   # Hourly
+  n_building <- length(df_hourly)
+  result <- data.frame(matrix(nrow = n_building, ncol = 0))
   for (z in 1:length(all_scenario$scenario)){
+    
     scenario <- unique(df_s_hourly[[z]] %>% .$scenario)
     aer_hour <- df_s_hourly[[z]] %>% 
       mutate(toy = format(datetime, "%m-%d %H:%M:%S")) %>% 
@@ -160,8 +162,6 @@ for (s in all_sites$site){
       pivot_wider(names_from = c(scenario, year), values_from = aer) %>% 
       drop_na(toy) %>% 
       select(-c(gea, toy)) 
-
-      
     
     df_hourly <- df_energy %>% 
       filter(site == s) %>% 
@@ -171,8 +171,178 @@ for (s in all_sites$site){
       pivot_wider(id_cols = timestamp,names_from = name, values_from = eload) %>% 
       select(-timestamp) 
     
-    result <- as.data.frame(t(as.matrix(df_hourly)) %*% as.matrix(aer_hour) / 1000)
+    s_result <- as.data.frame(t(as.matrix(df_hourly)) %*% as.matrix(aer_hour) / 1000)
     
-    write_rds(result, str_glue(paste0(output_path, "{s}/", "{scenario}_hourly_result.rds")), compress = "gz")
+    result <- bind_cols(result, s_result)
   }
+  
+  write_rds(result, str_glue(paste0(output_path, "{s}/", "hourly.rds")), compress = "gz")
+}
+
+rm(result, s_result, aer_hour, aer_tod, aer_month_hour, aer_annual)
+
+
+
+
+#### ANALYSIS ####
+readfile_path <- "../readfiles/results/"
+figs_path <- "../figs/"
+
+for (s in all_sites$site){
+  
+  g <- gea_map %>% 
+    filter(site == s) %>%
+    .$gea_name
+  
+  for (z in 1:length(all_scenario$scenario)){
+    
+    aer_hour <- df_s_hourly[[z]] %>% 
+      mutate(toy = format(datetime, "%m-%d %H:%M:%S")) %>% 
+      filter(gea == g) 
+    
+  }
+}
+
+all_median <- data.frame()
+
+for (s in all_sites$site){
+  figs_path <- str_glue("../figs/{s}/")
+  
+  for (z in all_scenario$scenario){
+    
+    aer_hourly <- read_rds(str_glue(paste0(readfile_path, "{s}/hourly.rds"))) %>% 
+      select(contains(z))
+    
+    colname <- colnames(aer_hourly)
+    
+    aer_annual <- read_rds(str_glue(paste0(readfile_path, "{s}/annual.rds"))) %>% 
+      select(colname)
+    
+    aer_tod <- read_rds(str_glue(paste0(readfile_path, "{s}/tod.rds"))) %>% 
+      select(colname)
+    
+    aer_month_hour <- read_rds(str_glue(paste0(readfile_path, "{s}/month_hour.rds"))) %>% 
+      select(colname)
+    
+    # Calculate annual error distribution
+    annual_err <- (aer_annual - aer_hourly) / aer_hourly * 100
+    
+    median <- annual_err %>% 
+      pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
+      group_by(scenario) %>% 
+      summarise(median = median(values)) %>% 
+      ungroup() %>% 
+      mutate(type = "annual", 
+             site = s)
+    
+    all_median <- bind_rows(all_median, median)
+    
+    annual_err %>% 
+      pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
+      mutate(scenario = as.factor(scenario)) %>% 
+      ggplot(aes(x = values, group = scenario)) +
+      geom_histogram(bins = 100, aes(y=after_stat(density)), colour="black", fill="white")+
+      geom_density(alpha=.2, fill="#FF6666") +
+      geom_vline(data = median, aes(xintercept = median),linewidth = 1) +
+      geom_text(data = median, 
+                aes(x = -5, y = 0.2, label = paste0("Median: ", round(median, digits = 2), " tons CO2e")), check_overlap = T) +
+      facet_wrap(~scenario, nrow = 6) +
+      coord_cartesian(xlim = c(-10, 10)) +
+      theme(panel.grid.major.y = element_line(color = "grey80"),
+            legend.direction = "horizontal",
+            legend.position = "bottom",
+            plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+    
+    
+    ggsave(filename = str_glue("annual_{z}_dist.png"), path = str_glue(figs_path), units = "in", height = 8, width = 8, dpi = 300)
+    
+    # Calculate tod error distribution
+    tod_err <- (aer_tod - aer_hourly) / aer_hourly * 100
+
+    median <- tod_err %>% 
+      pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
+      group_by(scenario) %>% 
+      summarise(median = median(values)) %>% 
+      ungroup() %>% 
+      mutate(type = "tod", 
+             site = s)
+    
+    all_median <- bind_rows(all_median, median)
+    
+    tod_err %>% 
+      pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
+      mutate(scenario = as.factor(scenario)) %>% 
+      ggplot(aes(x = values, group = scenario)) +
+      geom_histogram(bins = 100, aes(y=after_stat(density)), colour="black", fill="white")+
+      geom_density(alpha=.2, fill="#FF6666") +
+      geom_vline(data = median, aes(xintercept = median),linewidth = 1) +
+      geom_text(data = median, 
+                aes(x = -2.5, y = 0.5, label = paste0("Median: ", round(median, digits = 2), " tons CO2e")), check_overlap = T) +
+      facet_wrap(~scenario, nrow = 6) +
+      coord_cartesian(xlim = c(-5, 5)) +
+      theme(panel.grid.major.y = element_line(color = "grey80"),
+            legend.direction = "horizontal",
+            legend.position = "bottom",
+            plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+    
+    
+    ggsave(filename = str_glue("tod_{z}_dist.png"), path = str_glue(figs_path), units = "in", height = 8, width = 8, dpi = 300)
+    
+    # Calculate month-hour error distribution
+    month_hour_err <- (aer_hourly - aer_month_hour) / aer_hourly * 100
+    
+    median <- month_hour_err %>% 
+      pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
+      group_by(scenario) %>% 
+      summarise(median = median(values)) %>% 
+      ungroup() %>% 
+      mutate(type = "month-hour", 
+             site = s)
+    
+    all_median <- bind_rows(all_median, median)
+    
+    month_hour_err %>% 
+      pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
+      mutate(scenario = as.factor(scenario)) %>% 
+      ggplot(aes(x = values, group = scenario)) +
+      geom_histogram(bins = 100, aes(y=after_stat(density)), colour="black", fill="white")+
+      geom_density(alpha=.2, fill="#FF6666") +
+      geom_vline(data = median, aes(xintercept = median),linewidth = 1) +
+      geom_text(data = median, 
+                aes(x = -1, y = 0.75, label = paste0("Median: ", round(median, digits = 2), " tons CO2e")), check_overlap = T) +
+      facet_wrap(~scenario, nrow = 6) +
+      coord_cartesian(xlim = c(-2.5, 2.5)) +
+      theme(panel.grid.major.y = element_line(color = "grey80"),
+            legend.direction = "horizontal",
+            legend.position = "bottom",
+            plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+    
+    
+    ggsave(filename = str_glue("month-hour_{z}_dist.png"), path = str_glue(figs_path), units = "in", height = 8, width = 8, dpi = 300)
+    
+  }
+
+}
+
+all_median <- bind_rows(all_median)
+
+for (s in all_sites$site){
+  
+  all_median %>% 
+    filter(site == s) %>% 
+    separate(scenario, into = c("scenario", "year"), sep = "_") %>% 
+    ggplot() +
+    geom_bar(aes(x = year, y = median, fill = type), stat = "identity", position = "dodge") +
+    facet_wrap(~ site + scenario, nrow = 7, scales = "free_y") +
+    labs(x = "Projected year", 
+         y = "Error distribution median (tons CO2e)") +
+    scale_y_continuous(expand = c(0, 0), 
+                       breaks = breaks_pretty(n = 4),
+                       labels = number_format(suffix = " %")) + 
+    theme(panel.grid.major.y = element_line(color = "grey80"),
+          legend.direction = "horizontal",
+          legend.position = "bottom",
+          plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+  
+  ggsave(filename = str_glue("{s}_overall_summary.png"), path = str_glue("../figs/"), units = "in", height = 10, width = 8, dpi = 300)
 }
