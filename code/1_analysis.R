@@ -38,11 +38,25 @@ theme_update(plot.title = element_text(size = 14, color = "grey20", face = "bold
 readfile_path <- "../readfiles/"
 output_path <- paste0(readfile_path, "results/")
 
+gea_map <- read_csv(paste0(readfile_path, "gea_map.csv"))
+
 df_energy <- read_rds(paste0(readfile_path, "df_energy.rds")) %>% 
-  filter(year(timestamp) == 2016)
+  filter(year(timestamp) == 2016) %>% 
+  left_join(gea_map, by = "site") %>% 
+  select(site = location, 
+         timestamp, 
+         type, 
+         name, 
+         eload)
 
 df_compr <- read_rds(paste0(readfile_path, "df_energy.rds")) %>% 
-  filter(year(timestamp) == 2017)
+  filter(year(timestamp) == 2017) %>% 
+  left_join(gea_map, by = "site") %>% 
+  select(site = location, 
+         timestamp, 
+         type, 
+         name, 
+         eload)
 
 df_meta <- read_rds(paste0(readfile_path, "df_meta.rds"))
 
@@ -60,9 +74,6 @@ all_types <- df_energy %>%
   distinct()
 
 # carbon emissions dataset
-gea_map <- read_csv(paste0(readfile_path, "gea_map.csv")) %>% 
-  filter(site %in% all_sites$site)
-
 df_annual <- read_rds(paste0(readfile_path, "df_annual.rds")) 
 
 df_month_hour <- read_rds(paste0(readfile_path, "df_month_hour.rds")) 
@@ -100,7 +111,7 @@ for (s in all_sites$site){
     select(-timestamp) 
   
   g <- gea_map %>% 
-    filter(site == s) %>%
+    filter(location == s) %>%
     .$gea_name
   
   # Annual average rate
@@ -191,7 +202,7 @@ figs_path <- "../figs/"
 for (s in all_sites$site){
   
   g <- gea_map %>% 
-    filter(site == s) %>%
+    filter(location == s) %>%
     .$gea_name
   
   for (z in 1:length(all_scenario$scenario)){
@@ -207,6 +218,10 @@ all_median <- data.frame()
 
 for (s in all_sites$site){
   figs_path <- str_glue("../figs/{s}/")
+  
+  g <- gea_map %>% 
+    filter(location == s) %>%
+    .$gea_name
   
   for (z in all_scenario$scenario){
     
@@ -233,7 +248,8 @@ for (s in all_sites$site){
       summarise(median = median(values)) %>% 
       ungroup() %>% 
       mutate(type = "annual", 
-             site = s)
+             site = s, 
+             gea = g)
     
     all_median <- bind_rows(all_median, median)
     
@@ -265,7 +281,8 @@ for (s in all_sites$site){
       summarise(median = median(values)) %>% 
       ungroup() %>% 
       mutate(type = "tod", 
-             site = s)
+             site = s, 
+             gea = g)
     
     all_median <- bind_rows(all_median, median)
     
@@ -297,7 +314,8 @@ for (s in all_sites$site){
       summarise(median = median(values)) %>% 
       ungroup() %>% 
       mutate(type = "month-hour", 
-             site = s)
+             site = s, 
+             gea = g)
     
     all_median <- bind_rows(all_median, median)
     
@@ -330,15 +348,24 @@ for (s in all_sites$site){
   
   all_median %>% 
     filter(site == s) %>% 
+    mutate(type = as_factor(type), 
+           type = recode_factor(type, 
+                                "annual" = "Annual avg.", 
+                                "month-hour" = "Month-hour avg.", 
+                                "tod" = "Time-of-day avg.")) %>% 
     separate(scenario, into = c("scenario", "year"), sep = "_") %>% 
     ggplot() +
     geom_bar(aes(x = year, y = median, fill = type), stat = "identity", position = "dodge") +
-    facet_wrap(~ site + scenario, nrow = 7, scales = "free_y") +
+    facet_wrap(~ scenario, nrow = 4, scales = "free_y") +
     labs(x = "Projected year", 
-         y = "Error distribution median (tons CO2e)") +
+         y = "Error distribution median") +
     scale_y_continuous(expand = c(0, 0), 
                        breaks = breaks_pretty(n = 4),
-                       labels = number_format(suffix = " %")) + 
+                       labels = number_format(suffix = " %")) +
+    scale_fill_brewer(palette = "Set1") +
+    labs(title = str_glue("{s}"), 
+         subtitle = str_glue("{g}"), 
+         fill = NULL) +
     theme(panel.grid.major.y = element_line(color = "grey80"),
           legend.direction = "horizontal",
           legend.position = "bottom",
