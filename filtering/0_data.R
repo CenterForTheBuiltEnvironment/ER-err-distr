@@ -180,6 +180,25 @@ df_month_hour <- list.files(path = data_path, pattern = "month-hour", full.names
          hour = hour, 
          aer = aer_load_co2e)
 
+df_season <- df_month_hour %>% 
+  mutate(season = ifelse(month >= 3 & month <= 5, "spring", 
+                         ifelse(month >= 6 & month <= 8, "summer", 
+                                ifelse(month >= 9 & month <= 11, "fall", 
+                                       "winter")))) %>% 
+  group_by(scenario, gea, year, season) %>% 
+  summarise(aer = mean(aer)) %>% 
+  ungroup()
+  
+
+df_season_hour <- df_month_hour %>% 
+  mutate(season = ifelse(month >= 3 & month <= 5, "spring", 
+                          ifelse(month >= 6 & month <= 8, "summer", 
+                                 ifelse(month >= 9 & month <= 11, "fall", 
+                                        "winter")))) %>% 
+  group_by(scenario, gea, year, season, hour) %>% 
+  summarise(aer = mean(aer)) %>% 
+  ungroup()
+
 df_tod <- list.files(path = data_path, pattern = "tod", full.names = TRUE) %>% 
   map_dfr(~ read_csv(.x, skip = 5)) %>% 
   select(scenario, 
@@ -222,7 +241,9 @@ write_rds(df_meta, paste0(output_path, "df_meta.rds"), compress = "gz")
 write_rds(df_weather, paste0(output_path, "df_weather.rds"), compress = "gz")
 
 write_rds(df_annual, paste0(output_path, "df_annual.rds"), compress = "gz")
+write_rds(df_season, paste0(output_path, "df_season.rds"), compress = "gz")
 write_rds(df_month_hour, paste0(output_path, "df_month_hour.rds"), compress = "gz")
+write_rds(df_season_hour, paste0(output_path, "df_season_hour.rds"), compress = "gz")
 write_rds(df_tod, paste0(output_path, "df_tod.rds"), compress = "gz")
 write_rds(df_s1_hourly, paste0(output_path, "df_s1_hourly.rds"), compress = "gz")
 write_rds(df_s2_hourly, paste0(output_path, "df_s2_hourly.rds"), compress = "gz")
