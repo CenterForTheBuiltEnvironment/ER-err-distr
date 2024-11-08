@@ -39,10 +39,11 @@ readfile_path <- "../readfiles/"
 output_path <- paste0(readfile_path, "results/")
 
 gea_map <- read_csv(paste0(readfile_path, "gea_map.csv"))
+site_map <- read_csv(paste0(readfile_path, "site_map.csv"))
 
 df_energy <- read_rds(paste0(readfile_path, "df_energy.rds")) %>% 
+  left_join(site_map, by = "site") %>% 
   filter(year(timestamp) == 2016) %>% 
-  left_join(gea_map, by = "site") %>% 
   select(site = location, 
          timestamp, 
          type, 
@@ -50,8 +51,8 @@ df_energy <- read_rds(paste0(readfile_path, "df_energy.rds")) %>%
          eload)
 
 df_compr <- read_rds(paste0(readfile_path, "df_energy.rds")) %>% 
+  left_join(site_map, by = "site") %>% 
   filter(year(timestamp) == 2017) %>% 
-  left_join(gea_map, by = "site") %>% 
   select(site = location, 
          timestamp, 
          type, 
@@ -102,32 +103,97 @@ all_year <- df_annual %>%
 
 
 
+#### SITE ####
+set3 <- colorRampPalette(brewer.pal('Set3',n=12))
+type_colors <- setNames(set3(16), all_types$type)
+
+# site and type number summary
+p1 <- df_energy %>%
+  group_by(type) %>%
+  distinct(name) %>%
+  summarise(n = n()) %>%
+  ungroup() %>%
+  mutate(type = fct_reorder(type, n, .desc = F)) %>%
+  ggplot(aes(x = 1, y = n, fill = as.factor(type))) +
+  geom_col() +
+  geom_text(aes(label = ifelse(n > 10, as.character(n), "")), color = "black", position = position_stack(vjust = 0.5)) +
+  scale_y_continuous(expand = c(0, 0),
+                     breaks = breaks_pretty(n = 4)) +
+  scale_x_discrete(expand = c(0, 0.1)) +
+  scale_fill_manual(values = type_colors) +
+  labs(x = NULL,
+       y = NULL,
+       subtitle = "Across all sites",
+       fill = NULL) +
+  theme(axis.text.x = element_blank(),
+        panel.grid.major.y = element_line(color = "grey80"),
+        legend.direction = "horizontal",
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+p2 <- df_energy %>%
+  group_by(site, type) %>%
+  distinct(name) %>%
+  summarise(n = n()) %>%
+  mutate(proportion = n / sum(n),
+         total = sum(n),
+         ymax = cumsum(proportion),
+         ymin = c(0, head(ymax, n = -1))) %>%
+  mutate(label_pos = (ymax + ymin) / 2) %>%
+  ungroup() %>%
+  group_by(type) %>%
+  mutate(order = sum(n)) %>%
+  ungroup() %>%
+  mutate(type = fct_reorder(type, order, .desc = F)) %>%
+  ggplot(aes(ymax = ymax, ymin = ymin, xmax = 4, xmin = 3, fill = type)) +
+  geom_rect() +
+  coord_polar(theta = "y") +
+  xlim(c(2, 4)) +
+  facet_wrap(~ site, nrow = 2) +
+  labs(x = NULL,
+       y = NULL,
+       subtitle = "For each site",
+       fill = NULL) +
+  scale_fill_manual(values = type_colors) +
+  geom_text(aes(x = 3.5, y = label_pos, label = ifelse(n > 1, as.character(n), ""))) +
+  geom_text(aes(x = 2, y = 0, label = paste0("Total\n", total)), color = "black") +
+  theme(legend.direction = "horizontal",
+        axis.text = element_blank(),
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+ggarrange(p1, p2,
+          ncol = 2, nrow = 1,
+          widths = c(0.25, 1),
+          common.legend = TRUE,
+          legend = "bottom") +
+  plot_annotation(title = "Case study building type summary")
+
+
+
+
+
 #### PROCESS ####
-for (s in all_sites$site){
+for (area in gea_map$gea_name){
   
-  ifelse(!dir.exists(file.path(str_glue(paste0(output_path, "{s}")))), dir.create(file.path(str_glue(paste0(output_path, "{s}")))), FALSE)
+  g <- gea_map %>% filter(gea_name == area) %>% .$gea
+  
+  ifelse(!dir.exists(file.path(str_glue(paste0(output_path, "{g}")))), dir.create(file.path(str_glue(paste0(output_path, "{g}")))), FALSE)
   
   df_hourly <- df_energy %>% 
-    filter(site == s) %>% 
     select(timestamp, name, eload) %>% 
     mutate(eload = replace_na(eload, 0) / 1000) %>% 
     pivot_wider(id_cols = timestamp,names_from = name, values_from = eload) %>% 
     select(-timestamp) 
   
-  g <- gea_map %>% 
-    filter(location == s) %>%
-    .$gea_name
-  
   # Annual average rate
   aer_annual <- df_annual %>% 
-    filter(gea == g) %>% 
+    filter(gea == area) %>% 
     pivot_wider(names_from = c(scenario, year), values_from = aer) %>% 
     slice(rep(1, 8784)) %>% 
     select(-gea)
   
   result <- as.data.frame(t(as.matrix(df_hourly)) %*% as.matrix(aer_annual) / 1000)
   
-  write_rds(result, str_glue(paste0(output_path, "{s}/", "annual.rds")), compress = "gz")
+  write_rds(result, str_glue(paste0(output_path, "{g}/", "annual.rds")), compress = "gz")
   
   # Month-hour average rate
   month_days <- c(31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
@@ -141,7 +207,7 @@ for (s in all_sites$site){
   
   aer_month_hour <- year_hours %>%
     left_join(df_month_hour %>%  
-                filter(gea == g) %>% 
+                filter(gea == area) %>% 
                 pivot_wider(names_from = c(scenario, year), values_from = aer), 
               by = c("month", "hour")) %>% 
     arrange(month, day, hour) %>% 
@@ -149,7 +215,7 @@ for (s in all_sites$site){
     
   result <- as.data.frame(t(as.matrix(df_hourly)) %*% as.matrix(aer_month_hour) / 1000)
   
-  write_rds(result, str_glue(paste0(output_path, "{s}/", "month_hour.rds")), compress = "gz")
+  write_rds(result, str_glue(paste0(output_path, "{g}/", "month_hour.rds")), compress = "gz")
   
   # Season-hour average rate
   year_season_hours <- year_hours %>% 
@@ -160,7 +226,7 @@ for (s in all_sites$site){
   
   aer_season_hour <- year_season_hours %>%
     left_join(df_season_hour %>%  
-                filter(gea == g) %>% 
+                filter(gea == area) %>% 
                 pivot_wider(names_from = c(scenario, year), values_from = aer), 
               by = c("season", "hour")) %>% 
     arrange(month, day, hour) %>% 
@@ -168,12 +234,12 @@ for (s in all_sites$site){
   
   result <- as.data.frame(t(as.matrix(df_hourly)) %*% as.matrix(aer_season_hour) / 1000)
   
-  write_rds(result, str_glue(paste0(output_path, "{s}/", "season_hour.rds")), compress = "gz")
+  write_rds(result, str_glue(paste0(output_path, "{g}/", "season_hour.rds")), compress = "gz")
   
   # Season average rate
   aer_season <- year_season_hours %>%
     left_join(df_season %>%  
-                filter(gea == g) %>% 
+                filter(gea == area) %>% 
                 pivot_wider(names_from = c(scenario, year), values_from = aer), 
               by = c("season")) %>% 
     arrange(month, day, hour) %>% 
@@ -181,12 +247,12 @@ for (s in all_sites$site){
   
   result <- as.data.frame(t(as.matrix(df_hourly)) %*% as.matrix(aer_season) / 1000)
   
-  write_rds(result, str_glue(paste0(output_path, "{s}/", "season.rds")), compress = "gz")
+  write_rds(result, str_glue(paste0(output_path, "{g}/", "season.rds")), compress = "gz")
   
   # Time-of-day average rate
   aer_tod <- year_hours %>%
     left_join(df_tod %>%  
-                filter(gea == g) %>% 
+                filter(gea == area) %>% 
                 pivot_wider(names_from = c(scenario, year), values_from = aer), 
               by = "hour") %>% 
     arrange(month, day, hour) %>% 
@@ -194,7 +260,7 @@ for (s in all_sites$site){
   
   result <- as.data.frame(t(as.matrix(df_hourly)) %*% as.matrix(aer_tod) / 1000)
   
-  write_rds(result, str_glue(paste0(output_path, "{s}/", "tod.rds")), compress = "gz")
+  write_rds(result, str_glue(paste0(output_path, "{g}/", "tod.rds")), compress = "gz")
   
   # Hourly
   n_building <- length(df_hourly)
@@ -205,13 +271,12 @@ for (s in all_sites$site){
     aer_hour <- df_s_hourly[[z]] %>% 
       mutate(toy = format(datetime, "%m-%d %H:%M:%S")) %>% 
       select(-datetime) %>% 
-      filter(gea == g) %>% 
+      filter(gea == area) %>% 
       pivot_wider(names_from = c(scenario, year), values_from = aer) %>% 
       drop_na(toy) %>% 
       select(-c(gea, toy)) 
     
     df_hourly <- df_energy %>% 
-      filter(site == s) %>% 
       select(timestamp, name, eload) %>% 
       mutate(eload = replace_na(eload, 0) / 1000) %>% 
       filter(date(timestamp) != as.Date("2016-02-29")) %>% 
@@ -223,7 +288,7 @@ for (s in all_sites$site){
     result <- bind_cols(result, s_result)
   }
   
-  write_rds(result, str_glue(paste0(output_path, "{s}/", "hourly.rds")), compress = "gz")
+  write_rds(result, str_glue(paste0(output_path, "{g}/", "hourly.rds")), compress = "gz")
   
   
 }
@@ -237,51 +302,34 @@ rm(result, s_result, aer_hour, aer_tod, aer_month_hour, aer_annual)
 readfile_path <- "../readfiles/results/"
 figs_path <- "../figs/"
 
-for (s in all_sites$site){
-  
-  g <- gea_map %>% 
-    filter(location == s) %>%
-    .$gea_name
-  
-  for (z in 1:length(all_scenario$scenario)){
-    
-    aer_hour <- df_s_hourly[[z]] %>% 
-      mutate(toy = format(datetime, "%m-%d %H:%M:%S")) %>% 
-      filter(gea == g) 
-    
-  }
-}
-
 all_mean <- data.frame()
 all_ci <- data.frame()
 
-for (s in all_sites$site){
-  figs_path <- str_glue("../figs/{s}/")
+for (area in gea_map$gea_name){
+  g <- gea_map %>% filter(gea_name == area) %>% .$gea
   
-  g <- gea_map %>% 
-    filter(location == s) %>%
-    .$gea_name
+  figs_path <- str_glue("../figs/{g}/")
   
   for (z in all_scenario$scenario){
     
-    aer_hourly <- read_rds(str_glue(paste0(readfile_path, "{s}/hourly.rds"))) %>% 
+    aer_hourly <- read_rds(str_glue(paste0(readfile_path, "{g}/hourly.rds"))) %>% 
       select(contains(z))
     
     colname <- colnames(aer_hourly)
     
-    aer_annual <- read_rds(str_glue(paste0(readfile_path, "{s}/annual.rds"))) %>% 
+    aer_annual <- read_rds(str_glue(paste0(readfile_path, "{g}/annual.rds"))) %>% 
       select(all_of(colname))
     
-    aer_tod <- read_rds(str_glue(paste0(readfile_path, "{s}/tod.rds"))) %>% 
+    aer_tod <- read_rds(str_glue(paste0(readfile_path, "{g}/tod.rds"))) %>% 
       select(all_of(colname))
     
-    aer_month_hour <- read_rds(str_glue(paste0(readfile_path, "{s}/month_hour.rds"))) %>% 
+    aer_month_hour <- read_rds(str_glue(paste0(readfile_path, "{g}/month_hour.rds"))) %>% 
       select(all_of(colname))
     
-    aer_season <- read_rds(str_glue(paste0(readfile_path, "{s}/season.rds"))) %>% 
+    aer_season <- read_rds(str_glue(paste0(readfile_path, "{g}/season.rds"))) %>% 
       select(all_of(colname))
     
-    aer_season_hour <- read_rds(str_glue(paste0(readfile_path, "{s}/season_hour.rds"))) %>% 
+    aer_season_hour <- read_rds(str_glue(paste0(readfile_path, "{g}/season_hour.rds"))) %>% 
       select(all_of(colname))
     
     # Calculate annual error distribution
@@ -293,8 +341,7 @@ for (s in all_sites$site){
       summarise(mean = mean(values)) %>% 
       ungroup() %>% 
       mutate(type = "annual", 
-             site = s, 
-             gea = g)
+             gea = area)
     
     all_mean <- bind_rows(all_mean, mean)
     
@@ -307,8 +354,7 @@ for (s in all_sites$site){
                 high = mean + 1.96 * se) %>% 
       ungroup() %>% 
       mutate(type = "annual", 
-             site = s, 
-             gea = g)
+             gea = area)
     
     all_ci <- bind_rows(all_ci, ci)
     
@@ -340,8 +386,7 @@ for (s in all_sites$site){
       summarise(mean = mean(values)) %>% 
       ungroup() %>% 
       mutate(type = "tod", 
-             site = s, 
-             gea = g)
+             gea = area)
     
     all_mean <- bind_rows(all_mean, mean)
     
@@ -354,8 +399,7 @@ for (s in all_sites$site){
                 high = mean + 1.96 * se) %>% 
       ungroup() %>% 
       mutate(type = "tod", 
-             site = s, 
-             gea = g)
+             gea = area)
     
     all_ci <- bind_rows(all_ci, ci)
     
@@ -387,8 +431,7 @@ for (s in all_sites$site){
       summarise(mean = mean(values)) %>% 
       ungroup() %>% 
       mutate(type = "month-hour", 
-             site = s, 
-             gea = g)
+             gea = area)
     
     all_mean <- bind_rows(all_mean, mean)
     
@@ -401,8 +444,7 @@ for (s in all_sites$site){
                 high = mean + 1.96 * se) %>% 
       ungroup() %>% 
       mutate(type = "month-hour", 
-             site = s, 
-             gea = g)
+             gea = area)
     
     all_ci <- bind_rows(all_ci, ci)
     
@@ -434,8 +476,7 @@ for (s in all_sites$site){
       summarise(mean = mean(values)) %>% 
       ungroup() %>% 
       mutate(type = "season", 
-             site = s, 
-             gea = g)
+             gea = area)
     
     all_mean <- bind_rows(all_mean, mean)
     
@@ -448,8 +489,7 @@ for (s in all_sites$site){
                 high = mean + 1.96 * se) %>% 
       ungroup() %>% 
       mutate(type = "season", 
-             site = s, 
-             gea = g)
+             gea = area)
     
     all_ci <- bind_rows(all_ci, ci)
     
@@ -480,8 +520,7 @@ for (s in all_sites$site){
       summarise(mean = mean(values)) %>% 
       ungroup() %>% 
       mutate(type = "season-hour", 
-             site = s, 
-             gea = g)
+             gea = area)
     
     all_mean <- bind_rows(all_mean, mean)
     
@@ -494,8 +533,7 @@ for (s in all_sites$site){
                 high = mean + 1.96 * se) %>% 
       ungroup() %>% 
       mutate(type = "season-hour", 
-             site = s, 
-             gea = g)
+             gea = area)
     
     all_ci <- bind_rows(all_ci, ci)
     
@@ -525,16 +563,12 @@ for (s in all_sites$site){
 # Overall plot for distribution mean
 all_mean <- bind_rows(all_mean)
 
-for (s in all_sites$site){
+for (area in gea_map$gea_name){
   
-  g <- all_mean %>% 
-    filter(site == s) %>% 
-    select(gea) %>% 
-    unique() %>% 
-    .$gea
+  g <- gea_map %>% filter(gea_name == area) %>% .$gea
   
   all_mean %>% 
-    filter(site == s) %>% 
+    filter(gea == area) %>% 
     mutate(type = as_factor(type), 
            type = recode_factor(type, 
                                 "annual" = "Annual avg.", 
@@ -555,30 +589,25 @@ for (s in all_sites$site){
                        breaks = breaks_pretty(n = 4),
                        labels = number_format(suffix = " %")) +
     scale_fill_brewer(palette = "Set2") +
-    labs(title = str_glue("{s}"), 
-         subtitle = str_glue("{g}"), 
+    labs(title = str_glue("{area}"), 
          fill = NULL) +
     theme(panel.grid.major.y = element_line(color = "grey80"),
           legend.direction = "horizontal",
           legend.position = "bottom",
           plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
   
-  ggsave(filename = str_glue("{s}_mean_summary.png"), path = str_glue("../figs/"), units = "in", height = 6, width = 12, dpi = 300)
+  ggsave(filename = str_glue("{g}_mean_summary.png"), path = str_glue("../figs/"), units = "in", height = 6, width = 12, dpi = 300)
 }
 
 # Overall plot for distribution confidence interval
 all_ci <- bind_rows(all_ci)
 
-for (s in all_sites$site){
+for (area in gea_map$gea_name){
   
-  g <- all_ci %>% 
-    filter(site == s) %>% 
-    select(gea) %>% 
-    unique() %>% 
-    .$gea
+  g <- gea_map %>% filter(gea_name == area) %>% .$gea
   
   all_ci %>% 
-    filter(site == s) %>% 
+    filter(gea == area) %>% 
     mutate(type = as_factor(type), 
            type = recode_factor(type, 
                                 "annual" = "Annual avg.", 
@@ -604,13 +633,47 @@ for (s in all_sites$site){
                        breaks = breaks_pretty(n = 4),
                        labels = number_format(suffix = " %")) +
     scale_color_brewer(palette = "Set2") +
-    labs(title = str_glue("{s}"), 
-         subtitle = str_glue("{g}"), 
+    labs(title = str_glue("{area}"), 
          color = NULL) +
     theme(panel.grid.major.y = element_line(color = "grey80"),
           legend.direction = "horizontal",
           legend.position = "bottom",
           plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
   
-  ggsave(filename = str_glue("{s}_ci_summary.png"), path = str_glue("../figs/"), units = "in", height = 6, width = 12, dpi = 300)
+  ggsave(filename = str_glue("{g}_ci_summary.png"), path = str_glue("../figs/"), units = "in", height = 6, width = 12, dpi = 300)
 }
+
+
+
+
+#### CLUSTER ####
+# k <- 6
+# df_energyT <- df_energy %>% 
+#   select(name, timestamp, eload) %>% 
+#   arrange(name, timestamp) %>% 
+#   group_by(name) %>% 
+#   mutate(across(eload, ~ zoo::na.approx(., na.rm = FALSE))) %>% 
+#   ungroup() %>% 
+#   pivot_wider(names_from = timestamp, values_from = eload) %>% 
+#   select(-name) %>% 
+#   drop_na()
+# 
+# kmeans_result <- kmeans(df_energyT, centers = k, nstart = 25)
+# 
+# # Plot the clusters
+# df_cluster <- as.data.frame(kmeans_result$centers) %>%
+#   mutate(cluster = as.factor(row_number())) %>% 
+#   pivot_longer(-cluster, names_to = "datetime", values_to = "eload") 
+# 
+# df_cluster %>% 
+#   mutate(datetime = as.POSIXct(datetime)) %>% 
+#   ggplot(aes(x = datetime, y = eload, group = cluster, color = cluster)) +
+#   geom_smooth() +
+#   labs(title = "K-means Clustering of Genome Dataset",
+#        x = "Datetime",
+#        y = "Eload") +
+#   scale_x_datetime(date_breaks = "2 months", date_labels = "%b") +
+#   theme(panel.grid.major.y = element_line(color = "grey80"),
+#         legend.direction = "horizontal",
+#         legend.position = "bottom",
+#         plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
