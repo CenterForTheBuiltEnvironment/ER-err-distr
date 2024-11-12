@@ -30,21 +30,11 @@ theme_update(plot.title = element_text(size = 14, colour = "grey20", face = "bol
              strip.text = element_text(size = 10, color = "grey20", face = "bold"),
              strip.background = element_blank())
 
-# T test
-perform_t_test <- function(df_pre, df_post, building) {
-  t.test(df_pre[[building]], df_post[[building]], alternative = "two.sided")
-}
 
-perform_mean_diff <- function(df_pre, df_post, building) {
-  abs(mean(df_pre[[building]], na.rm = T) - mean(df_post[[building]], na.rm = T)) / mean(df_pre[[building]], na.rm = T) * 100
-}
 
-perform_mean_est <- function(df_pre, df_post, building) {
-  0.5 * (sum(df_pre[[building]], na.rm = T) + sum(df_post[[building]], na.rm = T))
-}
-
+#### FUNCTION ####
 process_csv <- function(file) {
-
+  
   part_a <- read_csv(file) %>% 
     slice(1:5)
   
@@ -72,97 +62,6 @@ process_csv <- function(file) {
 
 
 #### READ DATA ####
-data_path <- "../../../Genome/buds-lab-building-data-genome-project-2/data/meters/cleaned/"
-meta_path <- "../../../Genome/buds-lab-building-data-genome-project-2/data/metadata/"
-weather_path <- "../../../Genome/buds-lab-building-data-genome-project-2/data/weather/"
-output_path <- "../readfiles/"
-
-df_elec <- read_csv(paste0(data_path, "electricity_cleaned.csv"))
-df_meta <- read_csv(paste0(meta_path, "metadata.csv"))
-df_weather <- read_csv(paste0(weather_path, "weather.csv"))
-
-
-
-
-#### FILTER ####
-# Focus
-remove_type <- c()
-remove_site <- c("Eagle", "Bobcat", "Swan", "Hog", "Gator", "Robin", "Lamb", "Moose", "Wolf", "Shrew", "Mouse", "Crow")
-
-# NAs
-na_counts <- sapply(df_elec[-1], function(x) sum(is.na(x)))
-cols_to_keep <- names(na_counts[na_counts <= 1440])
-cols_to_keep <- c("timestamp", cols_to_keep)
-
-df_elec <- df_elec[, cols_to_keep]
-
-# 0 means
-means <- sapply(df_elec[-1], mean, na.rm = TRUE)
-cols_to_keep <- names(means[means > 1])
-cols_to_keep <- c("timestamp", cols_to_keep)
-
-df_elec <- df_elec[, cols_to_keep]
-
-# yearly difference
-df_elec$timestamp = as.POSIXct(df_elec$timestamp, format="%Y-%m-%d %H:%M:%OS")
-
-df_pre <- df_elec %>%
-  filter(year(timestamp) == 2016)
-
-df_post <- df_elec %>%
-  filter(year(timestamp) == 2017)
-
-buildings <- names(df_elec)[names(df_elec) != "timestamp"]
-
-p_values <- sapply(buildings, function(building) {
-  t_test_result <- perform_t_test(df_pre, df_post, building)
-  t_test_result$p.value
-})
-
-mean_diff <- sapply(buildings, function(building) {
-  perform_mean_diff(df_pre, df_post, building)
-})
-
-mean_est <- sapply(buildings, function(building) {
-  perform_mean_est(df_pre, df_post, building)
-})
-
-# electricity intensity
-eui_max <- 500
-
-results <- data.frame(Building = buildings, P_Value = p_values, Dev = mean_diff, mean = mean_est) %>% 
-  filter(Dev < 25) %>% 
-  left_join(df_meta, by = c("Building" = "building_id")) %>% 
-  mutate(elec_eui = mean / sqm) %>% 
-  filter(elec_eui <= eui_max)
-
-cols_to_keep <- c("timestamp", results %>% .$Building)
-
-
-df_elec <- df_elec[, cols_to_keep]
-
-
-# process corresponding metadata
-df_meta <- df_meta %>% 
-  filter(building_id %in% results$Building) %>% 
-  select(building_id, sqm, sqft, eui) %>% 
-  separate(building_id, into = c("site", "type", "name"), sep = "_") %>% 
-  filter(!type %in% remove_type) %>% 
-  filter(!site %in% remove_site)
-
-# process corresponding weather data
-df_weather <- df_weather %>% 
-  select(timestamp, 
-         site = site_id, 
-         t_out = airTemperature) %>% 
-  mutate(timestamp = as.POSIXct(timestamp, format="%Y-%m-%d %H:%M:%OS")) %>% 
-  filter(site %in% df_meta$site)
-
-
-
-
-
-#### Cambium ####
 data_path <- "../../Cambium/"
 df_annual <- list.files(path = data_path, pattern = "annual", full.names = TRUE) %>% 
   map_dfr(~ read_csv(.x, skip = 5)) %>% 
@@ -188,13 +87,13 @@ df_season <- df_month_hour %>%
   group_by(scenario, gea, year, season) %>% 
   summarise(aer = mean(aer)) %>% 
   ungroup()
-  
+
 
 df_season_hour <- df_month_hour %>% 
   mutate(season = ifelse(month >= 3 & month <= 5, "spring", 
-                          ifelse(month >= 6 & month <= 8, "summer", 
-                                 ifelse(month >= 9 & month <= 11, "fall", 
-                                        "winter")))) %>% 
+                         ifelse(month >= 6 & month <= 8, "summer", 
+                                ifelse(month >= 9 & month <= 11, "fall", 
+                                       "winter")))) %>% 
   group_by(scenario, gea, year, season, hour) %>% 
   summarise(aer = mean(aer)) %>% 
   ungroup()
@@ -230,16 +129,6 @@ for (subfolder in subfolder_list) {
 
 
 #### OUTPUT ####
-df_energy <- df_elec %>% 
-  pivot_longer(c(-timestamp), names_to = "buildings", values_to = "eload") %>% 
-  separate(buildings, into = c("site", "type", "name"), sep = "_") %>% 
-  filter(!type %in% remove_type) %>% 
-  filter(!site %in% remove_site) 
-
-write_rds(df_energy, paste0(output_path, "df_energy.rds"), compress = "gz")
-write_rds(df_meta, paste0(output_path, "df_meta.rds"), compress = "gz")
-write_rds(df_weather, paste0(output_path, "df_weather.rds"), compress = "gz")
-
 write_rds(df_annual, paste0(output_path, "df_annual.rds"), compress = "gz")
 write_rds(df_season, paste0(output_path, "df_season.rds"), compress = "gz")
 write_rds(df_month_hour, paste0(output_path, "df_month_hour.rds"), compress = "gz")
