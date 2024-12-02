@@ -125,9 +125,8 @@ for (s in 1:nrow(solar_map)) {
     }
   }
   
-  Rr <- 0.15 * Rt_h * (1 - cos(radians(beta))) / 2  # Reflected solar radiation on tilted surface
   Rs <- Rs_h * (1 + cos(radians(beta))) / 2  # Scattered solar radiation on tilted surface
-  Rt <- Rd + Rs + Rr
+  Rt <- Rd + Rs
   
   # Calculate PV power output
   Ppv <- array(dim = L)
@@ -139,8 +138,10 @@ for (s in 1:nrow(solar_map)) {
     }
   }
   
-  Ppv_cal <- 9 * 0.496 * Ppv
-  df_solar <- data.frame(datetime = df_tmy$datetime, PV = Ppv_cal)
+  
+  # adjustment for datetime
+  Ppv_cal <- c(0, Ppv[1:L-1])
+  df_solar <- data.frame(datetime = df_tmy$datetime - hours(1), PV = Ppv_cal)
   
   
   
@@ -163,7 +164,7 @@ for (s in 1:nrow(solar_map)) {
           plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"), 
           axis.text = element_text(size = 12))
   
-  ggsave(filename = str_glue("{gea}_solar.png"), path = output_path, units = "in", width = 8, height = 6)
+  ggsave(filename = str_glue("{gea}_solar.png"), path = output_path, units = "in", width = 10, height = 6)
   
   
   
