@@ -1,0 +1,57 @@
+code,name,gea,region
+WY,Wyoming,WestConnect_North,Western Electricity Coordinating Council North
+AK,Alaska,NA,NA
+MD,Maryland,PJM_East,PJM Interconnection East
+AS,American Samoa,NA,NA
+AR,Arkansas,MISO_South,Midcontinent Independent System Operator South
+ND,North Dakota,MISO_North,Midcontinent Independent System Operator North
+DE,Delaware,PJM_East,PJM Interconnection East
+GU,Guam,NA,NA
+NM,New Mexico,WestConnect_South,Western Electricity Coordinating Council South
+UT,Utah,WestConnect_North,Western Electricity Coordinating Council North
+WV,West Virginia,PJM_West,PJM Interconnection West
+KS,Kansas,SPP_South,Southwest Power Pool South
+GA,Georgia,SERTP,Southeastern Reliability Corporation
+MS,Mississippi,MISO_South,Midcontinent Independent System Operator South
+MN,Minnesota,MISO_North,Midcontinent Independent System Operator North
+NH,New Hampshire,ISONE,ISO New England
+MO,Missouri,MISO_Central,Midcontinent Independent System Operator Central
+ID,Idaho,WestConnect_North,Western Electricity Coordinating Council North
+SD,South Dakota,SPP_North,Southwest Power Pool North
+PA,Pennsylvania,PJM_West,PJM Interconnection West
+OK,Oklahoma,SPP_South,Southwest Power Pool South
+IN,Indiana,MISO_North,Midcontinent Independent System Operator North
+NJ,New Jersey,PJM_East,PJM Interconnection East
+NE,Nebraska,SPP_North,Southwest Power Pool North
+CO,Colorado,WestConnect_South,Western Electricity Coordinating Council South
+NY,New York,NYISO,New York Independent System Operator
+MT,Montana,WestConnect_North,Western Electricity Coordinating Council North
+KY,Kentucky,SERTP,Southeastern Reliability Corporation
+VT,Vermont,ISONE,ISO New England
+DC,District of Columbia,PJM_East,PJM Interconnection East
+FL,Florida,FRCC,Florida Reliability Coordinating Council
+NV,Nevada,WestConnect_South,Western Electricity Coordinating Council South
+MP,Northern Mariana Islands,NA,NA
+TN,Tennessee,SERTP,Tennessee Valley Authority
+IA,Iowa,MISO_Central,Midcontinent Independent System Operator Central
+AL,Alabama,SERTP,Southeastern Reliability Corporation
+MI,Michigan,MISO_North,Midcontinent Independent System Operator North
+CA,California,CAISO,California Independent System Operator
+CT,Connecticut,ISONE,ISO New England
+AZ,Arizona,WestConnect_South,Western Electricity Coordinating Council South
+TX,Texas,ERCOT,Electric Reliability Council of Texas
+VA,Virginia,PJM_East,PJM Interconnection East
+IL,Illinois,MISO_North,Midcontinent Independent System Operator North
+HI,Hawaii,NA,NA
+OR,Oregon,WestConnect_North,Western Electricity Coordinating Council North
+RI,Rhode Island,ISONE,ISO New England
+VI,United States Virgin Islands,NA,NA
+SC,South Carolina,SERTP,Southeastern Reliability Corporation
+WA,Washington,WestConnect_North,Western Electricity Coordinating Council North
+PR,Puerto Rico,NA,NA
+LA,Louisiana,MISO_South,Midcontinent Independent System Operator South
+ME,Maine,ISONE,ISO New England
+OH,Ohio,PJM_West,PJM Interconnection West
+WI,Wisconsin,MISO_North,Midcontinent Independent System Operator North
+NC,North Carolina,SERTP,Southeastern Reliability Corporation
+MA,Massachusetts,ISONE,ISO New England

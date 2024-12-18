@@ -48,7 +48,7 @@ solar_map <- read_csv(paste0(readfile_path, "./solar_map.csv"))
 
 
 #### LOCATION ####
-for (s in 1:nrow(solar_map)) {
+for (s in 6:nrow(solar_map)) {
   
   filename <- solar_map$filename[s]
   gea <- solar_map$gea[s]

@@ -5,3 +5,12 @@ Cornell.epw,Cornell,NYISO,42.45
 Orlando.epw,Orlando,FRCC,28.54
 Princeton.epw,Princeton,PJM_East,40.36
 Tempe.epw,Tempe,WestConnect_South,33.43
+Cheyenne.epw,Cheyenne,WestConnect_North,41.14
+Columbus.epw,Columbus,PJM_West,39.9612
+Dallas.epw,Dallas,SPP_South,32.7767
+Fargo.epw,Fargo,SPP_North,46.8772
+Little Rock.epw,Little Rock,MISO_South,34.7465
+Minneapolis.epw,Minneapolis,MISO_North,44.9778
+Des Moines.epw,Des Moines,MISO_Central,41.5868
+Atlanta.epw,Atlanta,SERTP,33.749
+Boston.epw,Boston,ISONE,42.3601
