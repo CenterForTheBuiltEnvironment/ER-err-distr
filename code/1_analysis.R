@@ -1,4 +1,4 @@
-# AER error distribution analysis
+# ER error distribution analysis
 # written by Aoyu
 
 
@@ -37,7 +37,8 @@ ls_colors <- c("Annual avg." = "#E68B81",
                
 )
 
-
+# emissions <- "aer"
+emissions <- "moer"
 
 
 #### FUNCTION ####
@@ -114,17 +115,17 @@ all_types <- df_energy %>%
   distinct()
 
 # carbon emissions dataset
-df_annual <- read_rds(paste0(readfile_path, "/aer/", "df_annual.rds")) 
+df_annual <- read_rds(paste0(readfile_path, str_glue("/{emissions}/"), "df_annual.rds")) 
 
-df_month_hour <- read_rds(paste0(readfile_path, "/aer/", "df_month_hour.rds")) 
+df_month_hour <- read_rds(paste0(readfile_path, str_glue("/{emissions}/"), "df_month_hour.rds")) 
 
-df_season_hour <- read_rds(paste0(readfile_path, "/aer/", "df_season_hour.rds"))
+df_season_hour <- read_rds(paste0(readfile_path, str_glue("/{emissions}/"), "df_season_hour.rds"))
 
-df_season <- read_rds(paste0(readfile_path, "/aer/", "df_season.rds"))
+df_season <- read_rds(paste0(readfile_path, str_glue("/{emissions}/"), "df_season.rds"))
 
-df_tod <- read_rds(paste0(readfile_path, "/aer/", "df_tod.rds")) 
+df_tod <- read_rds(paste0(readfile_path, str_glue("/{emissions}/"), "df_tod.rds")) 
 
-file_list <- paste0(readfile_path, "/aer/", "df_s", 1:8, "_hourly.rds")
+file_list <- paste0(readfile_path, str_glue("/{emissions}/"), "df_s", 1:8, "_hourly.rds")
 df_s_hourly <- map(file_list, readRDS)
 
 all_names <- df_energy %>%
@@ -226,14 +227,14 @@ for (g in all_region){
     df_hourly_net <- as.data.frame((as.matrix(df_hourly) - solar_gen) / 1000)
     
     # Annual average rate
-    aer_annual <- df_annual %>% 
+    er_annual <- df_annual %>% 
       filter(gea == g) %>% 
-      pivot_wider(names_from = c(scenario, year), values_from = aer) %>% 
+      pivot_wider(names_from = c(scenario, year), values_from = er) %>% 
       slice(rep(1, 8760)) %>% 
       select(-gea)
     
     # convert carbon equivalent emissions from kg to tons
-    result <- as.data.frame(t(as.matrix(df_hourly_net)) %*% as.matrix(aer_annual) / 1000)
+    result <- as.data.frame(t(as.matrix(df_hourly_net)) %*% as.matrix(er_annual) / 1000)
     
     write_rds(result, str_glue(paste0(output_path, "{g}/{perc}/", "annual.rds")), compress = "gz")
     
@@ -247,15 +248,15 @@ for (g in all_region){
       )
     }))
     
-    aer_month_hour <- year_hours %>%
+    er_month_hour <- year_hours %>%
       left_join(df_month_hour %>%  
                   filter(gea == g) %>% 
-                  pivot_wider(names_from = c(scenario, year), values_from = aer), 
+                  pivot_wider(names_from = c(scenario, year), values_from = er), 
                 by = c("month", "hour")) %>% 
       arrange(month, day, hour) %>% 
       select(-c(month, day, hour, gea))
     
-    result <- as.data.frame(t(as.matrix(df_hourly_net)) %*% as.matrix(aer_month_hour) / 1000)
+    result <- as.data.frame(t(as.matrix(df_hourly_net)) %*% as.matrix(er_month_hour) / 1000)
     
     write_rds(result, str_glue(paste0(output_path, "{g}/{perc}/", "month_hour.rds")), compress = "gz")
     
@@ -266,41 +267,41 @@ for (g in all_region){
                                     ifelse(month >= 9 & month <= 11, "fall", 
                                            "winter"))))
     
-    aer_season_hour <- year_season_hours %>%
+    er_season_hour <- year_season_hours %>%
       left_join(df_season_hour %>%  
                   filter(gea == g) %>% 
-                  pivot_wider(names_from = c(scenario, year), values_from = aer), 
+                  pivot_wider(names_from = c(scenario, year), values_from = er), 
                 by = c("season", "hour")) %>% 
       arrange(month, day, hour) %>% 
       select(-c(month, day, hour, gea, season))
     
-    result <- as.data.frame(t(as.matrix(df_hourly_net)) %*% as.matrix(aer_season_hour) / 1000)
+    result <- as.data.frame(t(as.matrix(df_hourly_net)) %*% as.matrix(er_season_hour) / 1000)
     
     write_rds(result, str_glue(paste0(output_path, "{g}/{perc}/", "season_hour.rds")), compress = "gz")
     
     # Season average rate
-    aer_season <- year_season_hours %>%
+    er_season <- year_season_hours %>%
       left_join(df_season %>%  
                   filter(gea == g) %>% 
-                  pivot_wider(names_from = c(scenario, year), values_from = aer), 
+                  pivot_wider(names_from = c(scenario, year), values_from = er), 
                 by = c("season")) %>% 
       arrange(month, day, hour) %>% 
       select(-c(month, day, hour, gea, season))
     
-    result <- as.data.frame(t(as.matrix(df_hourly_net)) %*% as.matrix(aer_season) / 1000)
+    result <- as.data.frame(t(as.matrix(df_hourly_net)) %*% as.matrix(er_season) / 1000)
     
     write_rds(result, str_glue(paste0(output_path, "{g}/{perc}/", "season.rds")), compress = "gz")
     
     # Time-of-day average rate
-    aer_tod <- year_hours %>%
+    er_tod <- year_hours %>%
       left_join(df_tod %>%  
                   filter(gea == g) %>% 
-                  pivot_wider(names_from = c(scenario, year), values_from = aer), 
+                  pivot_wider(names_from = c(scenario, year), values_from = er), 
                 by = "hour") %>% 
       arrange(month, day, hour) %>% 
       select(-c(month, day, hour, gea))
     
-    result <- as.data.frame(t(as.matrix(df_hourly_net)) %*% as.matrix(aer_tod) / 1000)
+    result <- as.data.frame(t(as.matrix(df_hourly_net)) %*% as.matrix(er_tod) / 1000)
     
     write_rds(result, str_glue(paste0(output_path, "{g}/{perc}/", "tod.rds")), compress = "gz")
     
@@ -310,15 +311,15 @@ for (g in all_region){
     for (z in 1:length(all_scenario$scenario)){
       
       scenario <- unique(df_s_hourly[[z]] %>% .$scenario)
-      aer_hour <- df_s_hourly[[z]] %>% 
+      er_hour <- df_s_hourly[[z]] %>% 
         mutate(toy = format(datetime, "%m-%d %H:%M:%S")) %>% 
         select(-datetime) %>% 
         filter(gea == g) %>% 
-        pivot_wider(names_from = c(scenario, year), values_from = aer) %>% 
+        pivot_wider(names_from = c(scenario, year), values_from = er) %>% 
         drop_na(toy) %>% 
         select(-c(gea, toy)) 
       
-      s_result <- as.data.frame(t(as.matrix(df_hourly_net)) %*% as.matrix(aer_hour) / 1000)
+      s_result <- as.data.frame(t(as.matrix(df_hourly_net)) %*% as.matrix(er_hour) / 1000)
       
       result <- bind_cols(result, s_result)
     }
@@ -329,7 +330,7 @@ for (g in all_region){
   
 }
 
-rm(result, s_result, aer_hour, aer_tod, aer_month_hour, aer_annual)
+rm(result, s_result, er_hour, er_tod, er_month_hour, er_annual)
 
 
 
@@ -337,7 +338,7 @@ rm(result, s_result, aer_hour, aer_tod, aer_month_hour, aer_annual)
 
 #### ANALYSIS ####
 readfile_path <- "../readfiles/results/"
-figs_path <- "../figs/"
+figs_path <- str_glue("../figs/{emissions}/")
 
 for (g in all_region){
   
@@ -350,28 +351,28 @@ for (g in all_region){
     
     for (z in all_scenario$scenario){
       
-      aer_hourly <- read_rds(str_glue(paste0(readfile_path, "{g}/{perc}/hourly.rds"))) %>% 
+      er_hourly <- read_rds(str_glue(paste0(readfile_path, "{g}/{perc}/hourly.rds"))) %>% 
         select(contains(z))
       
-      colname <- colnames(aer_hourly)
+      colname <- colnames(er_hourly)
       
-      aer_annual <- read_rds(str_glue(paste0(readfile_path, "{g}/{perc}/annual.rds"))) %>% 
+      er_annual <- read_rds(str_glue(paste0(readfile_path, "{g}/{perc}/annual.rds"))) %>% 
         select(all_of(colname))
       
-      aer_tod <- read_rds(str_glue(paste0(readfile_path, "{g}/{perc}/tod.rds"))) %>% 
+      er_tod <- read_rds(str_glue(paste0(readfile_path, "{g}/{perc}/tod.rds"))) %>% 
         select(all_of(colname))
       
-      aer_month_hour <- read_rds(str_glue(paste0(readfile_path, "{g}/{perc}/month_hour.rds"))) %>% 
+      er_month_hour <- read_rds(str_glue(paste0(readfile_path, "{g}/{perc}/month_hour.rds"))) %>% 
         select(all_of(colname))
       
-      aer_season <- read_rds(str_glue(paste0(readfile_path, "{g}/{perc}/season.rds"))) %>% 
+      er_season <- read_rds(str_glue(paste0(readfile_path, "{g}/{perc}/season.rds"))) %>% 
         select(all_of(colname))
       
-      aer_season_hour <- read_rds(str_glue(paste0(readfile_path, "{g}/{perc}/season_hour.rds"))) %>% 
+      er_season_hour <- read_rds(str_glue(paste0(readfile_path, "{g}/{perc}/season_hour.rds"))) %>% 
         select(all_of(colname))
       
       # Calculate annual error distribution
-      annual_err <- (aer_annual - aer_hourly) / aer_hourly * 100
+      annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
       
       mean <- annual_err %>% 
         pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
@@ -382,26 +383,26 @@ for (g in all_region){
                gea = g, 
                solar = perc)
       
-      annual_err %>% 
-        pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
-        mutate(scenario = as.factor(scenario)) %>% 
-        ggplot(aes(x = values, group = scenario)) +
-        geom_histogram(bins = 100, aes(y=after_stat(density)), colour="black", fill="white")+
-        geom_density(alpha=.2, fill="#FF6666") +
-        geom_vline(data = mean, aes(xintercept = mean),linewidth = 1) +
-        geom_text(data = mean, 
-                  aes(x = -5, y = 0.2, label = paste0("mean: ", round(mean, digits = 2), " tons CO2e")), check_overlap = T) +
-        facet_wrap(~scenario, nrow = 6) +
-        coord_cartesian(xlim = c(-10, 10)) +
-        theme(panel.grid.major.y = element_line(color = "grey80"),
-              legend.direction = "horizontal",
-              legend.position = "bottom",
-              plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
-      
-      ggsave(filename = str_glue("annual_{z}_{perc}_dist.png"), path = subfigs_path, units = "in", height = 8, width = 8, dpi = 300)
+      # annual_err %>% 
+      #   pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
+      #   mutate(scenario = as.factor(scenario)) %>% 
+      #   ggplot(aes(x = values, group = scenario)) +
+      #   geom_histogram(bins = 100, aes(y=after_stat(density)), colour="black", fill="white")+
+      #   geom_density(alpha=.2, fill="#FF6666") +
+      #   geom_vline(data = mean, aes(xintercept = mean),linewidth = 1) +
+      #   geom_text(data = mean, 
+      #             aes(x = -5, y = 0.2, label = paste0("mean: ", round(mean, digits = 2), " tons CO2e")), check_overlap = T) +
+      #   facet_wrap(~scenario, nrow = 6) +
+      #   coord_cartesian(xlim = c(-10, 10)) +
+      #   theme(panel.grid.major.y = element_line(color = "grey80"),
+      #         legend.direction = "horizontal",
+      #         legend.position = "bottom",
+      #         plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+      # 
+      # ggsave(filename = str_glue("annual_{z}_{perc}_dist.png"), path = subfigs_path, units = "in", height = 8, width = 8, dpi = 300)
       
       # Calculate tod error distribution
-      tod_err <- (aer_tod - aer_hourly) / aer_hourly * 100
+      tod_err <- abs((er_tod - er_hourly) / er_hourly * 100)
       
       mean <- tod_err %>% 
         pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
@@ -412,26 +413,26 @@ for (g in all_region){
                gea = g, 
                solar = perc)
       
-      tod_err %>% 
-        pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
-        mutate(scenario = as.factor(scenario)) %>% 
-        ggplot(aes(x = values, group = scenario)) +
-        geom_histogram(bins = 100, aes(y=after_stat(density)), colour="black", fill="white")+
-        geom_density(alpha=.2, fill="#FF6666") +
-        geom_vline(data = mean, aes(xintercept = mean),linewidth = 1) +
-        geom_text(data = mean, 
-                  aes(x = -2.5, y = 0.5, label = paste0("mean: ", round(mean, digits = 2), " tons CO2e")), check_overlap = T) +
-        facet_wrap(~scenario, nrow = 6) +
-        coord_cartesian(xlim = c(-5, 5)) +
-        theme(panel.grid.major.y = element_line(color = "grey80"),
-              legend.direction = "horizontal",
-              legend.position = "bottom",
-              plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
-      
-      ggsave(filename = str_glue("tod_{z}_{perc}_dist.png"), path = subfigs_path, units = "in", height = 8, width = 8, dpi = 300)
+      # tod_err %>% 
+      #   pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
+      #   mutate(scenario = as.factor(scenario)) %>% 
+      #   ggplot(aes(x = values, group = scenario)) +
+      #   geom_histogram(bins = 100, aes(y=after_stat(density)), colour="black", fill="white")+
+      #   geom_density(alpha=.2, fill="#FF6666") +
+      #   geom_vline(data = mean, aes(xintercept = mean),linewidth = 1) +
+      #   geom_text(data = mean, 
+      #             aes(x = -2.5, y = 0.5, label = paste0("mean: ", round(mean, digits = 2), " tons CO2e")), check_overlap = T) +
+      #   facet_wrap(~scenario, nrow = 6) +
+      #   coord_cartesian(xlim = c(-5, 5)) +
+      #   theme(panel.grid.major.y = element_line(color = "grey80"),
+      #         legend.direction = "horizontal",
+      #         legend.position = "bottom",
+      #         plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+      # 
+      # ggsave(filename = str_glue("tod_{z}_{perc}_dist.png"), path = subfigs_path, units = "in", height = 8, width = 8, dpi = 300)
       
       # Calculate month-hour error distribution
-      month_hour_err <- (aer_month_hour - aer_hourly) / aer_hourly * 100
+      month_hour_err <- abs((er_month_hour - er_hourly) / er_hourly * 100)
       
       mean <- month_hour_err %>% 
         pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
@@ -442,26 +443,26 @@ for (g in all_region){
                gea = g, 
                solar = perc)
       
-      month_hour_err %>% 
-        pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
-        mutate(scenario = as.factor(scenario)) %>% 
-        ggplot(aes(x = values, group = scenario)) +
-        geom_histogram(bins = 100, aes(y=after_stat(density)), colour="black", fill="white")+
-        geom_density(alpha=.2, fill="#FF6666") +
-        geom_vline(data = mean, aes(xintercept = mean),linewidth = 1) +
-        geom_text(data = mean, 
-                  aes(x = -1, y = 0.75, label = paste0("mean: ", round(mean, digits = 2), " tons CO2e")), check_overlap = T) +
-        facet_wrap(~scenario, nrow = 6) +
-        coord_cartesian(xlim = c(-2.5, 2.5)) +
-        theme(panel.grid.major.y = element_line(color = "grey80"),
-              legend.direction = "horizontal",
-              legend.position = "bottom",
-              plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
-      
-      ggsave(filename = str_glue("month-hour_{z}_{perc}_dist.png"), path = subfigs_path, units = "in", height = 8, width = 8, dpi = 300)
+      # month_hour_err %>% 
+      #   pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
+      #   mutate(scenario = as.factor(scenario)) %>% 
+      #   ggplot(aes(x = values, group = scenario)) +
+      #   geom_histogram(bins = 100, aes(y=after_stat(density)), colour="black", fill="white")+
+      #   geom_density(alpha=.2, fill="#FF6666") +
+      #   geom_vline(data = mean, aes(xintercept = mean),linewidth = 1) +
+      #   geom_text(data = mean, 
+      #             aes(x = -1, y = 0.75, label = paste0("mean: ", round(mean, digits = 2), " tons CO2e")), check_overlap = T) +
+      #   facet_wrap(~scenario, nrow = 6) +
+      #   coord_cartesian(xlim = c(-2.5, 2.5)) +
+      #   theme(panel.grid.major.y = element_line(color = "grey80"),
+      #         legend.direction = "horizontal",
+      #         legend.position = "bottom",
+      #         plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+      # 
+      # ggsave(filename = str_glue("month-hour_{z}_{perc}_dist.png"), path = subfigs_path, units = "in", height = 8, width = 8, dpi = 300)
       
       # Calculate season error distribution
-      season_err <- (aer_season - aer_hourly) / aer_hourly * 100
+      season_err <- abs((er_season - er_hourly) / er_hourly * 100)
       
       mean <- season_err %>% 
         pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
@@ -472,26 +473,26 @@ for (g in all_region){
                gea = g, 
                solar = perc)
       
-      season_err %>% 
-        pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
-        mutate(scenario = as.factor(scenario)) %>% 
-        ggplot(aes(x = values, group = scenario)) +
-        geom_histogram(bins = 100, aes(y=after_stat(density)), colour="black", fill="white")+
-        geom_density(alpha=.2, fill="#FF6666") +
-        geom_vline(data = mean, aes(xintercept = mean),linewidth = 1) +
-        geom_text(data = mean, 
-                  aes(x = -5, y = 0.2, label = paste0("mean: ", round(mean, digits = 2), " tons CO2e")), check_overlap = T) +
-        facet_wrap(~scenario, nrow = 6) +
-        coord_cartesian(xlim = c(-2.5, 2.5)) +
-        theme(panel.grid.major.y = element_line(color = "grey80"),
-              legend.direction = "horizontal",
-              legend.position = "bottom",
-              plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
-      
-      ggsave(filename = str_glue("season_{z}_{perc}_dist.png"), path = subfigs_path, units = "in", height = 8, width = 8, dpi = 300)
+      # season_err %>% 
+      #   pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
+      #   mutate(scenario = as.factor(scenario)) %>% 
+      #   ggplot(aes(x = values, group = scenario)) +
+      #   geom_histogram(bins = 100, aes(y=after_stat(density)), colour="black", fill="white")+
+      #   geom_density(alpha=.2, fill="#FF6666") +
+      #   geom_vline(data = mean, aes(xintercept = mean),linewidth = 1) +
+      #   geom_text(data = mean, 
+      #             aes(x = -5, y = 0.2, label = paste0("mean: ", round(mean, digits = 2), " tons CO2e")), check_overlap = T) +
+      #   facet_wrap(~scenario, nrow = 6) +
+      #   coord_cartesian(xlim = c(-2.5, 2.5)) +
+      #   theme(panel.grid.major.y = element_line(color = "grey80"),
+      #         legend.direction = "horizontal",
+      #         legend.position = "bottom",
+      #         plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+      # 
+      # ggsave(filename = str_glue("season_{z}_{perc}_dist.png"), path = subfigs_path, units = "in", height = 8, width = 8, dpi = 300)
       
       # Calculate season-hour error distribution
-      season_hour_err <- (aer_season_hour - aer_hourly) / aer_hourly * 100
+      season_hour_err <- abs((er_season_hour - er_hourly) / er_hourly * 100)
       
       mean <- season_hour_err %>% 
         pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
@@ -502,23 +503,23 @@ for (g in all_region){
                gea = g, 
                solar = perc)
       
-      season_hour_err %>% 
-        pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
-        mutate(scenario = as.factor(scenario)) %>% 
-        ggplot(aes(x = values, group = scenario)) +
-        geom_histogram(bins = 100, aes(y=after_stat(density)), colour="black", fill="white")+
-        geom_density(alpha=.2, fill="#FF6666") +
-        geom_vline(data = mean, aes(xintercept = mean),linewidth = 1) +
-        geom_text(data = mean, 
-                  aes(x = -1, y = 0.75, label = paste0("mean: ", round(mean, digits = 2), " tons CO2e")), check_overlap = T) +
-        facet_wrap(~scenario, nrow = 6) +
-        coord_cartesian(xlim = c(-2.5, 2.5)) +
-        theme(panel.grid.major.y = element_line(color = "grey80"),
-              legend.direction = "horizontal",
-              legend.position = "bottom",
-              plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
-      
-      ggsave(filename = str_glue("season-hour_{z}_{perc}_dist.png"), path = subfigs_path, units = "in", height = 8, width = 8, dpi = 300)
+      # season_hour_err %>% 
+      #   pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
+      #   mutate(scenario = as.factor(scenario)) %>% 
+      #   ggplot(aes(x = values, group = scenario)) +
+      #   geom_histogram(bins = 100, aes(y=after_stat(density)), colour="black", fill="white")+
+      #   geom_density(alpha=.2, fill="#FF6666") +
+      #   geom_vline(data = mean, aes(xintercept = mean),linewidth = 1) +
+      #   geom_text(data = mean, 
+      #             aes(x = -1, y = 0.75, label = paste0("mean: ", round(mean, digits = 2), " tons CO2e")), check_overlap = T) +
+      #   facet_wrap(~scenario, nrow = 6) +
+      #   coord_cartesian(xlim = c(-2.5, 2.5)) +
+      #   theme(panel.grid.major.y = element_line(color = "grey80"),
+      #         legend.direction = "horizontal",
+      #         legend.position = "bottom",
+      #         plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+      # 
+      # ggsave(filename = str_glue("season-hour_{z}_{perc}_dist.png"), path = subfigs_path, units = "in", height = 8, width = 8, dpi = 300)
       
       # Combine plots for all
       df_error <- bind_rows(
@@ -553,7 +554,7 @@ for (g in all_region){
         scale_y_continuous(expand = c(0, 0), 
                            breaks = seq(-100, 100, by = 25), 
                            labels = number_format(suffix = " %")) +
-        coord_cartesian(ylim = c(-120, 120)) +
+        coord_cartesian(ylim = c(0, 150)) +
         scale_fill_manual(values = ls_colors) +
         scale_color_manual(values = ls_colors)
       
@@ -596,7 +597,7 @@ for (g in all_region){
               legend = "bottom") +
       plot_annotation(title = str_glue("{g}\nwith {perc} % solar PV generation"))
     
-    ggsave(filename = str_glue("{g}_{perc}_summary.png"), path = figs_path, units = "in", height = 12, width = 18, dpi = 300)
+    ggsave(filename = str_glue("{g}_{perc}_summary.png"), path = figs_path, units = "in", height = 10, width = 16, dpi = 300)
     
   }
   

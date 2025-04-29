@@ -54,7 +54,7 @@ process_csv <- function(file) {
            gea, 
            year, 
            datetime, 
-           aer = aer_load_co2e)
+           er = aer_load_co2e)
   
   # Combine Part B with the extracted value added back in
   return(part_b)
@@ -63,12 +63,13 @@ process_csv <- function(file) {
 
 #### READ DATA ####
 data_path <- "../../Cambium/"
+output_path <- "../readfiles/aer/"
 df_annual <- list.files(path = data_path, pattern = "annual", full.names = TRUE) %>% 
   map_dfr(~ read_csv(.x, skip = 5)) %>% 
   select(scenario, 
          gea, 
          year = t, 
-         aer = aer_load_co2e)
+         er = aer_load_co2e)
 
 df_month_hour <- list.files(path = data_path, pattern = "month-hour", full.names = TRUE) %>% 
   map_dfr(~ read_csv(.x, skip = 5)) %>% 
@@ -77,7 +78,7 @@ df_month_hour <- list.files(path = data_path, pattern = "month-hour", full.names
          year = t, 
          month = month, 
          hour = hour, 
-         aer = aer_load_co2e)
+         er = aer_load_co2e)
 
 df_season <- df_month_hour %>% 
   mutate(season = ifelse(month >= 3 & month <= 5, "spring", 
@@ -85,7 +86,7 @@ df_season <- df_month_hour %>%
                                 ifelse(month >= 9 & month <= 11, "fall", 
                                        "winter")))) %>% 
   group_by(scenario, gea, year, season) %>% 
-  summarise(aer = mean(aer)) %>% 
+  summarise(er = mean(er)) %>% 
   ungroup()
 
 
@@ -95,7 +96,7 @@ df_season_hour <- df_month_hour %>%
                                 ifelse(month >= 9 & month <= 11, "fall", 
                                        "winter")))) %>% 
   group_by(scenario, gea, year, season, hour) %>% 
-  summarise(aer = mean(aer)) %>% 
+  summarise(er = mean(er)) %>% 
   ungroup()
 
 df_tod <- list.files(path = data_path, pattern = "tod", full.names = TRUE) %>% 
@@ -104,7 +105,7 @@ df_tod <- list.files(path = data_path, pattern = "tod", full.names = TRUE) %>%
          gea, 
          year = t, 
          hour = hour, 
-         aer = aer_load_co2e)
+         er = aer_load_co2e)
 
 # hourly Cambium dataset
 subfolder_list <- list.dirs(path = paste0(data_path, "hourly"), recursive = FALSE)
