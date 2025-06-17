@@ -149,8 +149,7 @@ df_hourly <- df_energy %>%
   run_interpo() %>% 
   select(timestamp, name, eload) %>% 
   pivot_wider(names_from = name, values_from = eload) %>% 
-  select(-timestamp) %>% 
-  select_if(~ !any(is.na(.)))
+  select(-timestamp)
 
 
 for (g in all_region){
@@ -193,8 +192,7 @@ df_hourly <- df_energy %>%
   run_interpo() %>% 
   select(timestamp, name, eload) %>% 
   pivot_wider(names_from = name, values_from = eload) %>% 
-  select(-timestamp) %>% 
-  select_if(~ !any(is.na(.)))
+  select(-timestamp)
 
 for (g in all_region){
   
@@ -238,8 +236,11 @@ for (g in all_region){
       select(-gea)
     
     # convert carbon equivalent emissions from kg to tons
-    oe_result <- as.data.frame(t(as.matrix(df_hourly_net)) %*% as.matrix(er_annual) / 1000)
-    ae_result <- as.data.frame(t(as.matrix(df_hourly_avd)) %*% as.matrix(er_annual) / 1000)
+    oe_result <- as.data.frame(t(as.matrix(replace(df_hourly_net, is.na(df_hourly_net), 0))) %*% 
+                                 as.matrix(er_annual) / 1000)
+    
+    ae_result <- as.data.frame(t(as.matrix(replace(df_hourly_avd, is.na(df_hourly_avd), 0))) %*% 
+                                 as.matrix(er_annual) / 1000)
     
     write_rds(oe_result, str_glue(paste0(output_path, "operational/{g}/{perc}/", "annual.rds")), compress = "gz")
     write_rds(ae_result, str_glue(paste0(output_path, "avoided/{g}/{perc}/", "annual.rds")), compress = "gz")
@@ -262,8 +263,10 @@ for (g in all_region){
       arrange(month, day, hour) %>% 
       select(-c(month, day, hour, gea))
     
-    oe_result <- as.data.frame(t(as.matrix(df_hourly_net)) %*% as.matrix(er_month_hour) / 1000)
-    ae_result <- as.data.frame(t(as.matrix(df_hourly_avd)) %*% as.matrix(er_month_hour) / 1000)
+    oe_result <- as.data.frame(t(as.matrix(replace(df_hourly_net, is.na(df_hourly_net), 0))) %*% 
+                                 as.matrix(er_month_hour) / 1000)
+    ae_result <- as.data.frame(t(as.matrix(replace(df_hourly_avd, is.na(df_hourly_avd), 0))) %*% 
+                                 as.matrix(er_month_hour) / 1000)
     
     write_rds(oe_result, str_glue(paste0(output_path, "operational/{g}/{perc}/", "month_hour.rds")), compress = "gz")
     write_rds(ae_result, str_glue(paste0(output_path, "avoided/{g}/{perc}/", "month_hour.rds")), compress = "gz")
@@ -283,8 +286,10 @@ for (g in all_region){
       arrange(month, day, hour) %>% 
       select(-c(month, day, hour, gea, season))
     
-    oe_result <- as.data.frame(t(as.matrix(df_hourly_net)) %*% as.matrix(er_season_hour) / 1000)
-    ae_result <- as.data.frame(t(as.matrix(df_hourly_avd)) %*% as.matrix(er_season_hour) / 1000)
+    oe_result <- as.data.frame(t(as.matrix(replace(df_hourly_net, is.na(df_hourly_net), 0))) %*% 
+                                 as.matrix(er_season_hour) / 1000)
+    ae_result <- as.data.frame(t(as.matrix(replace(df_hourly_avd, is.na(df_hourly_avd), 0))) %*% 
+                                 as.matrix(er_season_hour) / 1000)
     
     write_rds(oe_result, str_glue(paste0(output_path, "operational/{g}/{perc}/", "season_hour.rds")), compress = "gz")
     write_rds(ae_result, str_glue(paste0(output_path, "avoided/{g}/{perc}/", "season_hour.rds")), compress = "gz")
@@ -298,8 +303,10 @@ for (g in all_region){
       arrange(month, day, hour) %>% 
       select(-c(month, day, hour, gea, season))
     
-    oe_result <- as.data.frame(t(as.matrix(df_hourly_net)) %*% as.matrix(er_season) / 1000)
-    ae_result <- as.data.frame(t(as.matrix(df_hourly_avd)) %*% as.matrix(er_season) / 1000)
+    oe_result <- as.data.frame(t(as.matrix(replace(df_hourly_net, is.na(df_hourly_net), 0))) %*% 
+                                 as.matrix(er_season) / 1000)
+    ae_result <- as.data.frame(t(as.matrix(replace(df_hourly_avd, is.na(df_hourly_avd), 0))) %*% 
+                                 as.matrix(er_season) / 1000)
     
     write_rds(oe_result, str_glue(paste0(output_path, "operational/{g}/{perc}/", "season.rds")), compress = "gz")
     write_rds(ae_result, str_glue(paste0(output_path, "avoided/{g}/{perc}/", "season.rds")), compress = "gz")
@@ -313,8 +320,10 @@ for (g in all_region){
       arrange(month, day, hour) %>% 
       select(-c(month, day, hour, gea))
     
-    oe_result <- as.data.frame(t(as.matrix(df_hourly_net)) %*% as.matrix(er_tod) / 1000)
-    ae_result <- as.data.frame(t(as.matrix(df_hourly_avd)) %*% as.matrix(er_tod) / 1000)
+    oe_result <- as.data.frame(t(as.matrix(replace(df_hourly_net, is.na(df_hourly_net), 0))) %*% 
+                                 as.matrix(er_tod) / 1000)
+    ae_result <- as.data.frame(t(as.matrix(replace(df_hourly_avd, is.na(df_hourly_avd), 0))) %*% 
+                                 as.matrix(er_tod) / 1000)
     
     write_rds(oe_result, str_glue(paste0(output_path, "operational/{g}/{perc}/", "tod.rds")), compress = "gz")
     write_rds(ae_result, str_glue(paste0(output_path, "avoided/{g}/{perc}/", "tod.rds")), compress = "gz")
@@ -335,10 +344,12 @@ for (g in all_region){
         drop_na(toy) %>% 
         select(-c(gea, toy)) 
       
-      oe_s_result <- as.data.frame(t(as.matrix(df_hourly_net)) %*% as.matrix(er_hour) / 1000)
+      oe_s_result <- as.data.frame(t(as.matrix(replace(df_hourly_net, is.na(df_hourly_net), 0))) %*% 
+                                     as.matrix(er_hour) / 1000)
       oe_result <- bind_cols(oe_result, oe_s_result)
       
-      ae_s_result <- as.data.frame(t(as.matrix(df_hourly_avd)) %*% as.matrix(er_hour) / 1000)
+      ae_s_result <- as.data.frame(t(as.matrix(replace(df_hourly_avd, is.na(df_hourly_avd), 0))) %*% 
+                                     as.matrix(er_hour) / 1000)
       ae_result <- bind_cols(ae_result, ae_s_result)
     }
     
@@ -349,7 +360,7 @@ for (g in all_region){
   
 }
 
-rm(result, s_result, er_hour, er_tod, er_month_hour, er_annual)
+rm(oe_result, ae_result, oe_s_result, ae_s_result, er_hour, er_tod, er_month_hour, er_annual)
 
 
 

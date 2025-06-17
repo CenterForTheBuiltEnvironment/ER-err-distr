@@ -35,9 +35,9 @@
 <polyline points='43.69,220.57 556.16,220.57 ' style='stroke-width: 0.53; stroke: #CCCCCC; stroke-linecap: butt;' />
 <polyline points='43.69,122.44 556.16,122.44 ' style='stroke-width: 0.53; stroke: #CCCCCC; stroke-linecap: butt;' />
 <polyline points='43.69,24.32 556.16,24.32 ' style='stroke-width: 0.53; stroke: #CCCCCC; stroke-linecap: butt;' />
-<polyline points='43.69,45.71 65.97,35.50 88.25,28.64 110.53,27.65 132.81,36.29 155.09,122.44 177.38,238.03 199.66,320.46 221.94,355.78 244.22,358.53 266.50,356.96 288.78,355.39 311.06,355.00 333.34,355.59 355.63,348.33 377.91,285.72 400.19,214.48 422.47,139.52 444.75,76.72 467.03,78.87 489.31,83.19 511.59,57.68 533.88,55.91 556.16,51.20 ' style='stroke-width: 6.40; stroke: #B7B2D0; stroke-linecap: butt;' />
-<polyline points='43.69,244.31 65.97,236.46 88.25,230.18 110.53,227.24 132.81,228.42 155.09,263.35 177.38,329.29 199.66,381.69 221.94,403.27 244.22,405.83 266.50,405.63 288.78,404.45 311.06,404.84 333.34,404.65 355.63,400.13 377.91,360.30 400.19,314.57 422.47,281.40 444.75,226.85 467.03,232.34 489.31,243.92 511.59,239.60 533.88,248.24 556.16,246.67 ' style='stroke-width: 6.40; stroke: #B7B2D0; stroke-opacity: 0.70; stroke-linecap: butt;' />
-<polyline points='43.69,488.64 65.97,488.05 88.25,488.25 110.53,491.39 132.81,493.55 155.09,497.87 177.38,501.79 199.66,505.32 221.94,506.50 244.22,506.70 266.50,506.89 288.78,506.89 311.06,506.89 333.34,506.89 355.63,506.50 377.91,502.58 400.19,495.32 422.47,491.98 444.75,482.36 467.03,484.13 489.31,487.86 511.59,482.17 533.88,483.74 556.16,485.11 ' style='stroke-width: 6.40; stroke: #B7B2D0; stroke-opacity: 0.40; stroke-linecap: butt;' />
+<polyline points='43.69,63.96 65.97,52.97 88.25,43.75 110.53,39.23 132.81,48.26 155.09,134.81 177.38,247.26 199.66,329.29 221.94,363.24 244.22,366.18 266.50,364.81 288.78,363.24 311.06,363.44 333.34,364.42 355.63,358.53 377.91,298.48 400.19,231.36 422.47,156.59 444.75,93.00 467.03,95.95 489.31,100.66 511.59,76.52 533.88,75.73 556.16,70.44 ' style='stroke-width: 6.40; stroke: #B7B2D0; stroke-linecap: butt;' />
+<polyline points='43.69,324.97 65.97,317.12 88.25,310.84 110.53,306.72 132.81,306.72 155.09,338.51 177.38,390.52 199.66,436.05 221.94,449.98 244.22,450.96 266.50,450.77 288.78,450.18 311.06,450.77 333.34,451.75 355.63,449.00 377.91,419.37 400.19,378.35 422.47,348.52 444.75,273.75 467.03,282.58 489.31,303.38 511.59,308.49 533.88,329.49 556.16,329.29 ' style='stroke-width: 6.40; stroke: #B7B2D0; stroke-opacity: 0.70; stroke-linecap: butt;' />
+<polyline points='43.69,433.89 65.97,428.79 88.25,423.49 110.53,419.56 132.81,418.39 155.09,442.92 177.38,468.63 199.66,489.23 221.94,494.73 244.22,495.51 266.50,495.71 288.78,495.71 311.06,495.90 333.34,496.10 355.63,495.32 377.91,480.40 400.19,457.83 422.47,443.11 444.75,404.84 467.03,406.41 489.31,416.03 511.59,415.25 533.88,426.43 556.16,432.71 ' style='stroke-width: 6.40; stroke: #B7B2D0; stroke-opacity: 0.40; stroke-linecap: butt;' />
 </g>
 <g clip-path='url(#cpMC4wMHw1NzYuMDB8MC4wMHw1NzYuMDA=)'>
 <text x='38.76' y='519.25' text-anchor='end' style='font-size: 12.00px;fill: #4D4D4D; font-family: "Arial";' textLength='6.67px' lengthAdjust='spacingAndGlyphs'>0</text>
@@ -50,15 +50,15 @@
 <text x='311.06' y='528.48' text-anchor='middle' style='font-size: 12.00px;fill: #4D4D4D; font-family: "Arial";' textLength='34.68px' lengthAdjust='spacingAndGlyphs'>12 PM</text>
 <text x='444.75' y='528.48' text-anchor='middle' style='font-size: 12.00px;fill: #4D4D4D; font-family: "Arial";' textLength='28.01px' lengthAdjust='spacingAndGlyphs'>6 PM</text>
 <text transform='translate(13.56,269.63) rotate(-90)' text-anchor='middle' style='font-size: 11.00px; font-family: "Arial";' textLength='72.14px' lengthAdjust='spacingAndGlyphs'>Emissions rate</text>
-<line x1='162.95' y1='556.21' x2='176.78' y2='556.21' style='stroke-width: 6.40; stroke: #B7B2D0; stroke-linecap: butt;' />
-<text x='183.98' y='559.36' style='font-size: 8.80px; font-family: "Arial";' textLength='66.01px' lengthAdjust='spacingAndGlyphs'>Time-of-day avg.</text>
-<text x='271.91' y='560.16' style='font-size: 11.00px; font-family: "Arial";' textLength='23.24px' lengthAdjust='spacingAndGlyphs'>Year</text>
-<line x1='302.36' y1='556.21' x2='316.18' y2='556.21' style='stroke-width: 6.40; stroke-linecap: butt;' />
-<line x1='350.18' y1='556.21' x2='364.01' y2='556.21' style='stroke-width: 6.40; stroke: #000000; stroke-opacity: 0.70; stroke-linecap: butt;' />
-<line x1='398.01' y1='556.21' x2='411.83' y2='556.21' style='stroke-width: 6.40; stroke: #000000; stroke-opacity: 0.40; stroke-linecap: butt;' />
-<text x='323.39' y='559.36' style='font-size: 8.80px; font-family: "Arial";' textLength='19.58px' lengthAdjust='spacingAndGlyphs'>2025</text>
-<text x='371.21' y='559.36' style='font-size: 8.80px; font-family: "Arial";' textLength='19.58px' lengthAdjust='spacingAndGlyphs'>2030</text>
-<text x='419.04' y='559.36' style='font-size: 8.80px; font-family: "Arial";' textLength='19.58px' lengthAdjust='spacingAndGlyphs'>2050</text>
+<text x='161.22' y='560.16' style='font-size: 11.00px; font-family: "Arial";' textLength='23.24px' lengthAdjust='spacingAndGlyphs'>Year</text>
+<line x1='191.67' y1='556.21' x2='205.50' y2='556.21' style='stroke-width: 6.40; stroke-linecap: butt;' />
+<line x1='239.50' y1='556.21' x2='253.32' y2='556.21' style='stroke-width: 6.40; stroke: #000000; stroke-opacity: 0.70; stroke-linecap: butt;' />
+<line x1='287.32' y1='556.21' x2='301.14' y2='556.21' style='stroke-width: 6.40; stroke: #000000; stroke-opacity: 0.40; stroke-linecap: butt;' />
+<text x='212.70' y='559.36' style='font-size: 8.80px; font-family: "Arial";' textLength='19.58px' lengthAdjust='spacingAndGlyphs'>2025</text>
+<text x='260.53' y='559.36' style='font-size: 8.80px; font-family: "Arial";' textLength='19.58px' lengthAdjust='spacingAndGlyphs'>2035</text>
+<text x='308.35' y='559.36' style='font-size: 8.80px; font-family: "Arial";' textLength='19.58px' lengthAdjust='spacingAndGlyphs'>2050</text>
+<line x1='351.58' y1='556.21' x2='365.40' y2='556.21' style='stroke-width: 6.40; stroke: #B7B2D0; stroke-linecap: butt;' />
+<text x='372.61' y='559.36' style='font-size: 8.80px; font-family: "Arial";' textLength='66.01px' lengthAdjust='spacingAndGlyphs'>Time-of-day avg.</text>
 <text x='299.92' y='15.74' text-anchor='middle' style='font-size: 14.00px; font-weight: bold;fill: #333333; font-family: "Arial";' textLength='246.55px' lengthAdjust='spacingAndGlyphs'>Time-of-day averaged emissions rate</text>
 </g>
 </svg>
