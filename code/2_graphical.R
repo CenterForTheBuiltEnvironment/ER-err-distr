@@ -43,8 +43,8 @@ ls_colors <- c("Annual avg." = "#E68B81",
 
 alpha_values <- c(1, 0.7, 0.4)
 
-emissions <- "aer"
-# emissions <- "moer"
+# emissions <- "aer"
+emissions <- "moer"
 
 
 #### FUNCTION ####
@@ -162,7 +162,7 @@ all_region <- unique(gis %>% drop_na() %>% .$gea)
 
 #### GENERATION ####
 df_gen <- read_rds(paste0(readfile_path, "df_gen.rds")) %>% 
-  filter(gea %in% c("CAISO", "ERCOT", "PJM_West"), 
+  filter(gea %in% c("CAISO", "ERCOT", "PJM_East"), 
          scenario %in% c("MidCase", "HighNGPrice", "Decarb95by2050", "Decarb100by2035"), 
          year %in% c(2025, 2035, 2050)) %>% 
   mutate(solar = rowSums(across(c("distpv_MWh", "upv_MWh"))), 
@@ -234,7 +234,7 @@ p2 <- df_gen %>%
         plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
 
 p3 <- df_gen %>% 
-  filter(gea == "PJM_West") %>% 
+  filter(gea == "PJM_East") %>% 
   select(c(gea, year, scenario, other, solar, solar_rt, wind, wind_rt, foss, foss_rt, solar_pos, wind_pos, foss_pos)) %>% 
   pivot_longer(c(solar, wind, foss, other), names_to = "gen", values_to = "value") %>% 
   mutate(gen = factor(gen, levels = c("solar", "wind", "other", "foss")), 
@@ -252,7 +252,7 @@ p3 <- df_gen %>%
   labs(x = NULL,
        y = NULL,
        fill = NULL,
-       subtitle = "PJM_West") +
+       subtitle = "PJM_East") +
   scale_fill_manual(values = ls_colors) +
   theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.25),
         axis.text = element_text(size = 12), 
@@ -290,8 +290,8 @@ df_annual %>%
   scale_alpha_manual(name = "Year", values = alpha_values) +
   scale_fill_manual(values = ls_colors) +
   scale_y_continuous(expand = c(0, 0),
-                     breaks = seq(0, 250, by = 50)) +
-  coord_cartesian(ylim = c(0, 250)) +
+                     breaks = seq(0, 300, by = 50)) +
+  coord_cartesian(ylim = c(0, 270)) +
   labs(x = NULL,
        y = "Emissions rate",
        fill = NULL,
@@ -315,8 +315,8 @@ df_season %>%
   scale_alpha_manual(name = "Year", values = alpha_values) +
   scale_fill_manual(values = ls_colors) +
   scale_y_continuous(expand = c(0, 0),
-                     breaks = seq(0, 250, by = 50)) +
-  coord_cartesian(ylim = c(0, 250)) +
+                     breaks = seq(0, 300, by = 50)) +
+  coord_cartesian(ylim = c(0, 300)) +
   labs(x = NULL,
        y = "Emissions rate",
        fill = NULL,
@@ -339,8 +339,8 @@ df_tod %>%
   scale_alpha_manual(name = "Year", values = alpha_values) +
   scale_color_manual(values = ls_colors) +
   scale_y_continuous(expand = c(0, 0),
-                     breaks = seq(0, 250, by = 50)) +
-  coord_cartesian(ylim = c(0, 250)) +
+                     breaks = seq(0, 350, by = 50)) +
+  coord_cartesian(ylim = c(0, 350)) +
   scale_x_continuous(expand = c(0, 0), 
                      breaks = c(6, 12, 18), 
                      labels = c("6 AM", "12 PM", "6 PM")) +
@@ -368,8 +368,8 @@ df_season_hour %>%
   scale_alpha_manual(name = "Year", values = alpha_values) +
   scale_color_manual(values = ls_colors) +
   scale_y_continuous(expand = c(0, 0),
-                     breaks = seq(0, 350, by = 100)) +
-  coord_cartesian(ylim = c(0, 350)) +
+                     breaks = seq(0, 400, by = 100)) +
+  coord_cartesian(ylim = c(0, 400)) +
   scale_x_continuous(expand = c(0, 0), 
                      breaks = c(6, 12, 18), 
                      labels = c("6 AM", "12 PM", "6 PM")) +
@@ -397,8 +397,8 @@ df_month_hour %>%
   scale_alpha_manual(name = "Year", values = alpha_values) +
   scale_color_manual(values = ls_colors) +
   scale_y_continuous(expand = c(0, 0),
-                     breaks = seq(0, 350, by = 100)) +
-  coord_cartesian(ylim = c(0, 350)) +
+                     breaks = seq(0, 450, by = 100)) +
+  coord_cartesian(ylim = c(0, 450)) +
   scale_x_continuous(expand = c(0, 0), 
                      breaks = c(6, 18), 
                      labels = c("6 AM", "6 PM")) +
@@ -426,8 +426,8 @@ df_hourly %>%
   scale_color_manual(values = ls_colors) +
   scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(expand = c(0, 0),
-                     breaks = seq(0, 350, by = 100)) +
-  coord_cartesian(ylim = c(0, 350)) +
+                     breaks = seq(0, 450, by = 100)) +
+  coord_cartesian(ylim = c(0, 450)) +
   labs(x = NULL,
        y = "Emissions rate",
        fill = NULL,
@@ -1585,8 +1585,8 @@ ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = past
 
 
 
-#### PJM WEST ####
-gea_example <- "PJM_West"
+#### PJM EAST ####
+gea_example <- "PJM_East"
 
 # all scenarios at hourly resolution at 2050
 df_hourly %>% 
@@ -1909,8 +1909,8 @@ for (perc in c(25, 100)){
         mutate(type = "Season avg.")) %>% 
       filter(year %in% c(2025, 2035, 2050))
     
-    breaks <- if (perc == 25) seq(0, 400, by = 100) else seq(0, 125, by = 25)
-    ylim <- if (perc == 25) c(0, 400) else c(0, 125)
+    breaks <- if (perc == 25) seq(0, 250, by = 50) else seq(0, 100, by = 25)
+    ylim <- if (perc == 25) c(0, 280) else c(0, 120)
     
     p <- df_error %>% 
       mutate(scenario = as.factor(scenario), 
@@ -2055,8 +2055,8 @@ for (perc in c(25, 100)){
         mutate(type = "Month-hour avg.")) %>% 
       filter(year %in% c(2025, 2035, 2050))
     
-    breaks <- if (perc == 25) seq(0, 250, by = 50) else seq(0, 75, by = 25)
-    ylim <- if (perc == 25) c(0, 250) else c(0, 80)
+    breaks <- if (perc == 25) seq(0, 125, by = 25) else seq(0, 30, by = 10)
+    ylim <- if (perc == 25) c(0, 130) else c(0, 35)
     
     p <- df_error %>% 
       mutate(scenario = as.factor(scenario), 
