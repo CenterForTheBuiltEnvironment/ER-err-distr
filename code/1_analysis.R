@@ -37,8 +37,8 @@ ls_colors <- c("Annual avg." = "#E68B81",
                
 )
 
-emissions <- "aer"
-# emissions <- "moer"
+# emissions <- "aer"
+emissions <- "moer"
 
 
 #### FUNCTION ####
@@ -74,7 +74,7 @@ run_interpo <- function(df_all, site_day){
 #### READ ####
 # genome dataset
 readfile_path <- "../readfiles/"
-output_path <- paste0(readfile_path, "results/")
+output_path <- paste0(readfile_path, "results/", str_glue("{emissions}/"))
 
 gis <- read_csv(paste0(readfile_path, "gis.csv"))
 site_map <- read_csv(paste0(readfile_path, "site_map.csv"))
@@ -231,7 +231,7 @@ for (g in all_region){
     # Annual average rate
     er_annual <- df_annual %>% 
       filter(gea == g) %>% 
-      pivot_wider(names_from = c(scenario, year), values_from = er) %>% 
+      pivot_wider(names_from = c(scenario, year), values_from = er,  names_sep = "-") %>% 
       slice(rep(1, 8760)) %>% 
       select(-gea)
     
@@ -258,7 +258,7 @@ for (g in all_region){
     er_month_hour <- year_hours %>%
       left_join(df_month_hour %>%  
                   filter(gea == g) %>% 
-                  pivot_wider(names_from = c(scenario, year), values_from = er), 
+                  pivot_wider(names_from = c(scenario, year), values_from = er,  names_sep = "-"), 
                 by = c("month", "hour")) %>% 
       arrange(month, day, hour) %>% 
       select(-c(month, day, hour, gea))
@@ -281,7 +281,7 @@ for (g in all_region){
     er_season_hour <- year_season_hours %>%
       left_join(df_season_hour %>%  
                   filter(gea == g) %>% 
-                  pivot_wider(names_from = c(scenario, year), values_from = er), 
+                  pivot_wider(names_from = c(scenario, year), values_from = er,  names_sep = "-"), 
                 by = c("season", "hour")) %>% 
       arrange(month, day, hour) %>% 
       select(-c(month, day, hour, gea, season))
@@ -298,7 +298,7 @@ for (g in all_region){
     er_season <- year_season_hours %>%
       left_join(df_season %>%  
                   filter(gea == g) %>% 
-                  pivot_wider(names_from = c(scenario, year), values_from = er), 
+                  pivot_wider(names_from = c(scenario, year), values_from = er,  names_sep = "-"), 
                 by = c("season")) %>% 
       arrange(month, day, hour) %>% 
       select(-c(month, day, hour, gea, season))
@@ -315,7 +315,7 @@ for (g in all_region){
     er_tod <- year_hours %>%
       left_join(df_tod %>%  
                   filter(gea == g) %>% 
-                  pivot_wider(names_from = c(scenario, year), values_from = er), 
+                  pivot_wider(names_from = c(scenario, year), values_from = er,  names_sep = "-"), 
                 by = "hour") %>% 
       arrange(month, day, hour) %>% 
       select(-c(month, day, hour, gea))
@@ -340,7 +340,7 @@ for (g in all_region){
         mutate(toy = format(datetime, "%m-%d %H:%M:%S")) %>% 
         select(-datetime) %>% 
         filter(gea == g) %>% 
-        pivot_wider(names_from = c(scenario, year), values_from = er) %>% 
+        pivot_wider(names_from = c(scenario, year), values_from = er,  names_sep = "-") %>% 
         drop_na(toy) %>% 
         select(-c(gea, toy)) 
       
@@ -367,7 +367,7 @@ rm(oe_result, ae_result, oe_s_result, ae_s_result, er_hour, er_tod, er_month_hou
 
 
 #### ANALYSIS ####
-readfile_path <- "../readfiles/results/"
+readfile_path <- str_glue("../readfiles/results/{emissions}/")
 figs_path <- str_glue("../figs/{emissions}/")
 
 # operational
@@ -556,23 +556,23 @@ for (g in all_region){
       df_error <- bind_rows(
         annual_err %>% 
           pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
-          separate(year, into = c("scenario", "year"), sep = "_") %>% 
+          separate(year, into = c("scenario", "year"), sep = "-") %>% 
           mutate(type = "Annual avg."), 
         season_err %>% 
           pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
-          separate(year, into = c("scenario", "year"), sep = "_") %>% 
+          separate(year, into = c("scenario", "year"), sep = "-") %>% 
           mutate(type = "Season avg."), 
         tod_err %>% 
           pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
-          separate(year, into = c("scenario", "year"), sep = "_") %>% 
+          separate(year, into = c("scenario", "year"), sep = "-") %>% 
           mutate(type = "Time-of-day avg."),
         season_hour_err %>% 
           pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
-          separate(year, into = c("scenario", "year"), sep = "_") %>% 
+          separate(year, into = c("scenario", "year"), sep = "-") %>% 
           mutate(type = "Season-hour avg."),
         month_hour_err %>% 
           pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
-          separate(year, into = c("scenario", "year"), sep = "_") %>% 
+          separate(year, into = c("scenario", "year"), sep = "-") %>% 
           mutate(type = "Month-hour avg."))
       
       p <- df_error %>% 
@@ -820,23 +820,23 @@ for (g in all_region){
       df_error <- bind_rows(
         annual_err %>% 
           pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
-          separate(year, into = c("scenario", "year"), sep = "_") %>% 
+          separate(year, into = c("scenario", "year"), sep = "-") %>% 
           mutate(type = "Annual avg."), 
         season_err %>% 
           pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
-          separate(year, into = c("scenario", "year"), sep = "_") %>% 
+          separate(year, into = c("scenario", "year"), sep = "-") %>% 
           mutate(type = "Season avg."), 
         tod_err %>% 
           pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
-          separate(year, into = c("scenario", "year"), sep = "_") %>% 
+          separate(year, into = c("scenario", "year"), sep = "-") %>% 
           mutate(type = "Time-of-day avg."),
         season_hour_err %>% 
           pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
-          separate(year, into = c("scenario", "year"), sep = "_") %>% 
+          separate(year, into = c("scenario", "year"), sep = "-") %>% 
           mutate(type = "Season-hour avg."),
         month_hour_err %>% 
           pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
-          separate(year, into = c("scenario", "year"), sep = "_") %>% 
+          separate(year, into = c("scenario", "year"), sep = "-") %>% 
           mutate(type = "Month-hour avg."))
       
       p <- df_error %>% 
