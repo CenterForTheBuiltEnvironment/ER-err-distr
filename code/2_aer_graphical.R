@@ -420,7 +420,7 @@ df_hourly %>%
          year = as.factor(year)) %>% 
   ggplot() +
   geom_point(aes(x = datetime, y = er, color = type, group = year), size = 0.1, alpha = 0.2) +
-  geom_smooth(aes(x = datetime, y = er, color = type, group = year), size = 0.8) +
+  geom_smooth(aes(x = datetime, y = er, color = type, group = year), linewidth = 0.8) +
   facet_wrap(~year, nrow = 3, scales = "free") +
   scale_color_manual(values = ls_colors) +
   scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
@@ -440,124 +440,86 @@ ggsave(filename = str_glue("{emissions}_hour.svg"), path = paste0(figs_path, str
 
   
 # all scenarios at hourly resolution at 2050
-df_hourly %>% 
-  filter(year %in% c(2025, 2050), 
+p1 <- df_hourly %>% 
+  filter(year == 2025, 
          gea == gea_example, 
          scenario == "MidCase") %>% 
-  mutate(type = as.factor("Hourly avg."), 
-         year = as.factor(year)) %>% 
   ggplot() +
   geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
   geom_smooth(aes(x = datetime, y = er), linewidth = 0.8, alpha = 0.4) +
-  geom_text(data = . %>% 
-              filter(year %in% c(2025, 2050), 
-                     gea == gea_example, 
-                     (scenario == "MidCase") | (scenario == "LowRECost_HighNGPrice" & year == 2050)) %>% 
-              group_by(year, scenario) %>% 
-              summarise(mean = round(mean(er), digits = 0), 
-                        sd = round(sd(er), digits = 0)) %>% 
-              ungroup() %>% 
-              mutate(label = c("MidCase-2025", "MidCase-2050"), 
-                     x_pos = as.POSIXct(c("2025-09-15", "2050-09-15")), 
-                     y_pos = c(300, 50)), 
-            aes(x = x_pos, y = y_pos, label = paste0(label, ": (", mean, ", ", sd, ")"))) +
-  facet_wrap(~year, nrow = 2, scales = "free") +
   scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
-  scale_y_continuous(expand = c(0, 0),
-                     breaks = breaks_pretty(n = 5)) +
+  scale_y_continuous(expand = c(0.01, 0),
+                     breaks = seq(0, 400, by = 100), 
+                     labels = c("0", "100", "200", "300", "400")) +
   labs(x = NULL,
-       y = "Emissions rate (gCO2e/kWh)",
+       y = NULL,
        color = NULL,
-       title = "Hourly emissions rate estimation", 
-       subtitle = str_glue("{gea_example}")) +
+       subtitle = "MidCase - 2025") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.25),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        axis.text.x = element_blank(), 
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+p2 <- df_hourly %>% 
+  filter(year == 2050, 
+         gea == gea_example, 
+         scenario == "MidCase") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_smooth(aes(x = datetime, y = er), linewidth = 0.8, alpha = 0.4) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(expand = c(0.01, 0),
+                     breaks = seq(0, 150, by = 50), 
+                     labels = c("0", "50", "100", "150")) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "MidCase - 2050") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.25),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        axis.text.x = element_blank(), 
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+p3 <- df_hourly %>% 
+  filter(year == 2050, 
+         gea == gea_example, 
+         scenario == "LowRECost_HighNGPrice") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_smooth(aes(x = datetime, y = er), linewidth = 0.8, alpha = 0.4) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(expand = c(0.01, 0),
+                     breaks = seq(0, 150, by = 50), 
+                     labels = c("0", "50", "100", "150")) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "LowRECost_HighNGPrice - 2050") +
   theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.25),
         axis.text = element_text(size = 12), 
         legend.direction = "horizontal",
         legend.position = "bottom",
         plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 6, width = 10, dpi = 300)
+final_plot <- ggarrange(p1, p2, p3, 
+                        nrow = 3, 
+                        common.legend = T, 
+                        legend = "bottom")
+
+
+annotate_figure(final_plot, 
+                left = text_grob("Emissions rate (gCO2e/kWh)", 
+                                 rot = 90, vjust = 1, size = 12),
+                top = text_grob(str_glue("Hourly emissions rate at {gea_example}"), size = 14))
+
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 8, width = 8, dpi = 300)
 
 # Summary
 sce_example <- c("MidCase", "LowRECost", "HighNGPrice", "LowRECost_HighNGPrice")
-
-# range
-df_hourly %>% 
-  filter(gea == gea_example, 
-         scenario %in% sce_example, 
-         year %in% c(2025, 2035, 2050)) %>% 
-  select(datetime, year, scenario, hourly = er) %>% 
-  left_join(df_annual %>% 
-              filter(gea == gea_example, 
-                     scenario %in% sce_example,
-                     year %in% c(2025, 2035, 2050)) %>% 
-              select(year, scenario, annual = er), 
-            by = c("year", "scenario")) %>% 
-  mutate(month = month(datetime), 
-         season = ifelse(month >= 3 & month <= 5, "spring", 
-                         ifelse(month >= 6 & month <= 8, "summer", 
-                                ifelse(month >= 9 & month <= 11, "fall", 
-                                       "winter")))) %>% 
-  left_join(df_season %>% 
-              filter(gea == gea_example, 
-                     scenario %in% sce_example,
-                     year %in% c(2025, 2035, 2050)) %>% 
-              select(year, season, scenario, seasonal = er), 
-            by = c("season", "year", "scenario")) %>% 
-  select(-c(month, season)) %>% 
-  pivot_longer(c(annual, seasonal), names_to = "alt", values_to = "er") %>% 
-  mutate(exceed = abs(hourly - er)) %>% 
-  group_by(year, alt, scenario) %>% 
-  summarise(exceed_dev = sd(exceed), 
-            exceed_avg = mean(exceed), 
-            exceed_fra = exceed_avg / mean(hourly)) %>% 
-  ungroup() %>% 
-  print(n = 25)
-
-df_hourly %>% 
-  filter(gea == gea_example, 
-         scenario %in% sce_example) %>% 
-  mutate(type = as.factor("Hourly avg."), 
-         year = as.factor(year), 
-         scenario = as.factor(scenario)) %>% 
-  ggplot() +
-  geom_lv(aes(x = year, y = er), alpha = 0.4, k = 4, outlier.size = 0.4) +
-  geom_boxplot(aes(x = year, y = er), outlier.alpha = 0, coef = 0, fill = "#00000000") +
-  geom_point(data = df_annual %>% 
-               filter(gea == gea_example, 
-                      scenario %in% sce_example) %>% 
-               mutate(type = as.factor("Annual avg."), 
-                      year = as.factor(year)), 
-             aes(x = year, y = er, color = "Annual avg."), 
-             size = 3, 
-             alpha = 0.5, 
-             position = position_nudge(x = -0.1)) +
-  geom_point(data = df_season %>% 
-               filter(gea == gea_example, 
-                      scenario %in% sce_example) %>% 
-               mutate(type = as.factor("Season avg."), 
-                      year = as.factor(year)), 
-             aes(x = year, y = er, color = "Season avg."), 
-             size = 3, 
-             alpha = 0.5, 
-             position = position_nudge(x = 0.1)) +
-  scale_y_continuous(expand = c(0, 0), 
-                     breaks = seq(0, 500, by = 200)) +
-  scale_color_manual(values = ls_colors) +
-  coord_cartesian(ylim = c(-20, 500)) +
-  facet_wrap(~scenario, nrow = 2) + 
-  labs(x = NULL,
-       title = "Illustration of differences in emissions factors", 
-       y = "Emissions rate (gCO2e/kWh)",
-       color = NULL,
-       subtitle = str_glue("{gea_example}")) +
-  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.25),
-        axis.text = element_text(size = 12), 
-        legend.direction = "horizontal",
-        legend.position = "bottom",
-        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
-
-ggsave(filename = str_glue("{gea_example}_{emissions}_er_compar.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 8, width = 8, dpi = 300)
 
 # operational
 # subfigs_path <- paste0(figs_path, str_glue("operational/{g}/"))
@@ -1014,122 +976,86 @@ ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = past
 gea_example <- "ERCOT"
 
 # all scenarios at hourly resolution at 2050
-df_hourly %>% 
-  filter(year %in% c(2025, 2050), 
+p1 <- df_hourly %>% 
+  filter(year == 2025, 
          gea == gea_example, 
          scenario == "MidCase") %>% 
-  mutate(type = as.factor("Hourly avg."), 
-         year = as.factor(year)) %>% 
   ggplot() +
   geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
   geom_smooth(aes(x = datetime, y = er), linewidth = 0.8, alpha = 0.4) +
-  geom_text(data = . %>% 
-              filter(year %in% c(2025, 2050), 
-                     gea == gea_example, 
-                     (scenario == "MidCase") | (scenario == "LowRECost_HighNGPrice" & year == 2050)) %>% 
-              group_by(year, scenario) %>% 
-              summarise(mean = round(mean(er), digits = 0), 
-                        sd = round(sd(er), digits = 0)) %>% 
-              ungroup() %>% 
-              mutate(label = c("MidCase-2025", "MidCase-2050"), 
-                     x_pos = as.POSIXct(c("2025-09-15", "2050-09-15")), 
-                     y_pos = c(500, 150)), 
-            aes(x = x_pos, y = y_pos, label = paste0(label, ": (", mean, ", ", sd, ")"))) +
-  facet_wrap(~year, nrow = 2, scales = "free") +
   scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
-  scale_y_continuous(expand = c(0, 0),
-                     breaks = breaks_pretty(n = 5)) +
+  scale_y_continuous(expand = c(0.01, 0),
+                     breaks = seq(0, 500, by = 100), 
+                     labels = c("0", "100", "200", "300", "400", "500")) +
   labs(x = NULL,
-       y = "Emissions rate (gCO2e/kWh)",
+       y = NULL,
        color = NULL,
-       title = "Hourly emissions rate estimation", 
-       subtitle = str_glue("{gea_example}")) +
+       subtitle = "MidCase - 2025") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.25),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        axis.text.x = element_blank(), 
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+p2 <- df_hourly %>% 
+  filter(year == 2050, 
+         gea == gea_example, 
+         scenario == "MidCase") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_smooth(aes(x = datetime, y = er), linewidth = 0.8, alpha = 0.4) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(expand = c(0.01, 0),
+                     breaks = seq(0, 300, by = 100), 
+                     labels = c("0", "100", "200", "300")) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "MidCase - 2050") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.25),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        axis.text.x = element_blank(), 
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+p3 <- df_hourly %>% 
+  filter(year == 2050, 
+         gea == gea_example, 
+         scenario == "LowRECost_HighNGPrice") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_smooth(aes(x = datetime, y = er), linewidth = 0.8, alpha = 0.4) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(expand = c(0.01, 0),
+                     breaks = seq(0, 300, by = 100), 
+                     labels = c("0", "100", "200", "300")) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "LowRECost_HighNGPrice - 2050") +
   theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.25),
         axis.text = element_text(size = 12), 
         legend.direction = "horizontal",
         legend.position = "bottom",
         plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 6, width = 10, dpi = 300)
+final_plot <- ggarrange(p1, p2, p3, 
+                        nrow = 3, 
+                        common.legend = T, 
+                        legend = "bottom")
+
+
+annotate_figure(final_plot, 
+                left = text_grob("Emissions rate (gCO2e/kWh)", 
+                                 rot = 90, vjust = 1, size = 12),
+                top = text_grob(str_glue("Hourly emissions rate at {gea_example}"), size = 14))
+
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 8, width = 8, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost", "HighNGPrice", "LowRECost_HighNGPrice")
-
-# range
-df_hourly %>% 
-  filter(gea == gea_example, 
-         scenario %in% sce_example, 
-         year %in% c(2025, 2035, 2050)) %>% 
-  select(datetime, year, scenario, hourly = er) %>% 
-  left_join(df_annual %>% 
-              filter(gea == gea_example, 
-                     scenario %in% sce_example,
-                     year %in% c(2025, 2035, 2050)) %>% 
-              select(year, scenario, annual = er), 
-            by = c("year", "scenario")) %>% 
-  mutate(month = month(datetime), 
-         season = ifelse(month >= 3 & month <= 5, "spring", 
-                         ifelse(month >= 6 & month <= 8, "summer", 
-                                ifelse(month >= 9 & month <= 11, "fall", 
-                                       "winter")))) %>% 
-  left_join(df_season %>% 
-              filter(gea == gea_example, 
-                     scenario %in% sce_example,
-                     year %in% c(2025, 2035, 2050)) %>% 
-              select(year, season, scenario, seasonal = er), 
-            by = c("season", "year", "scenario")) %>% 
-  select(-c(month, season)) %>% 
-  pivot_longer(c(annual, seasonal), names_to = "alt", values_to = "er") %>% 
-  mutate(exceed = abs(hourly - er)) %>% 
-  group_by(year, alt, scenario) %>% 
-  summarise(exceed_dev = sd(exceed), 
-            exceed_avg = mean(exceed), 
-            exceed_fra = exceed_avg / mean(hourly)) %>% 
-  ungroup()
-
-df_hourly %>% 
-  filter(gea == gea_example, 
-         scenario %in% sce_example) %>% 
-  mutate(type = as.factor("Hourly avg."), 
-         year = as.factor(year)) %>% 
-  ggplot() +
-  geom_lv(aes(x = year, y = er), alpha = 0.4, k = 4, outlier.size = 0.4) +
-  geom_boxplot(aes(x = year, y = er), outlier.alpha = 0, coef = 0, fill = "#00000000") +
-  geom_point(data = df_annual %>% 
-               filter(gea == gea_example, 
-                      scenario %in% sce_example) %>% 
-               mutate(type = as.factor("Annual avg."), 
-                      year = as.factor(year)), 
-             aes(x = year, y = er, color = "Annual avg."), 
-             size = 3, 
-             alpha = 0.5, 
-             position = position_nudge(x = -0.1)) +
-  geom_point(data = df_season %>% 
-               filter(gea == gea_example, 
-                      scenario %in% sce_example) %>% 
-               mutate(type = as.factor("Season avg."), 
-                      year = as.factor(year)), 
-             aes(x = year, y = er, color = "Season avg."), 
-             size = 3, 
-             alpha = 0.5, 
-             position = position_nudge(x = 0.1)) +
-  scale_y_continuous(expand = c(0, 0), 
-                     breaks = seq(0, 700, by = 200)) +
-  scale_color_manual(values = ls_colors) +
-  coord_cartesian(ylim = c(-20, 700)) +
-  facet_wrap(~scenario, nrow = 2) + 
-  labs(x = NULL,
-       title = "Illustration of differences in emissions factors", 
-       y = "Emissions rate (gCO2e/kWh)",
-       color = NULL,
-       subtitle = str_glue("{gea_example}")) +
-  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.25),
-        axis.text = element_text(size = 12), 
-        legend.direction = "horizontal",
-        legend.position = "bottom",
-        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
-
-ggsave(filename = str_glue("{gea_example}_{emissions}_er_compar.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 8, width = 8, dpi = 300)
 
 # operational
 # subfigs_path <- paste0(figs_path, str_glue("operational/{g}/"))
@@ -1587,122 +1513,86 @@ ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = past
 gea_example <- "PJM_East"
 
 # all scenarios at hourly resolution at 2050
-df_hourly %>% 
-  filter(year %in% c(2025, 2050), 
+p1 <- df_hourly %>% 
+  filter(year == 2025, 
          gea == gea_example, 
          scenario == "MidCase") %>% 
-  mutate(type = as.factor("Hourly avg."), 
-         year = as.factor(year)) %>% 
   ggplot() +
   geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
   geom_smooth(aes(x = datetime, y = er), linewidth = 0.8, alpha = 0.4) +
-  geom_text(data = . %>% 
-              filter(year %in% c(2025, 2050), 
-                     gea == gea_example, 
-                     (scenario == "MidCase") | (scenario == "LowRECost_HighNGPrice" & year == 2050)) %>% 
-              group_by(year, scenario) %>% 
-              summarise(mean = round(mean(er), digits = 0), 
-                        sd = round(sd(er), digits = 0)) %>% 
-              ungroup() %>% 
-              mutate(label = c("MidCase-2025", "MidCase-2050"), 
-                     x_pos = as.POSIXct(c("2025-09-15", "2050-09-15")), 
-                     y_pos = c(600, 350)), 
-            aes(x = x_pos, y = y_pos, label = paste0(label, ": (", mean, ", ", sd, ")"))) +
-  facet_wrap(~year, nrow = 2, scales = "free") +
   scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
-  scale_y_continuous(expand = c(0, 0),
-                     breaks = breaks_pretty(n = 5)) +
+  scale_y_continuous(expand = c(0.01, 0),
+                     breaks = seq(0, 800, by = 200), 
+                     labels = c("0", "200", "400", "600", "800")) +
   labs(x = NULL,
-       y = "Emissions rate (gCO2e/kWh)",
+       y = NULL,
        color = NULL,
-       title = "Hourly emissions rate estimation", 
-       subtitle = str_glue("{gea_example}")) +
+       subtitle = "MidCase - 2025") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.25),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        axis.text.x = element_blank(), 
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+p2 <- df_hourly %>% 
+  filter(year == 2050, 
+         gea == gea_example, 
+         scenario == "MidCase") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_smooth(aes(x = datetime, y = er), linewidth = 0.8, alpha = 0.4) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(expand = c(0.01, 0),
+                     breaks = seq(0, 400, by = 100), 
+                     labels = c("0", "100", "200", "300", "400")) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "MidCase - 2050") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.25),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        axis.text.x = element_blank(), 
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+p3 <- df_hourly %>% 
+  filter(year == 2050, 
+         gea == gea_example, 
+         scenario == "LowRECost_HighNGPrice") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_smooth(aes(x = datetime, y = er), linewidth = 0.8, alpha = 0.4) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(expand = c(0.01, 0),
+                     breaks = seq(0, 400, by = 100), 
+                     labels = c("0", "100", "200", "300", "400")) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "LowRECost_HighNGPrice - 2050") +
   theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.25),
         axis.text = element_text(size = 12), 
         legend.direction = "horizontal",
         legend.position = "bottom",
         plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 6, width = 10, dpi = 300)
+final_plot <- ggarrange(p1, p2, p3, 
+                        nrow = 3, 
+                        common.legend = T, 
+                        legend = "bottom")
+
+
+annotate_figure(final_plot, 
+                left = text_grob("Emissions rate (gCO2e/kWh)", 
+                                 rot = 90, vjust = 1, size = 12),
+                top = text_grob("Hourly emissions rate", size = 14))
+
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 8, width = 8, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost", "HighNGPrice", "LowRECost_HighNGPrice")
-
-# range
-df_hourly %>% 
-  filter(gea == gea_example, 
-         scenario %in% sce_example, 
-         year %in% c(2025, 2035, 2050)) %>% 
-  select(datetime, year, scenario, hourly = er) %>% 
-  left_join(df_annual %>% 
-              filter(gea == gea_example, 
-                     scenario %in% sce_example,
-                     year %in% c(2025, 2035, 2050)) %>% 
-              select(year, scenario, annual = er), 
-            by = c("year", "scenario")) %>% 
-  mutate(month = month(datetime), 
-         season = ifelse(month >= 3 & month <= 5, "spring", 
-                         ifelse(month >= 6 & month <= 8, "summer", 
-                                ifelse(month >= 9 & month <= 11, "fall", 
-                                       "winter")))) %>% 
-  left_join(df_season %>% 
-              filter(gea == gea_example, 
-                     scenario %in% sce_example,
-                     year %in% c(2025, 2035, 2050)) %>% 
-              select(year, season, scenario, seasonal = er), 
-            by = c("season", "year", "scenario")) %>% 
-  select(-c(month, season)) %>% 
-  pivot_longer(c(annual, seasonal), names_to = "alt", values_to = "er") %>% 
-  mutate(exceed = abs(hourly - er)) %>% 
-  group_by(year, alt, scenario) %>% 
-  summarise(exceed_dev = sd(exceed), 
-            exceed_avg = mean(exceed), 
-            exceed_fra = exceed_avg / mean(hourly)) %>% 
-  ungroup()
-
-df_hourly %>% 
-  filter(gea == gea_example, 
-         scenario %in% sce_example) %>% 
-  mutate(type = as.factor("Hourly avg."), 
-         year = as.factor(year)) %>% 
-  ggplot() +
-  geom_lv(aes(x = year, y = er), alpha = 0.4, k = 4, outlier.size = 0.4) +
-  geom_boxplot(aes(x = year, y = er), outlier.alpha = 0, coef = 0, fill = "#00000000") +
-  geom_point(data = df_annual %>% 
-               filter(gea == gea_example, 
-                      scenario %in% sce_example) %>% 
-               mutate(type = as.factor("Annual avg."), 
-                      year = as.factor(year)), 
-             aes(x = year, y = er, color = "Annual avg."), 
-             size = 3, 
-             alpha = 0.5, 
-             position = position_nudge(x = -0.1)) +
-  geom_point(data = df_season %>% 
-               filter(gea == gea_example, 
-                      scenario %in% sce_example) %>% 
-               mutate(type = as.factor("Season avg."), 
-                      year = as.factor(year)), 
-             aes(x = year, y = er, color = "Season avg."), 
-             size = 3, 
-             alpha = 0.5, 
-             position = position_nudge(x = 0.1)) +
-  scale_y_continuous(expand = c(0, 0), 
-                     breaks = seq(0, 700, by = 200)) +
-  scale_color_manual(values = ls_colors) +
-  coord_cartesian(ylim = c(-20, 700)) +
-  facet_wrap(~scenario, nrow = 2) + 
-  labs(x = NULL,
-       title = "Illustration of differences in emissions factors", 
-       y = "Emissions rate (gCO2e/kWh)",
-       color = NULL,
-       subtitle = str_glue("{gea_example}")) +
-  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.25),
-        axis.text = element_text(size = 12), 
-        legend.direction = "horizontal",
-        legend.position = "bottom",
-        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
-
-ggsave(filename = str_glue("{gea_example}_{emissions}_er_compar.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 8, width = 8, dpi = 300)
 
 # operational
 # subfigs_path <- paste0(figs_path, str_glue("operational/{g}/"))
@@ -2151,4 +2041,3 @@ ggarrange(plotlist = plot_list,
                   subtitle = str_glue("{gea_example}"))
 
 ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 6, width = 12, dpi = 300)
-

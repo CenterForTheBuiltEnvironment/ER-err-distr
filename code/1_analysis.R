@@ -414,24 +414,6 @@ for (g in all_region){
                gea = g, 
                solar = perc)
       
-      # annual_err %>% 
-      #   pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
-      #   mutate(scenario = as.factor(scenario)) %>% 
-      #   ggplot(aes(x = values, group = scenario)) +
-      #   geom_histogram(bins = 100, aes(y=after_stat(density)), colour="black", fill="white")+
-      #   geom_density(alpha=.2, fill="#FF6666") +
-      #   geom_vline(data = mean, aes(xintercept = mean),linewidth = 1) +
-      #   geom_text(data = mean, 
-      #             aes(x = -5, y = 0.2, label = paste0("mean: ", round(mean, digits = 2), " tons CO2e")), check_overlap = T) +
-      #   facet_wrap(~scenario, nrow = 6) +
-      #   coord_cartesian(xlim = c(-10, 10)) +
-      #   theme(panel.grid.major.y = element_line(color = "grey80"),
-      #         legend.direction = "horizontal",
-      #         legend.position = "bottom",
-      #         plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
-      # 
-      # ggsave(filename = str_glue("annual_{z}_{perc}_dist.png"), path = subfigs_path, units = "in", height = 8, width = 8, dpi = 300)
-      
       # Calculate tod error distribution
       tod_err <- abs((er_tod - er_hourly) / er_hourly * 100)
       
@@ -443,24 +425,6 @@ for (g in all_region){
         mutate(type = "tod", 
                gea = g, 
                solar = perc)
-      
-      # tod_err %>% 
-      #   pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
-      #   mutate(scenario = as.factor(scenario)) %>% 
-      #   ggplot(aes(x = values, group = scenario)) +
-      #   geom_histogram(bins = 100, aes(y=after_stat(density)), colour="black", fill="white")+
-      #   geom_density(alpha=.2, fill="#FF6666") +
-      #   geom_vline(data = mean, aes(xintercept = mean),linewidth = 1) +
-      #   geom_text(data = mean, 
-      #             aes(x = -2.5, y = 0.5, label = paste0("mean: ", round(mean, digits = 2), " tons CO2e")), check_overlap = T) +
-      #   facet_wrap(~scenario, nrow = 6) +
-      #   coord_cartesian(xlim = c(-5, 5)) +
-      #   theme(panel.grid.major.y = element_line(color = "grey80"),
-      #         legend.direction = "horizontal",
-      #         legend.position = "bottom",
-      #         plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
-      # 
-      # ggsave(filename = str_glue("tod_{z}_{perc}_dist.png"), path = subfigs_path, units = "in", height = 8, width = 8, dpi = 300)
       
       # Calculate month-hour error distribution
       month_hour_err <- abs((er_month_hour - er_hourly) / er_hourly * 100)
@@ -474,24 +438,6 @@ for (g in all_region){
                gea = g, 
                solar = perc)
       
-      # month_hour_err %>% 
-      #   pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
-      #   mutate(scenario = as.factor(scenario)) %>% 
-      #   ggplot(aes(x = values, group = scenario)) +
-      #   geom_histogram(bins = 100, aes(y=after_stat(density)), colour="black", fill="white")+
-      #   geom_density(alpha=.2, fill="#FF6666") +
-      #   geom_vline(data = mean, aes(xintercept = mean),linewidth = 1) +
-      #   geom_text(data = mean, 
-      #             aes(x = -1, y = 0.75, label = paste0("mean: ", round(mean, digits = 2), " tons CO2e")), check_overlap = T) +
-      #   facet_wrap(~scenario, nrow = 6) +
-      #   coord_cartesian(xlim = c(-2.5, 2.5)) +
-      #   theme(panel.grid.major.y = element_line(color = "grey80"),
-      #         legend.direction = "horizontal",
-      #         legend.position = "bottom",
-      #         plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
-      # 
-      # ggsave(filename = str_glue("month-hour_{z}_{perc}_dist.png"), path = subfigs_path, units = "in", height = 8, width = 8, dpi = 300)
-      
       # Calculate season error distribution
       season_err <- abs((er_season - er_hourly) / er_hourly * 100)
       
@@ -504,24 +450,6 @@ for (g in all_region){
                gea = g, 
                solar = perc)
       
-      # season_err %>% 
-      #   pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
-      #   mutate(scenario = as.factor(scenario)) %>% 
-      #   ggplot(aes(x = values, group = scenario)) +
-      #   geom_histogram(bins = 100, aes(y=after_stat(density)), colour="black", fill="white")+
-      #   geom_density(alpha=.2, fill="#FF6666") +
-      #   geom_vline(data = mean, aes(xintercept = mean),linewidth = 1) +
-      #   geom_text(data = mean, 
-      #             aes(x = -5, y = 0.2, label = paste0("mean: ", round(mean, digits = 2), " tons CO2e")), check_overlap = T) +
-      #   facet_wrap(~scenario, nrow = 6) +
-      #   coord_cartesian(xlim = c(-2.5, 2.5)) +
-      #   theme(panel.grid.major.y = element_line(color = "grey80"),
-      #         legend.direction = "horizontal",
-      #         legend.position = "bottom",
-      #         plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
-      # 
-      # ggsave(filename = str_glue("season_{z}_{perc}_dist.png"), path = subfigs_path, units = "in", height = 8, width = 8, dpi = 300)
-      
       # Calculate season-hour error distribution
       season_hour_err <- abs((er_season_hour - er_hourly) / er_hourly * 100)
       
@@ -533,24 +461,6 @@ for (g in all_region){
         mutate(type = "season-hour", 
                gea = g, 
                solar = perc)
-      
-      # season_hour_err %>% 
-      #   pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
-      #   mutate(scenario = as.factor(scenario)) %>% 
-      #   ggplot(aes(x = values, group = scenario)) +
-      #   geom_histogram(bins = 100, aes(y=after_stat(density)), colour="black", fill="white")+
-      #   geom_density(alpha=.2, fill="#FF6666") +
-      #   geom_vline(data = mean, aes(xintercept = mean),linewidth = 1) +
-      #   geom_text(data = mean, 
-      #             aes(x = -1, y = 0.75, label = paste0("mean: ", round(mean, digits = 2), " tons CO2e")), check_overlap = T) +
-      #   facet_wrap(~scenario, nrow = 6) +
-      #   coord_cartesian(xlim = c(-2.5, 2.5)) +
-      #   theme(panel.grid.major.y = element_line(color = "grey80"),
-      #         legend.direction = "horizontal",
-      #         legend.position = "bottom",
-      #         plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
-      # 
-      # ggsave(filename = str_glue("season-hour_{z}_{perc}_dist.png"), path = subfigs_path, units = "in", height = 8, width = 8, dpi = 300)
       
       # Combine plots for all
       df_error <- bind_rows(
@@ -678,24 +588,6 @@ for (g in all_region){
                gea = g, 
                solar = perc)
       
-      # annual_err %>% 
-      #   pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
-      #   mutate(scenario = as.factor(scenario)) %>% 
-      #   ggplot(aes(x = values, group = scenario)) +
-      #   geom_histogram(bins = 100, aes(y=after_stat(density)), colour="black", fill="white")+
-      #   geom_density(alpha=.2, fill="#FF6666") +
-      #   geom_vline(data = mean, aes(xintercept = mean),linewidth = 1) +
-      #   geom_text(data = mean, 
-      #             aes(x = -5, y = 0.2, label = paste0("mean: ", round(mean, digits = 2), " tons CO2e")), check_overlap = T) +
-      #   facet_wrap(~scenario, nrow = 6) +
-      #   coord_cartesian(xlim = c(-10, 10)) +
-      #   theme(panel.grid.major.y = element_line(color = "grey80"),
-      #         legend.direction = "horizontal",
-      #         legend.position = "bottom",
-      #         plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
-      # 
-      # ggsave(filename = str_glue("annual_{z}_{perc}_dist.png"), path = subfigs_path, units = "in", height = 8, width = 8, dpi = 300)
-      
       # Calculate tod error distribution
       tod_err <- abs((er_tod - er_hourly) / er_hourly * 100)
       
@@ -707,25 +599,7 @@ for (g in all_region){
         mutate(type = "tod", 
                gea = g, 
                solar = perc)
-      
-      # tod_err %>% 
-      #   pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
-      #   mutate(scenario = as.factor(scenario)) %>% 
-      #   ggplot(aes(x = values, group = scenario)) +
-      #   geom_histogram(bins = 100, aes(y=after_stat(density)), colour="black", fill="white")+
-      #   geom_density(alpha=.2, fill="#FF6666") +
-      #   geom_vline(data = mean, aes(xintercept = mean),linewidth = 1) +
-      #   geom_text(data = mean, 
-      #             aes(x = -2.5, y = 0.5, label = paste0("mean: ", round(mean, digits = 2), " tons CO2e")), check_overlap = T) +
-      #   facet_wrap(~scenario, nrow = 6) +
-      #   coord_cartesian(xlim = c(-5, 5)) +
-      #   theme(panel.grid.major.y = element_line(color = "grey80"),
-      #         legend.direction = "horizontal",
-      #         legend.position = "bottom",
-      #         plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
-      # 
-      # ggsave(filename = str_glue("tod_{z}_{perc}_dist.png"), path = subfigs_path, units = "in", height = 8, width = 8, dpi = 300)
-      
+
       # Calculate month-hour error distribution
       month_hour_err <- abs((er_month_hour - er_hourly) / er_hourly * 100)
       
@@ -737,24 +611,6 @@ for (g in all_region){
         mutate(type = "month-hour", 
                gea = g, 
                solar = perc)
-      
-      # month_hour_err %>% 
-      #   pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
-      #   mutate(scenario = as.factor(scenario)) %>% 
-      #   ggplot(aes(x = values, group = scenario)) +
-      #   geom_histogram(bins = 100, aes(y=after_stat(density)), colour="black", fill="white")+
-      #   geom_density(alpha=.2, fill="#FF6666") +
-      #   geom_vline(data = mean, aes(xintercept = mean),linewidth = 1) +
-      #   geom_text(data = mean, 
-      #             aes(x = -1, y = 0.75, label = paste0("mean: ", round(mean, digits = 2), " tons CO2e")), check_overlap = T) +
-      #   facet_wrap(~scenario, nrow = 6) +
-      #   coord_cartesian(xlim = c(-2.5, 2.5)) +
-      #   theme(panel.grid.major.y = element_line(color = "grey80"),
-      #         legend.direction = "horizontal",
-      #         legend.position = "bottom",
-      #         plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
-      # 
-      # ggsave(filename = str_glue("month-hour_{z}_{perc}_dist.png"), path = subfigs_path, units = "in", height = 8, width = 8, dpi = 300)
       
       # Calculate season error distribution
       season_err <- abs((er_season - er_hourly) / er_hourly * 100)
@@ -768,24 +624,6 @@ for (g in all_region){
                gea = g, 
                solar = perc)
       
-      # season_err %>% 
-      #   pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
-      #   mutate(scenario = as.factor(scenario)) %>% 
-      #   ggplot(aes(x = values, group = scenario)) +
-      #   geom_histogram(bins = 100, aes(y=after_stat(density)), colour="black", fill="white")+
-      #   geom_density(alpha=.2, fill="#FF6666") +
-      #   geom_vline(data = mean, aes(xintercept = mean),linewidth = 1) +
-      #   geom_text(data = mean, 
-      #             aes(x = -5, y = 0.2, label = paste0("mean: ", round(mean, digits = 2), " tons CO2e")), check_overlap = T) +
-      #   facet_wrap(~scenario, nrow = 6) +
-      #   coord_cartesian(xlim = c(-2.5, 2.5)) +
-      #   theme(panel.grid.major.y = element_line(color = "grey80"),
-      #         legend.direction = "horizontal",
-      #         legend.position = "bottom",
-      #         plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
-      # 
-      # ggsave(filename = str_glue("season_{z}_{perc}_dist.png"), path = subfigs_path, units = "in", height = 8, width = 8, dpi = 300)
-      
       # Calculate season-hour error distribution
       season_hour_err <- abs((er_season_hour - er_hourly) / er_hourly * 100)
       
@@ -797,24 +635,6 @@ for (g in all_region){
         mutate(type = "season-hour", 
                gea = g, 
                solar = perc)
-      
-      # season_hour_err %>% 
-      #   pivot_longer(cols = everything(), names_to = "scenario", values_to = "values") %>% 
-      #   mutate(scenario = as.factor(scenario)) %>% 
-      #   ggplot(aes(x = values, group = scenario)) +
-      #   geom_histogram(bins = 100, aes(y=after_stat(density)), colour="black", fill="white")+
-      #   geom_density(alpha=.2, fill="#FF6666") +
-      #   geom_vline(data = mean, aes(xintercept = mean),linewidth = 1) +
-      #   geom_text(data = mean, 
-      #             aes(x = -1, y = 0.75, label = paste0("mean: ", round(mean, digits = 2), " tons CO2e")), check_overlap = T) +
-      #   facet_wrap(~scenario, nrow = 6) +
-      #   coord_cartesian(xlim = c(-2.5, 2.5)) +
-      #   theme(panel.grid.major.y = element_line(color = "grey80"),
-      #         legend.direction = "horizontal",
-      #         legend.position = "bottom",
-      #         plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
-      # 
-      # ggsave(filename = str_glue("season-hour_{z}_{perc}_dist.png"), path = subfigs_path, units = "in", height = 8, width = 8, dpi = 300)
       
       # Combine plots for all
       df_error <- bind_rows(
