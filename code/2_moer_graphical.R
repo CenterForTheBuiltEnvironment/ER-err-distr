@@ -31,15 +31,11 @@ theme_update(plot.title = element_text(size = 16, colour = "grey20", face = "bol
              strip.text = element_text(size = 12, color = "grey20", face = "bold"),
              strip.background = element_blank())
 
-ls_colors <- c("Annual avg." = "#E68B81", 
-               "Season avg." = "#EAAA60", 
-               "Time-of-day avg." = "#B7B2D0",
-               "Season-hour avg." = "#7DA6C6",
-               "Month-hour avg." = "#84C3B7", 
-               "PV" = "#feb24c", 
-               "Wind" = "#9ecae1", 
-               "Others" = "#045a8d", 
-               "Fossil" = "grey20"
+ls_colors <- c("Annual avg." = "#A14D44", 
+               "Season avg." = "#A56C2D", 
+               "Time-of-day avg." = "#6B6593",
+               "Season-hour avg." = "#406B8A",
+               "Month-hour avg." = "#417A71"
                
 )
 
@@ -333,11 +329,18 @@ p1 <- df_hourly %>%
          scenario == "MidCase") %>% 
   ggplot() +
   geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
-  geom_smooth(aes(x = datetime, y = er), linewidth = 0.8, alpha = 0.4) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2025, 
+                      gea == gea_example,
+                      scenario == "MidCase"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
   scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(expand = c(0.01, 0),
                      breaks = seq(0, 800, by = 200), 
                      labels = c("0", "200", "400", "600", "800")) +
+  scale_color_manual(values = ls_colors) +
   labs(x = NULL,
        y = NULL,
        color = NULL,
@@ -355,11 +358,18 @@ p2 <- df_hourly %>%
          scenario == "MidCase") %>% 
   ggplot() +
   geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
-  geom_smooth(aes(x = datetime, y = er), linewidth = 0.8, alpha = 0.4) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2050, 
+                      gea == gea_example,
+                      scenario == "MidCase"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
   scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(expand = c(0.01, 0),
                      breaks = seq(0, 100, by = 25), 
                      labels = c("0", "25", "50", "75", "100")) +
+  scale_color_manual(values = ls_colors) +
   labs(x = NULL,
        y = NULL,
        color = NULL,
@@ -368,186 +378,52 @@ p2 <- df_hourly %>%
         axis.text = element_text(size = 12), 
         legend.direction = "horizontal",
         legend.position = "bottom",
+        axis.text.x = element_blank(),
         plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
 
-final_plot <- ggarrange(p1, p2, 
-                        nrow = 2, 
-                        common.legend = T, 
-                        labels = c("a)", "b)"), 
-                        legend = "bottom")
+p3 <- df_hourly %>% 
+  filter(year == 2050, 
+         gea == gea_example, 
+         scenario == "LowRECost_HighNGPrice") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2050, 
+                      gea == gea_example,
+                      scenario == "LowRECost_HighNGPrice"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(expand = c(0.01, 0),
+                     breaks = seq(0, 100, by = 25), 
+                     labels = c("0", "25", "50", "75", "100")) +
+  scale_color_manual(values = ls_colors) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "LowRECost_HighNGPrice - 2050") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.25),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
 
+final_plot <- ggarrange(p1, p2, p3,
+                        nrow = 3, 
+                        common.legend = T, 
+                        labels = c("a)", "b)", "c)"), 
+                        legend = "bottom")
 
 annotate_figure(final_plot, 
                 left = text_grob("Emissions rate (gCO2e/kWh)", 
                                  rot = 90, vjust = 1, size = 12),
-                top = text_grob(str_glue("Hourly long-run marginal carbon emissions rate at {gea_example}"), size = 14))
+                top = text_grob(str_glue("Hourly long-run marginal emissions rate at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 6, width = 6, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 8, width = 8, dpi = 300)
 
 # Summary
-sce_example <- c("MidCase", "LowRECost", "LowRECost_HighNGPrice")
-
-# operational
-# subfigs_path <- paste0(figs_path, str_glue("operational/{g}/"))
-z_index <- 1
-plot_list <- list()
-for (perc in c(0, 100)){
-  
-  
-  for (z in sce_example){
-    
-    er_hourly <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/hourly.rds"))) %>% 
-      select(contains(z))
-    
-    colname <- colnames(er_hourly)
-    
-    er_annual <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/annual.rds"))) %>% 
-      select(all_of(colname))
-    
-    er_tod <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/tod.rds"))) %>% 
-      select(all_of(colname))
-    
-    er_month_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/month_hour.rds"))) %>% 
-      select(all_of(colname))
-    
-    er_season <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/season.rds"))) %>% 
-      select(all_of(colname))
-    
-    er_season_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/season_hour.rds"))) %>% 
-      select(all_of(colname))
-    
-    # Calculate annual error distribution
-    annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
-    
-    # Calculate tod error distribution
-    tod_err <- abs((er_tod - er_hourly) / er_hourly * 100)
-    
-    # Calculate month-hour error distribution
-    month_hour_err <- abs((er_month_hour - er_hourly) / er_hourly * 100)
-    
-    # Calculate season error distribution
-    season_err <- abs((er_season - er_hourly) / er_hourly * 100)
-    
-    # Calculate season-hour error distribution
-    season_hour_err <- abs((er_season_hour - er_hourly) / er_hourly * 100)
-    
-    # Combine plots for all
-    df_error <- bind_rows(
-      annual_err %>% 
-        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
-        separate(year, into = c("scenario", "year"), sep = "-") %>% 
-        mutate(type = "Annual avg."), 
-      season_err %>% 
-        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
-        separate(year, into = c("scenario", "year"), sep = "-") %>% 
-        mutate(type = "Season avg."), 
-      tod_err %>% 
-        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
-        separate(year, into = c("scenario", "year"), sep = "-") %>% 
-        mutate(type = "Time-of-day avg."),
-      season_hour_err %>% 
-        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
-        separate(year, into = c("scenario", "year"), sep = "-") %>% 
-        mutate(type = "Season-hour avg."),
-      month_hour_err %>% 
-        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
-        separate(year, into = c("scenario", "year"), sep = "-") %>% 
-        mutate(type = "Month-hour avg.")) %>% 
-      filter(year %in% c(2025, 2050))
-    
-    p <- df_error %>% 
-      mutate(scenario = as.factor(scenario), 
-             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
-      ggplot(aes(x = year, y = error, fill = type)) +
-      geom_lv(alpha = 0.4, k = 4, outlier.size = 0.4) +
-      geom_boxplot(outlier.alpha = 0, coef = 0, fill = "#00000000", aes(color = type)) +
-      scale_y_continuous(expand = c(0, 0), 
-                         breaks = seq(0, 40, by = 10), 
-                         labels = number_format(suffix = " %")) +
-      coord_cartesian(ylim = c(0, 50)) +
-      scale_fill_manual(values = ls_colors) +
-      scale_color_manual(values = ls_colors) 
-    
-    if (z_index %% 3 == 1){
-      
-      if (z_index / 3 <= 1){
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = str_glue("{perc}% PV generation"), 
-               color = NULL, 
-               fill = NULL, 
-               subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      } else {
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = str_glue("{perc}% PV generation"), 
-               color = NULL, 
-               fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      }
-      
-      
-    } else {
-      
-      if (z_index / 3 <= 1){
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = NULL, 
-               color = NULL, 
-               fill = NULL, 
-               subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                axis.text.y = element_blank(), 
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      } else {
-        
-        p <- p +
-          labs(x = NULL, 
-               y = NULL, 
-               color = NULL, 
-               fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                axis.text.y = element_blank(), 
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-      }
-      
-    }
-    
-    plot_list[[z_index]] <- p
-    
-    z_index <- z_index + 1
-    
-  }
-  
-}
-
-ggarrange(plotlist = plot_list, 
-          ncol = 3, nrow = 2,
-          align = "hv",
-          common.legend = TRUE,
-          legend = "bottom") +
-  plot_annotation(title = "Error distribution of operational carbon emissions", 
-                  subtitle = str_glue("{gea_example}"))
-
-ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 6, width = 10, dpi = 300)
-
+sce_example <- c("MidCase", "LowRECost_HighNGPrice")
 
 # avoided
 # only annual and season
@@ -575,7 +451,6 @@ for (perc in c(25, 100)){
     # Calculate season error distribution
     season_err <- abs((er_season - er_hourly) / er_hourly * 100)
     
-    
     # Combine plots for all
     df_error <- bind_rows(
       annual_err %>% 
@@ -588,27 +463,40 @@ for (perc in c(25, 100)){
         mutate(type = "Season avg.")) %>% 
       filter(year %in% c(2025, 2050))
     
-    breaks <- if (perc == 25) seq(0, 4000, by = 1000) else seq(0, 250, by = 50)
-    ylim <- if (perc == 25) c(0, 4100) else c(0, 280)
+    breaks <- if (perc == 25) seq(0, 3500, by = 1000) else seq(0, 250, by = 50)
+    ylim <- if (perc == 25) c(-100, 3600) else c(0, 280)
+    
+    er_hourly_med <- as.data.frame(t(apply(er_hourly, 2, median))) %>% 
+      pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
+      separate(year, into = c("scenario", "year"), sep = "-") %>% 
+      filter(year %in% c(2025, 2050)) %>% 
+      mutate(pos = ifelse(perc == 25, 3200, 250))
+    
+    error_med <- df_error %>% 
+      group_by(year, type, scenario) %>% 
+      summarise(med = median(error)) %>% 
+      ungroup() %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) 
     
     p <- df_error %>% 
       mutate(scenario = as.factor(scenario), 
              type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
-      ggplot(aes(x = year, y = error, fill = type)) +
-      geom_lv(alpha = 0.4, k = 4, outlier.size = 0.4) +
-      geom_boxplot(outlier.alpha = 0, coef = 0, fill = "#00000000", aes(color = type)) +
+      ggplot(aes(x = year, y = error)) +
+      geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey60", linewidth = 0.2, aes(fill = type)) +
+      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = paste0("Hourly med:\n", round(er, digits = 2), " tCO2e")), size = 4) +
+      geom_text(data = error_med, aes(x = year, y = med, label = paste0(round(med, digits = 0), "%"), group = type), position = position_dodge(width = 0.8), size = 5) +
       scale_y_continuous(expand = c(0, 0), 
                          breaks = breaks, 
                          labels = number_format(suffix = " %")) +
       coord_cartesian(ylim = ylim) +
       scale_fill_manual(values = ls_colors) +
-      scale_color_manual(values = ls_colors) +
-      geom_hline(yintercept = 100, color = "red", lty = "dashed")
+      scale_color_manual(values = ls_colors)
     
     
-    if (z_index %% 3 == 1){
+    if (z_index %% 2 == 1){
       
-      if (z_index / 3 <= 1){
+      if (z_index / 2 <= 1){
         
         p <- p + 
           labs(x = NULL, 
@@ -616,7 +504,7 @@ for (perc in c(25, 100)){
                color = NULL, 
                fill = NULL, 
                subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
+          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
                 legend.direction = "horizontal",
                 legend.position = "bottom",
                 plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
@@ -628,7 +516,7 @@ for (perc in c(25, 100)){
                y = str_glue("{perc}% PV generation"), 
                color = NULL, 
                fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
+          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
                 legend.direction = "horizontal",
                 legend.position = "bottom",
                 plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
@@ -638,7 +526,7 @@ for (perc in c(25, 100)){
       
     } else {
       
-      if (z_index / 3 <= 1){
+      if (z_index / 2 <= 1){
         
         p <- p + 
           labs(x = NULL, 
@@ -646,7 +534,7 @@ for (perc in c(25, 100)){
                color = NULL, 
                fill = NULL, 
                subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
+          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
                 legend.direction = "horizontal",
                 legend.position = "bottom",
                 axis.text.y = element_blank(), 
@@ -659,7 +547,7 @@ for (perc in c(25, 100)){
                y = NULL, 
                color = NULL, 
                fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
+          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
                 legend.direction = "horizontal",
                 legend.position = "bottom",
                 axis.text.y = element_blank(), 
@@ -678,11 +566,12 @@ for (perc in c(25, 100)){
 }
 
 ggarrange(plotlist = plot_list, 
-          ncol = 3, nrow = 2,
+          ncol = 2, nrow = 2,
           align = "hv",
           common.legend = TRUE,
+          labels = c("a)", "b)", "c)", "d)"),
           legend = "bottom") +
-  plot_annotation(title = "Error distribution of avoided carbon emissions", 
+  plot_annotation(title = "Error distribution of quantifying avoided emissions\nfrom exported utilities using LRMER", 
                   subtitle = str_glue("{gea_example}"))
 
 ggsave(filename = str_glue("{gea_example}_{emissions}_avoided_sep.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 6, width = 10, dpi = 300)
@@ -705,7 +594,6 @@ for (perc in c(25, 100)){
     
     er_month_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/month_hour.rds"))) %>% 
       select(all_of(colname))
-    
     
     er_season_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/season_hour.rds"))) %>% 
       select(all_of(colname))
@@ -735,27 +623,41 @@ for (perc in c(25, 100)){
         mutate(type = "Month-hour avg.")) %>% 
       filter(year %in% c(2025, 2050))
     
-    breaks <- if (perc == 25) seq(0, 1250, by = 250) else seq(0, 60, by = 20)
-    ylim <- if (perc == 25) c(0, 1300) else c(0, 60)
+    breaks <- if (perc == 25) seq(0, 1000, by = 250) else seq(0, 60, by = 20)
+    ylim <- if (perc == 25) c(-20, 1000) else c(-10, 65)
+    
+    er_hourly_med <- as.data.frame(t(apply(er_hourly, 2, median))) %>% 
+      pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
+      separate(year, into = c("scenario", "year"), sep = "-") %>% 
+      filter(year %in% c(2025, 2050)) %>% 
+      mutate(pos = ifelse(perc == 25, 900, 55))
+    
+    error_med <- df_error %>% 
+      group_by(year, type, scenario) %>% 
+      summarise(med = median(error)) %>% 
+      ungroup() %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) 
     
     p <- df_error %>% 
       mutate(scenario = as.factor(scenario), 
              type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
-      ggplot(aes(x = year, y = error, fill = type)) +
-      geom_lv(alpha = 0.4, k = 4, outlier.size = 0.4) +
-      geom_boxplot(outlier.alpha = 0, coef = 0, fill = "#00000000", aes(color = type)) +
+      ggplot(aes(x = year, y = error)) +
+      geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey60", linewidth = 0.2, aes(fill = type)) +
+      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = paste0("Hourly med:\n", round(er, digits = 2), " tCO2e")), size = 4) +
+      geom_text(data = error_med, aes(x = year, y = med, label = paste0(round(med, digits = 0), "%"), group = type), position = position_dodge(width = 0.8), size = 5) +
       scale_y_continuous(expand = c(0, 0), 
                          breaks = breaks, 
                          labels = number_format(suffix = " %")) +
       coord_cartesian(ylim = ylim) +
       scale_fill_manual(values = ls_colors) +
-      scale_color_manual(values = ls_colors) + 
-      geom_hline(yintercept = 100, color = "red", lty = "dashed")
-    
-    
-    if (z_index %% 3 == 1){
+      scale_color_manual(values = ls_colors)
       
-      if (z_index / 3 <= 1){
+    
+    
+    if (z_index %% 2 == 1){
+      
+      if (z_index / 2 <= 1){
         
         p <- p + 
           labs(x = NULL, 
@@ -763,7 +665,7 @@ for (perc in c(25, 100)){
                color = NULL, 
                fill = NULL, 
                subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
+          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
                 legend.direction = "horizontal",
                 legend.position = "bottom",
                 plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
@@ -775,7 +677,7 @@ for (perc in c(25, 100)){
                y = str_glue("{perc}% PV generation"), 
                color = NULL, 
                fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
+          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
                 legend.direction = "horizontal",
                 legend.position = "bottom",
                 plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
@@ -785,7 +687,7 @@ for (perc in c(25, 100)){
       
     } else {
       
-      if (z_index / 3 <= 1){
+      if (z_index / 2 <= 1){
         
         p <- p + 
           labs(x = NULL, 
@@ -793,7 +695,7 @@ for (perc in c(25, 100)){
                color = NULL, 
                fill = NULL, 
                subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
+          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
                 legend.direction = "horizontal",
                 legend.position = "bottom",
                 axis.text.y = element_blank(), 
@@ -806,7 +708,7 @@ for (perc in c(25, 100)){
                y = NULL, 
                color = NULL, 
                fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
+          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
                 legend.direction = "horizontal",
                 legend.position = "bottom",
                 axis.text.y = element_blank(), 
@@ -825,11 +727,12 @@ for (perc in c(25, 100)){
 }
 
 ggarrange(plotlist = plot_list, 
-          ncol = 3, nrow = 2,
+          ncol = 2, nrow = 2,
           align = "hv",
           common.legend = TRUE,
+          labels = c("a)", "b)", "c)", "d)"),
           legend = "bottom") +
-  plot_annotation(title = "Error distribution of avoided carbon emissions", 
+  plot_annotation(title = "Error distribution of quantifying avoided emissions\nfrom exported utilities using LRMER", 
                   subtitle = str_glue("{gea_example}"))
 
 ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 6, width = 10, dpi = 300)
@@ -848,11 +751,18 @@ p1 <- df_hourly %>%
          scenario == "MidCase") %>% 
   ggplot() +
   geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
-  geom_smooth(aes(x = datetime, y = er), linewidth = 0.8, alpha = 0.4) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2025, 
+                      gea == gea_example,
+                      scenario == "MidCase"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
   scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(expand = c(0.01, 0),
                      breaks = seq(0, 1000, by = 250), 
                      labels = c("0", "250", "500", "750", "1000")) +
+  scale_color_manual(values = ls_colors) +
   labs(x = NULL,
        y = NULL,
        color = NULL,
@@ -870,11 +780,18 @@ p2 <- df_hourly %>%
          scenario == "MidCase") %>% 
   ggplot() +
   geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
-  geom_smooth(aes(x = datetime, y = er), linewidth = 0.8, alpha = 0.4) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2050, 
+                      gea == gea_example,
+                      scenario == "MidCase"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
   scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(expand = c(0.01, 0),
                      breaks = seq(0, 500, by = 100), 
                      labels = c("0", "100", "200", "300", "400", "500")) +
+  scale_color_manual(values = ls_colors) +
   labs(x = NULL,
        y = NULL,
        color = NULL,
@@ -885,185 +802,50 @@ p2 <- df_hourly %>%
         legend.position = "bottom",
         plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
 
-final_plot <- ggarrange(p1, p2,
-                        nrow = 2, 
+p3 <- df_hourly %>% 
+  filter(year == 2050, 
+         gea == gea_example, 
+         scenario == "LowRECost_HighNGPrice") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2050, 
+                      gea == gea_example,
+                      scenario == "LowRECost_HighNGPrice"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(expand = c(0.01, 0),
+                     breaks = seq(0, 500, by = 100), 
+                     labels = c("0", "100", "200", "300", "400", "500")) +
+  scale_color_manual(values = ls_colors) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "LowRECost_HighNGPrice - 2050") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.25),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+final_plot <- ggarrange(p1, p2, p3,
+                        nrow = 3, 
                         common.legend = T, 
-                        labels = c("a)", "b)"), 
+                        labels = c("a)", "b)", "c)"), 
                         legend = "bottom")
 
 
 annotate_figure(final_plot, 
                 left = text_grob("Emissions rate (gCO2e/kWh)", 
                                  rot = 90, vjust = 1, size = 12),
-                top = text_grob(str_glue("Hourly long-run marginal carbon emissions rate at {gea_example}"), size = 14))
+                top = text_grob(str_glue("Hourly long-run marginal emissions rate at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 6, width = 6, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 8, width = 8, dpi = 300)
 
 # summary
-sce_example <- c("MidCase", "LowRECost", "LowRECost_HighNGPrice")
-
-# operational
-# subfigs_path <- paste0(figs_path, str_glue("operational/{g}/"))
-z_index <- 1
-plot_list <- list()
-for (perc in c(0, 100)){
-  
-  
-  for (z in sce_example){
-    
-    er_hourly <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/hourly.rds"))) %>% 
-      select(contains(z))
-    
-    colname <- colnames(er_hourly)
-    
-    er_annual <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/annual.rds"))) %>% 
-      select(all_of(colname))
-    
-    er_tod <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/tod.rds"))) %>% 
-      select(all_of(colname))
-    
-    er_month_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/month_hour.rds"))) %>% 
-      select(all_of(colname))
-    
-    er_season <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/season.rds"))) %>% 
-      select(all_of(colname))
-    
-    er_season_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/season_hour.rds"))) %>% 
-      select(all_of(colname))
-    
-    # Calculate annual error distribution
-    annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
-    
-    # Calculate tod error distribution
-    tod_err <- abs((er_tod - er_hourly) / er_hourly * 100)
-    
-    # Calculate month-hour error distribution
-    month_hour_err <- abs((er_month_hour - er_hourly) / er_hourly * 100)
-    
-    # Calculate season error distribution
-    season_err <- abs((er_season - er_hourly) / er_hourly * 100)
-    
-    # Calculate season-hour error distribution
-    season_hour_err <- abs((er_season_hour - er_hourly) / er_hourly * 100)
-    
-    # Combine plots for all
-    df_error <- bind_rows(
-      annual_err %>% 
-        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
-        separate(year, into = c("scenario", "year"), sep = "-") %>% 
-        mutate(type = "Annual avg."), 
-      season_err %>% 
-        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
-        separate(year, into = c("scenario", "year"), sep = "-") %>% 
-        mutate(type = "Season avg."), 
-      tod_err %>% 
-        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
-        separate(year, into = c("scenario", "year"), sep = "-") %>% 
-        mutate(type = "Time-of-day avg."),
-      season_hour_err %>% 
-        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
-        separate(year, into = c("scenario", "year"), sep = "-") %>% 
-        mutate(type = "Season-hour avg."),
-      month_hour_err %>% 
-        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
-        separate(year, into = c("scenario", "year"), sep = "-") %>% 
-        mutate(type = "Month-hour avg.")) %>% 
-      filter(year %in% c(2025, 2050))
-    
-    p <- df_error %>% 
-      mutate(scenario = as.factor(scenario), 
-             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
-      ggplot(aes(x = year, y = error, fill = type)) +
-      geom_lv(alpha = 0.4, k = 4, outlier.size = 0.4) +
-      geom_boxplot(outlier.alpha = 0, coef = 0, fill = "#00000000", aes(color = type)) +
-      scale_y_continuous(expand = c(0, 0), 
-                         breaks = seq(0, 40, by = 10), 
-                         labels = number_format(suffix = " %")) +
-      coord_cartesian(ylim = c(0, 45)) +
-      scale_fill_manual(values = ls_colors) +
-      scale_color_manual(values = ls_colors) +
-      geom_hline(yintercept = 100, color = "red", lty = "dashed")
-    
-    if (z_index %% 3 == 1){
-      
-      if (z_index / 3 <= 1){
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = str_glue("{perc}% PV generation"), 
-               color = NULL, 
-               fill = NULL, 
-               subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      } else {
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = str_glue("{perc}% PV generation"), 
-               color = NULL, 
-               fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      }
-      
-      
-    } else {
-      
-      if (z_index / 3 <= 1){
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = NULL, 
-               color = NULL, 
-               fill = NULL, 
-               subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                axis.text.y = element_blank(), 
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      } else {
-        
-        p <- p +
-          labs(x = NULL, 
-               y = NULL, 
-               color = NULL, 
-               fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                axis.text.y = element_blank(), 
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-      }
-      
-    }
-    
-    plot_list[[z_index]] <- p
-    
-    z_index <- z_index + 1
-    
-  }
-  
-}
-
-ggarrange(plotlist = plot_list, 
-          ncol = 3, nrow = 2,
-          align = "hv",
-          common.legend = TRUE,
-          legend = "bottom") +
-  plot_annotation(title = "Error distribution of operational carbon emissions", 
-                  subtitle = str_glue("{gea_example}"))
-
-ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 6, width = 10, dpi = 300)
-
+sce_example <- c("MidCase", "LowRECost_HighNGPrice")
 
 # avoided
 # only annual and season
@@ -1088,10 +870,8 @@ for (perc in c(25, 100)){
     # Calculate annual error distribution
     annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
     
-    
     # Calculate season error distribution
     season_err <- abs((er_season - er_hourly) / er_hourly * 100)
-    
     
     # Combine plots for all
     df_error <- bind_rows(
@@ -1105,27 +885,41 @@ for (perc in c(25, 100)){
         mutate(type = "Season avg.")) %>% 
       filter(year %in% c(2025, 2050))
     
-    breaks <- if (perc == 25) seq(0, 1000, by = 250) else seq(0, 250, by = 50)
-    ylim <- if (perc == 25) c(0, 1200) else c(0, 250)
+    breaks <- if (perc == 25) seq(0, 750, by = 250) else seq(0, 200, by = 50)
+    ylim <- if (perc == 25) c(-40, 780) else c(-10, 210)
+    
+    er_hourly_med <- as.data.frame(t(apply(er_hourly, 2, median))) %>% 
+      pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
+      separate(year, into = c("scenario", "year"), sep = "-") %>% 
+      filter(year %in% c(2025, 2050)) %>% 
+      mutate(pos = ifelse(perc == 25, 700, 190))
+    
+    error_med <- df_error %>% 
+      group_by(year, type, scenario) %>% 
+      summarise(med = median(error)) %>% 
+      ungroup() %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) 
     
     p <- df_error %>% 
       mutate(scenario = as.factor(scenario), 
              type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
-      ggplot(aes(x = year, y = error, fill = type)) +
-      geom_lv(alpha = 0.4, k = 4, outlier.size = 0.4) +
-      geom_boxplot(outlier.alpha = 0, coef = 0, fill = "#00000000", aes(color = type)) +
+      ggplot(aes(x = year, y = error)) +
+      geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey60", linewidth = 0.2, aes(fill = type)) +
+      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = paste0("Hourly med:\n", round(er, digits = 2), " tCO2e")), size = 4) +
+      geom_text(data = error_med, aes(x = year, y = med, label = paste0(round(med, digits = 0), "%"), group = type), position = position_dodge(width = 0.8), size = 5) +
       scale_y_continuous(expand = c(0, 0), 
                          breaks = breaks, 
                          labels = number_format(suffix = " %")) +
       coord_cartesian(ylim = ylim) +
       scale_fill_manual(values = ls_colors) +
-      scale_color_manual(values = ls_colors) +
-      geom_hline(yintercept = 100, color = "red", lty = "dashed")
-    
-    
-    if (z_index %% 3 == 1){
+      scale_color_manual(values = ls_colors)
       
-      if (z_index / 3 <= 1){
+    
+    
+    if (z_index %% 2 == 1){
+      
+      if (z_index / 2 <= 1){
         
         p <- p + 
           labs(x = NULL, 
@@ -1133,7 +927,7 @@ for (perc in c(25, 100)){
                color = NULL, 
                fill = NULL, 
                subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
+          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
                 legend.direction = "horizontal",
                 legend.position = "bottom",
                 plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
@@ -1145,7 +939,7 @@ for (perc in c(25, 100)){
                y = str_glue("{perc}% PV generation"), 
                color = NULL, 
                fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
+          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
                 legend.direction = "horizontal",
                 legend.position = "bottom",
                 plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
@@ -1155,7 +949,7 @@ for (perc in c(25, 100)){
       
     } else {
       
-      if (z_index / 3 <= 1){
+      if (z_index / 2 <= 1){
         
         p <- p + 
           labs(x = NULL, 
@@ -1163,7 +957,7 @@ for (perc in c(25, 100)){
                color = NULL, 
                fill = NULL, 
                subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
+          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
                 legend.direction = "horizontal",
                 legend.position = "bottom",
                 axis.text.y = element_blank(), 
@@ -1176,7 +970,7 @@ for (perc in c(25, 100)){
                y = NULL, 
                color = NULL, 
                fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
+          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
                 legend.direction = "horizontal",
                 legend.position = "bottom",
                 axis.text.y = element_blank(), 
@@ -1195,11 +989,12 @@ for (perc in c(25, 100)){
 }
 
 ggarrange(plotlist = plot_list, 
-          ncol = 3, nrow = 2,
+          ncol = 2, nrow = 2,
           align = "hv",
           common.legend = TRUE,
+          labels = c("a)", "b)", "c)", "d)"),
           legend = "bottom") +
-  plot_annotation(title = "Error distribution of avoided carbon emissions", 
+  plot_annotation(title = "Error distribution of quantifying avoided emissions\nfrom exported utilities using LRMER", 
                   subtitle = str_glue("{gea_example}"))
 
 ggsave(filename = str_glue("{gea_example}_{emissions}_avoided_sep.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 6, width = 10, dpi = 300)
@@ -1251,27 +1046,41 @@ for (perc in c(25, 100)){
         mutate(type = "Month-hour avg.")) %>% 
       filter(year %in% c(2025, 2050))
     
-    breaks <- if (perc == 25) seq(0, 200, by = 50) else seq(0, 15, by = 5)
-    ylim <- if (perc == 25) c(0, 220) else c(0, 18)
+    breaks <- if (perc == 25) seq(0, 200, by = 50) else seq(0, 10, by = 5)
+    ylim <- if (perc == 25) c(-10, 220) else c(-2, 12)
+    
+    er_hourly_med <- as.data.frame(t(apply(er_hourly, 2, median))) %>% 
+      pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
+      separate(year, into = c("scenario", "year"), sep = "-") %>% 
+      filter(year %in% c(2025, 2050)) %>% 
+      mutate(pos = ifelse(perc == 25, 200, 10))
+    
+    error_med <- df_error %>% 
+      group_by(year, type, scenario) %>% 
+      summarise(med = median(error)) %>% 
+      ungroup() %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) 
     
     p <- df_error %>% 
       mutate(scenario = as.factor(scenario), 
              type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
-      ggplot(aes(x = year, y = error, fill = type)) +
-      geom_lv(alpha = 0.4, k = 4, outlier.size = 0.4) +
-      geom_boxplot(outlier.alpha = 0, coef = 0, fill = "#00000000", aes(color = type)) +
+      ggplot(aes(x = year, y = error)) +
+      geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey60", linewidth = 0.2, aes(fill = type)) +
+      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = paste0("Hourly med:\n", round(er, digits = 2), " tCO2e")), size = 4) +
+      geom_text(data = error_med, aes(x = year, y = med, label = paste0(round(med, digits = 0), "%"), group = type), position = position_dodge(width = 0.8), size = 5) +
       scale_y_continuous(expand = c(0, 0), 
                          breaks = breaks, 
                          labels = number_format(suffix = " %")) +
       coord_cartesian(ylim = ylim) +
       scale_fill_manual(values = ls_colors) +
-      scale_color_manual(values = ls_colors) +
-      geom_hline(yintercept = 100, color = "red", lty = "dashed")
-    
-    
-    if (z_index %% 3 == 1){
+      scale_color_manual(values = ls_colors)
       
-      if (z_index / 3 <= 1){
+    
+    
+    if (z_index %% 2 == 1){
+      
+      if (z_index / 2 <= 1){
         
         p <- p + 
           labs(x = NULL, 
@@ -1279,7 +1088,7 @@ for (perc in c(25, 100)){
                color = NULL, 
                fill = NULL, 
                subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
+          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
                 legend.direction = "horizontal",
                 legend.position = "bottom",
                 plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
@@ -1291,7 +1100,7 @@ for (perc in c(25, 100)){
                y = str_glue("{perc}% PV generation"), 
                color = NULL, 
                fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
+          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
                 legend.direction = "horizontal",
                 legend.position = "bottom",
                 plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
@@ -1301,7 +1110,7 @@ for (perc in c(25, 100)){
       
     } else {
       
-      if (z_index / 3 <= 1){
+      if (z_index / 2 <= 1){
         
         p <- p + 
           labs(x = NULL, 
@@ -1309,7 +1118,7 @@ for (perc in c(25, 100)){
                color = NULL, 
                fill = NULL, 
                subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
+          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
                 legend.direction = "horizontal",
                 legend.position = "bottom",
                 axis.text.y = element_blank(), 
@@ -1322,7 +1131,7 @@ for (perc in c(25, 100)){
                y = NULL, 
                color = NULL, 
                fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
+          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
                 legend.direction = "horizontal",
                 legend.position = "bottom",
                 axis.text.y = element_blank(), 
@@ -1341,11 +1150,12 @@ for (perc in c(25, 100)){
 }
 
 ggarrange(plotlist = plot_list, 
-          ncol = 3, nrow = 2,
+          ncol = 2, nrow = 2,
           align = "hv",
           common.legend = TRUE,
+          labels = c("a)", "b)", "c)", "d)"),
           legend = "bottom") +
-  plot_annotation(title = "Error distribution of avoided carbon emissions", 
+  plot_annotation(title = "Error distribution of quantifying avoided emissions\nfrom exported utilities using LRMER", 
                   subtitle = str_glue("{gea_example}"))
 
 ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 6, width = 10, dpi = 300)
@@ -1364,11 +1174,18 @@ p1 <- df_hourly %>%
          scenario == "MidCase") %>% 
   ggplot() +
   geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
-  geom_smooth(aes(x = datetime, y = er), linewidth = 0.8, alpha = 0.4) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2025, 
+                      gea == gea_example,
+                      scenario == "MidCase"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
   scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
-  scale_y_continuous(expand = c(0.01, 0),
+  scale_y_continuous(expand = c(0, 0),
                      breaks = seq(0, 800, by = 200), 
                      labels = c("0", "200", "400", "600", "800")) +
+  scale_color_manual(values = ls_colors) +
   labs(x = NULL,
        y = NULL,
        color = NULL,
@@ -1386,11 +1203,18 @@ p2 <- df_hourly %>%
          scenario == "MidCase") %>% 
   ggplot() +
   geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
-  geom_smooth(aes(x = datetime, y = er), linewidth = 0.8, alpha = 0.4) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2050, 
+                      gea == gea_example,
+                      scenario == "MidCase"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
   scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
-  scale_y_continuous(expand = c(0.01, 0),
+  scale_y_continuous(expand = c(0, 0),
                      breaks = seq(0, 500, by = 100), 
                      labels = c("0", "100", "200", "300", "400", "500")) +
+  scale_color_manual(values = ls_colors) +
   labs(x = NULL,
        y = NULL,
        color = NULL,
@@ -1399,188 +1223,53 @@ p2 <- df_hourly %>%
         axis.text = element_text(size = 12), 
         legend.direction = "horizontal",
         legend.position = "bottom",
+        axis.text.x = element_blank(),
         plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
 
+p3 <- df_hourly %>% 
+  filter(year == 2050, 
+         gea == gea_example, 
+         scenario == "LowRECost_HighNGPrice") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2050, 
+                      gea == gea_example,
+                      scenario == "LowRECost_HighNGPrice"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(expand = c(0, 0),
+                     breaks = seq(0, 500, by = 100), 
+                     labels = c("0", "100", "200", "300", "400", "500")) +
+  scale_color_manual(values = ls_colors) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "LowRECost_HighNGPrice - 2050") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.25),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
 
-final_plot <- ggarrange(p1, p2,
-                        nrow = 2, 
+final_plot <- ggarrange(p1, p2, p3,
+                        nrow = 3, 
                         common.legend = T, 
-                        labels = c("a)", "b)"), 
+                        labels = c("a)", "b)", "c)"), 
                         legend = "bottom")
 
 
 annotate_figure(final_plot, 
                 left = text_grob("Emissions rate (gCO2e/kWh)", 
                                  rot = 90, vjust = 1, size = 12),
-                top = text_grob(str_glue("Hourly long-run marginal carbon emissions rate at {gea_example}"), size = 14))
+                top = text_grob(str_glue("Hourly long-run marginal emissions rate at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 6, width = 6, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 8, width = 8, dpi = 300)
 
 # summary
-sce_example <- c("MidCase", "LowRECost", "LowRECost_HighNGPrice")
-
-# operational
-# subfigs_path <- paste0(figs_path, str_glue("operational/{g}/"))
-z_index <- 1
-plot_list <- list()
-for (perc in c(0, 100)){
-  
-  
-  for (z in sce_example){
-    
-    er_hourly <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/hourly.rds"))) %>% 
-      select(contains(z))
-    
-    colname <- colnames(er_hourly)
-    
-    er_annual <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/annual.rds"))) %>% 
-      select(all_of(colname))
-    
-    er_tod <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/tod.rds"))) %>% 
-      select(all_of(colname))
-    
-    er_month_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/month_hour.rds"))) %>% 
-      select(all_of(colname))
-    
-    er_season <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/season.rds"))) %>% 
-      select(all_of(colname))
-    
-    er_season_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/season_hour.rds"))) %>% 
-      select(all_of(colname))
-    
-    # Calculate annual error distribution
-    annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
-    
-    # Calculate tod error distribution
-    tod_err <- abs((er_tod - er_hourly) / er_hourly * 100)
-    
-    # Calculate month-hour error distribution
-    month_hour_err <- abs((er_month_hour - er_hourly) / er_hourly * 100)
-    
-    # Calculate season error distribution
-    season_err <- abs((er_season - er_hourly) / er_hourly * 100)
-    
-    # Calculate season-hour error distribution
-    season_hour_err <- abs((er_season_hour - er_hourly) / er_hourly * 100)
-    
-    # Combine plots for all
-    df_error <- bind_rows(
-      annual_err %>% 
-        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
-        separate(year, into = c("scenario", "year"), sep = "-") %>% 
-        mutate(type = "Annual avg."), 
-      season_err %>% 
-        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
-        separate(year, into = c("scenario", "year"), sep = "-") %>% 
-        mutate(type = "Season avg."), 
-      tod_err %>% 
-        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
-        separate(year, into = c("scenario", "year"), sep = "-") %>% 
-        mutate(type = "Time-of-day avg."),
-      season_hour_err %>% 
-        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
-        separate(year, into = c("scenario", "year"), sep = "-") %>% 
-        mutate(type = "Season-hour avg."),
-      month_hour_err %>% 
-        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
-        separate(year, into = c("scenario", "year"), sep = "-") %>% 
-        mutate(type = "Month-hour avg.")) %>% 
-      filter(year %in% c(2025, 2050))
-    
-    p <- df_error %>% 
-      mutate(scenario = as.factor(scenario), 
-             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
-      ggplot(aes(x = year, y = error, fill = type)) +
-      geom_lv(alpha = 0.4, k = 4, outlier.size = 0.4) +
-      geom_boxplot(outlier.alpha = 0, coef = 0, fill = "#00000000", aes(color = type)) +
-      scale_y_continuous(expand = c(0, 0), 
-                         breaks = seq(0, 25, by = 5), 
-                         labels = number_format(suffix = " %")) +
-      coord_cartesian(ylim = c(0, 20)) +
-      scale_fill_manual(values = ls_colors) +
-      scale_color_manual(values = ls_colors) +
-      geom_hline(yintercept = 100, color = "red", lty = "dashed")
-    
-    if (z_index %% 3 == 1){
-      
-      if (z_index / 3 <= 1){
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = str_glue("{perc}% PV generation"), 
-               color = NULL, 
-               fill = NULL, 
-               subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      } else {
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = str_glue("{perc}% PV generation"), 
-               color = NULL, 
-               fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      }
-      
-      
-    } else {
-      
-      if (z_index / 3 <= 1){
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = NULL, 
-               color = NULL, 
-               fill = NULL, 
-               subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                axis.text.y = element_blank(), 
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      } else {
-        
-        p <- p +
-          labs(x = NULL, 
-               y = NULL, 
-               color = NULL, 
-               fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                axis.text.y = element_blank(), 
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-      }
-      
-    }
-    
-    plot_list[[z_index]] <- p
-    
-    z_index <- z_index + 1
-    
-  }
-  
-}
-
-ggarrange(plotlist = plot_list, 
-          ncol = 3, nrow = 2,
-          align = "hv",
-          common.legend = TRUE,
-          legend = "bottom") +
-  plot_annotation(title = "Error distribution of operational carbon emissions", 
-                  subtitle = str_glue("{gea_example}"))
-
-ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 6, width = 10, dpi = 300)
-
+sce_example <- c("MidCase", "LowRECost_HighNGPrice")
 
 # avoided
 # only annual and season
@@ -1605,10 +1294,8 @@ for (perc in c(25, 100)){
     # Calculate annual error distribution
     annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
     
-    
     # Calculate season error distribution
     season_err <- abs((er_season - er_hourly) / er_hourly * 100)
-    
     
     # Combine plots for all
     df_error <- bind_rows(
@@ -1622,27 +1309,41 @@ for (perc in c(25, 100)){
         mutate(type = "Season avg.")) %>% 
       filter(year %in% c(2025, 2050))
     
-    breaks <- if (perc == 25) seq(0, 125, by = 25) else seq(0, 60, by = 20)
-    ylim <- if (perc == 25) c(0, 130) else c(0, 60)
+    breaks <- if (perc == 25) seq(0, 75, by = 25) else seq(0, 30, by = 10)
+    ylim <- if (perc == 25) c(0, 75) else c(0, 30)
+    
+    er_hourly_med <- as.data.frame(t(apply(er_hourly, 2, median))) %>% 
+      pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
+      separate(year, into = c("scenario", "year"), sep = "-") %>% 
+      filter(year %in% c(2025, 2050)) %>% 
+      mutate(pos = ifelse(perc == 25, 65, 27))
+    
+    error_med <- df_error %>% 
+      group_by(year, type, scenario) %>% 
+      summarise(med = median(error)) %>% 
+      ungroup() %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) 
     
     p <- df_error %>% 
       mutate(scenario = as.factor(scenario), 
              type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
-      ggplot(aes(x = year, y = error, fill = type)) +
-      geom_lv(alpha = 0.4, k = 4, outlier.size = 0.4) +
-      geom_boxplot(outlier.alpha = 0, coef = 0, fill = "#00000000", aes(color = type)) +
+      ggplot(aes(x = year, y = error)) +
+      geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey60", linewidth = 0.2, aes(fill = type)) +
+      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = paste0("Hourly med:\n", round(er, digits = 2), " tCO2e")), size = 4) +
+      geom_text(data = error_med, aes(x = year, y = med, label = paste0(round(med, digits = 0), "%"), group = type), position = position_dodge(width = 0.8), size = 5) +
       scale_y_continuous(expand = c(0, 0), 
                          breaks = breaks, 
                          labels = number_format(suffix = " %")) +
       coord_cartesian(ylim = ylim) +
       scale_fill_manual(values = ls_colors) +
-      scale_color_manual(values = ls_colors) +
-      geom_hline(yintercept = 100, color = "red", lty = "dashed")
-    
-    
-    if (z_index %% 3 == 1){
+      scale_color_manual(values = ls_colors)
       
-      if (z_index / 3 <= 1){
+    
+    
+    if (z_index %% 2 == 1){
+      
+      if (z_index / 2 <= 1){
         
         p <- p + 
           labs(x = NULL, 
@@ -1650,7 +1351,7 @@ for (perc in c(25, 100)){
                color = NULL, 
                fill = NULL, 
                subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
+          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
                 legend.direction = "horizontal",
                 legend.position = "bottom",
                 plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
@@ -1662,7 +1363,7 @@ for (perc in c(25, 100)){
                y = str_glue("{perc}% PV generation"), 
                color = NULL, 
                fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
+          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
                 legend.direction = "horizontal",
                 legend.position = "bottom",
                 plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
@@ -1672,7 +1373,7 @@ for (perc in c(25, 100)){
       
     } else {
       
-      if (z_index / 3 <= 1){
+      if (z_index / 2 <= 1){
         
         p <- p + 
           labs(x = NULL, 
@@ -1680,7 +1381,7 @@ for (perc in c(25, 100)){
                color = NULL, 
                fill = NULL, 
                subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
+          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
                 legend.direction = "horizontal",
                 legend.position = "bottom",
                 axis.text.y = element_blank(), 
@@ -1693,7 +1394,7 @@ for (perc in c(25, 100)){
                y = NULL, 
                color = NULL, 
                fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
+          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
                 legend.direction = "horizontal",
                 legend.position = "bottom",
                 axis.text.y = element_blank(), 
@@ -1712,11 +1413,12 @@ for (perc in c(25, 100)){
 }
 
 ggarrange(plotlist = plot_list, 
-          ncol = 3, nrow = 2,
+          ncol = 2, nrow = 2,
           align = "hv",
           common.legend = TRUE,
+          labels = c("a)", "b)", "c)", "d)"),
           legend = "bottom") +
-  plot_annotation(title = "Error distribution of avoided carbon emissions", 
+  plot_annotation(title = "Error distribution of quantifying avoided emissions\nfrom exported utilities using LRMER", 
                   subtitle = str_glue("{gea_example}"))
 
 ggsave(filename = str_glue("{gea_example}_{emissions}_avoided_sep.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 6, width = 10, dpi = 300)
@@ -1768,27 +1470,41 @@ for (perc in c(25, 100)){
         mutate(type = "Month-hour avg.")) %>% 
       filter(year %in% c(2025, 2050))
     
-    breaks <- if (perc == 25) seq(0, 75, by = 25) else seq(0, 20, by = 5)
-    ylim <- if (perc == 25) c(0, 75) else c(0, 20)
+    breaks <- if (perc == 25) seq(0, 75, by = 25) else seq(0, 15, by = 5)
+    ylim <- if (perc == 25) c(-5, 75) else c(-2, 18)
+    
+    er_hourly_med <- as.data.frame(t(apply(er_hourly, 2, median))) %>% 
+      pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
+      separate(year, into = c("scenario", "year"), sep = "-") %>% 
+      filter(year %in% c(2025, 2050)) %>% 
+      mutate(pos = ifelse(perc == 25, 68, 15))
+    
+    error_med <- df_error %>% 
+      group_by(year, type, scenario) %>% 
+      summarise(med = median(error)) %>% 
+      ungroup() %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) 
     
     p <- df_error %>% 
       mutate(scenario = as.factor(scenario), 
              type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
-      ggplot(aes(x = year, y = error, fill = type)) +
-      geom_lv(alpha = 0.4, k = 4, outlier.size = 0.4) +
-      geom_boxplot(outlier.alpha = 0, coef = 0, fill = "#00000000", aes(color = type)) +
+      ggplot(aes(x = year, y = error)) +
+      geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey60", linewidth = 0.2, aes(fill = type)) +
+      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = paste0("Hourly med:\n", round(er, digits = 2), " tCO2e")), size = 4) +
+      geom_text(data = error_med, aes(x = year, y = med, label = paste0(round(med, digits = 0), "%"), group = type), position = position_dodge(width = 0.8), size = 5) +
       scale_y_continuous(expand = c(0, 0), 
                          breaks = breaks, 
                          labels = number_format(suffix = " %")) +
       coord_cartesian(ylim = ylim) +
       scale_fill_manual(values = ls_colors) +
-      scale_color_manual(values = ls_colors) +
-      geom_hline(yintercept = 100, color = "red", lty = "dashed")
-    
-    
-    if (z_index %% 3 == 1){
+      scale_color_manual(values = ls_colors)
       
-      if (z_index / 3 <= 1){
+    
+    
+    if (z_index %% 2 == 1){
+      
+      if (z_index / 2 <= 1){
         
         p <- p + 
           labs(x = NULL, 
@@ -1796,7 +1512,7 @@ for (perc in c(25, 100)){
                color = NULL, 
                fill = NULL, 
                subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
+          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
                 legend.direction = "horizontal",
                 legend.position = "bottom",
                 plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
@@ -1808,7 +1524,7 @@ for (perc in c(25, 100)){
                y = str_glue("{perc}% PV generation"), 
                color = NULL, 
                fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
+          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
                 legend.direction = "horizontal",
                 legend.position = "bottom",
                 plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
@@ -1818,7 +1534,7 @@ for (perc in c(25, 100)){
       
     } else {
       
-      if (z_index / 3 <= 1){
+      if (z_index / 2 <= 1){
         
         p <- p + 
           labs(x = NULL, 
@@ -1826,7 +1542,7 @@ for (perc in c(25, 100)){
                color = NULL, 
                fill = NULL, 
                subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
+          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
                 legend.direction = "horizontal",
                 legend.position = "bottom",
                 axis.text.y = element_blank(), 
@@ -1839,7 +1555,7 @@ for (perc in c(25, 100)){
                y = NULL, 
                color = NULL, 
                fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80"),
+          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
                 legend.direction = "horizontal",
                 legend.position = "bottom",
                 axis.text.y = element_blank(), 
@@ -1858,11 +1574,12 @@ for (perc in c(25, 100)){
 }
 
 ggarrange(plotlist = plot_list, 
-          ncol = 3, nrow = 2,
+          ncol = 2, nrow = 2,
           align = "hv",
           common.legend = TRUE,
+          labels = c("a)", "b)", "c)", "d)"),
           legend = "bottom") +
-  plot_annotation(title = "Error distribution of avoided carbon emissions", 
+  plot_annotation(title = "Error distribution of quantifying avoided emissions\nfrom exported utilities using LRMER", 
                   subtitle = str_glue("{gea_example}"))
 
 ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 6, width = 10, dpi = 300)

@@ -37,9 +37,9 @@
 <polyline points='43.69,165.84 556.16,165.84 ' style='stroke-width: 0.53; stroke: #CCCCCC; stroke-linecap: butt;' />
 <polyline points='43.69,96.02 556.16,96.02 ' style='stroke-width: 0.53; stroke: #CCCCCC; stroke-linecap: butt;' />
 <polyline points='43.69,26.20 556.16,26.20 ' style='stroke-width: 0.53; stroke: #CCCCCC; stroke-linecap: butt;' />
-<rect x='67.71' y='81.22' width='144.13' height='433.73' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #E68B81;' />
-<rect x='227.86' y='422.08' width='144.13' height='92.86' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #E68B81; fill-opacity: 0.70;' />
-<rect x='388.00' y='478.21' width='144.13' height='36.73' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #E68B81; fill-opacity: 0.40;' />
+<rect x='67.71' y='81.22' width='144.13' height='433.73' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #A14D44;' />
+<rect x='227.86' y='422.08' width='144.13' height='92.86' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #A14D44; fill-opacity: 0.70;' />
+<rect x='388.00' y='478.21' width='144.13' height='36.73' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #A14D44; fill-opacity: 0.40;' />
 </g>
 <g clip-path='url(#cpMC4wMHw1NzYuMDB8MC4wMHw1NzYuMDA=)'>
 <text x='38.76' y='519.25' text-anchor='end' style='font-size: 12.00px;fill: #4D4D4D; font-family: "Arial";' textLength='6.67px' lengthAdjust='spacingAndGlyphs'>0</text>
@@ -54,7 +54,7 @@
 <text x='299.92' y='528.48' text-anchor='middle' style='font-size: 12.00px;fill: #4D4D4D; font-family: "Arial";' textLength='26.70px' lengthAdjust='spacingAndGlyphs'>2035</text>
 <text x='460.07' y='528.48' text-anchor='middle' style='font-size: 12.00px;fill: #4D4D4D; font-family: "Arial";' textLength='26.70px' lengthAdjust='spacingAndGlyphs'>2050</text>
 <text transform='translate(13.56,270.57) rotate(-90)' text-anchor='middle' style='font-size: 11.00px; font-family: "Arial";' textLength='72.14px' lengthAdjust='spacingAndGlyphs'>Emissions rate</text>
-<rect x='152.58' y='548.28' width='15.86' height='15.86' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #E68B81;' />
+<rect x='152.58' y='548.28' width='15.86' height='15.86' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #A14D44;' />
 <text x='174.63' y='560.52' style='font-size: 12.00px; font-family: "Arial";' textLength='63.38px' lengthAdjust='spacingAndGlyphs'>Annual avg.</text>
 <text x='259.93' y='560.16' style='font-size: 11.00px; font-family: "Arial";' textLength='23.24px' lengthAdjust='spacingAndGlyphs'>Year</text>
 <rect x='289.36' y='548.28' width='15.86' height='15.86' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #595959;' />
