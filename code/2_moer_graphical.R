@@ -415,9 +415,10 @@ final_plot <- ggarrange(p1, p2, p3,
                         labels = c("a)", "b)", "c)"), 
                         legend = "bottom")
 
+y_axis <- expression(Emissions ~ rate ~ (gCO[2] ~ e/kWh))
+
 annotate_figure(final_plot, 
-                left = text_grob("Emissions rate (gCO2e/kWh)", 
-                                 rot = 90, vjust = 1, size = 12),
+                left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly long-run marginal emissions rate at {gea_example}"), size = 14))
 
 ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 8, width = 8, dpi = 300)
@@ -470,8 +471,9 @@ for (perc in c(25, 100)){
       pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
       separate(year, into = c("scenario", "year"), sep = "-") %>% 
       filter(year %in% c(2025, 2050)) %>% 
-      mutate(pos = ifelse(perc == 25, 3200, 250))
-    
+      mutate(pos = ifelse(perc == 25, 3200, 250), 
+             label = paste0(round(er, 2), "*~tCO[2]*e"))
+
     error_med <- df_error %>% 
       group_by(year, type, scenario) %>% 
       summarise(med = median(error)) %>% 
@@ -484,7 +486,7 @@ for (perc in c(25, 100)){
              type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
       ggplot(aes(x = year, y = error)) +
       geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey60", linewidth = 0.2, aes(fill = type)) +
-      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = paste0("Hourly med:\n", round(er, digits = 2), " tCO2e")), size = 4) +
+      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = label), parse = T, size = 4) +
       geom_text(data = error_med, aes(x = year, y = med, label = paste0(round(med, digits = 0), "%"), group = type), position = position_dodge(width = 0.8), size = 5) +
       scale_y_continuous(expand = c(0, 0), 
                          breaks = breaks, 
@@ -630,7 +632,8 @@ for (perc in c(25, 100)){
       pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
       separate(year, into = c("scenario", "year"), sep = "-") %>% 
       filter(year %in% c(2025, 2050)) %>% 
-      mutate(pos = ifelse(perc == 25, 900, 55))
+      mutate(pos = ifelse(perc == 25, 900, 55), 
+             label = paste0(round(er, 2), "*~tCO[2]*e"))
     
     error_med <- df_error %>% 
       group_by(year, type, scenario) %>% 
@@ -644,7 +647,7 @@ for (perc in c(25, 100)){
              type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
       ggplot(aes(x = year, y = error)) +
       geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey60", linewidth = 0.2, aes(fill = type)) +
-      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = paste0("Hourly med:\n", round(er, digits = 2), " tCO2e")), size = 4) +
+      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = label), parse = T, size = 4) +
       geom_text(data = error_med, aes(x = year, y = med, label = paste0(round(med, digits = 0), "%"), group = type), position = position_dodge(width = 0.8), size = 5) +
       scale_y_continuous(expand = c(0, 0), 
                          breaks = breaks, 
@@ -837,9 +840,10 @@ final_plot <- ggarrange(p1, p2, p3,
                         legend = "bottom")
 
 
+y_axis <- expression(Emissions ~ rate ~ (gCO[2] ~ e/kWh))
+
 annotate_figure(final_plot, 
-                left = text_grob("Emissions rate (gCO2e/kWh)", 
-                                 rot = 90, vjust = 1, size = 12),
+                left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly long-run marginal emissions rate at {gea_example}"), size = 14))
 
 ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 8, width = 8, dpi = 300)
@@ -892,7 +896,8 @@ for (perc in c(25, 100)){
       pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
       separate(year, into = c("scenario", "year"), sep = "-") %>% 
       filter(year %in% c(2025, 2050)) %>% 
-      mutate(pos = ifelse(perc == 25, 700, 190))
+      mutate(pos = ifelse(perc == 25, 700, 190), 
+             label = paste0(round(er, 2), "*~tCO[2]*e"))
     
     error_med <- df_error %>% 
       group_by(year, type, scenario) %>% 
@@ -906,7 +911,7 @@ for (perc in c(25, 100)){
              type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
       ggplot(aes(x = year, y = error)) +
       geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey60", linewidth = 0.2, aes(fill = type)) +
-      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = paste0("Hourly med:\n", round(er, digits = 2), " tCO2e")), size = 4) +
+      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = label), parse = T, size = 4) +
       geom_text(data = error_med, aes(x = year, y = med, label = paste0(round(med, digits = 0), "%"), group = type), position = position_dodge(width = 0.8), size = 5) +
       scale_y_continuous(expand = c(0, 0), 
                          breaks = breaks, 
@@ -1053,7 +1058,8 @@ for (perc in c(25, 100)){
       pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
       separate(year, into = c("scenario", "year"), sep = "-") %>% 
       filter(year %in% c(2025, 2050)) %>% 
-      mutate(pos = ifelse(perc == 25, 200, 10))
+      mutate(pos = ifelse(perc == 25, 200, 10), 
+             label = paste0(round(er, 2), "*~tCO[2]*e"))
     
     error_med <- df_error %>% 
       group_by(year, type, scenario) %>% 
@@ -1067,7 +1073,7 @@ for (perc in c(25, 100)){
              type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
       ggplot(aes(x = year, y = error)) +
       geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey60", linewidth = 0.2, aes(fill = type)) +
-      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = paste0("Hourly med:\n", round(er, digits = 2), " tCO2e")), size = 4) +
+      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = label), parse = T, size = 4) +
       geom_text(data = error_med, aes(x = year, y = med, label = paste0(round(med, digits = 0), "%"), group = type), position = position_dodge(width = 0.8), size = 5) +
       scale_y_continuous(expand = c(0, 0), 
                          breaks = breaks, 
@@ -1186,6 +1192,7 @@ p1 <- df_hourly %>%
                      breaks = seq(0, 800, by = 200), 
                      labels = c("0", "200", "400", "600", "800")) +
   scale_color_manual(values = ls_colors) +
+  coord_cartesian(ylim = c(0, 800)) +
   labs(x = NULL,
        y = NULL,
        color = NULL,
@@ -1215,6 +1222,7 @@ p2 <- df_hourly %>%
                      breaks = seq(0, 500, by = 100), 
                      labels = c("0", "100", "200", "300", "400", "500")) +
   scale_color_manual(values = ls_colors) +
+  coord_cartesian(ylim = c(0, 500)) +
   labs(x = NULL,
        y = NULL,
        color = NULL,
@@ -1243,6 +1251,7 @@ p3 <- df_hourly %>%
   scale_y_continuous(expand = c(0, 0),
                      breaks = seq(0, 500, by = 100), 
                      labels = c("0", "100", "200", "300", "400", "500")) +
+  coord_cartesian(ylim = c(0, 500)) +
   scale_color_manual(values = ls_colors) +
   labs(x = NULL,
        y = NULL,
@@ -1261,9 +1270,10 @@ final_plot <- ggarrange(p1, p2, p3,
                         legend = "bottom")
 
 
+y_axis <- expression(Emissions ~ rate ~ (gCO[2] ~ e/kWh))
+
 annotate_figure(final_plot, 
-                left = text_grob("Emissions rate (gCO2e/kWh)", 
-                                 rot = 90, vjust = 1, size = 12),
+                left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly long-run marginal emissions rate at {gea_example}"), size = 14))
 
 ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 8, width = 8, dpi = 300)
@@ -1309,14 +1319,15 @@ for (perc in c(25, 100)){
         mutate(type = "Season avg.")) %>% 
       filter(year %in% c(2025, 2050))
     
-    breaks <- if (perc == 25) seq(0, 75, by = 25) else seq(0, 30, by = 10)
-    ylim <- if (perc == 25) c(0, 75) else c(0, 30)
+    breaks <- if (perc == 25) seq(0, 75, by = 25) else seq(0, 40, by = 10)
+    ylim <- if (perc == 25) c(0, 75) else c(0, 40)
     
     er_hourly_med <- as.data.frame(t(apply(er_hourly, 2, median))) %>% 
       pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
       separate(year, into = c("scenario", "year"), sep = "-") %>% 
       filter(year %in% c(2025, 2050)) %>% 
-      mutate(pos = ifelse(perc == 25, 65, 27))
+      mutate(pos = ifelse(perc == 25, 65, 35), 
+             label = paste0(round(er, 2), "*~tCO[2]*e"))
     
     error_med <- df_error %>% 
       group_by(year, type, scenario) %>% 
@@ -1330,7 +1341,7 @@ for (perc in c(25, 100)){
              type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
       ggplot(aes(x = year, y = error)) +
       geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey60", linewidth = 0.2, aes(fill = type)) +
-      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = paste0("Hourly med:\n", round(er, digits = 2), " tCO2e")), size = 4) +
+      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = label), parse = T, size = 4) +
       geom_text(data = error_med, aes(x = year, y = med, label = paste0(round(med, digits = 0), "%"), group = type), position = position_dodge(width = 0.8), size = 5) +
       scale_y_continuous(expand = c(0, 0), 
                          breaks = breaks, 
@@ -1477,7 +1488,8 @@ for (perc in c(25, 100)){
       pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
       separate(year, into = c("scenario", "year"), sep = "-") %>% 
       filter(year %in% c(2025, 2050)) %>% 
-      mutate(pos = ifelse(perc == 25, 68, 15))
+      mutate(pos = ifelse(perc == 25, 65, 15), 
+             label = paste0(round(er, 2), "*~tCO[2]*e"))
     
     error_med <- df_error %>% 
       group_by(year, type, scenario) %>% 
@@ -1491,7 +1503,7 @@ for (perc in c(25, 100)){
              type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
       ggplot(aes(x = year, y = error)) +
       geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey60", linewidth = 0.2, aes(fill = type)) +
-      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = paste0("Hourly med:\n", round(er, digits = 2), " tCO2e")), size = 4) +
+      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = label), parse = T, size = 4) +
       geom_text(data = error_med, aes(x = year, y = med, label = paste0(round(med, digits = 0), "%"), group = type), position = position_dodge(width = 0.8), size = 5) +
       scale_y_continuous(expand = c(0, 0), 
                          breaks = breaks, 

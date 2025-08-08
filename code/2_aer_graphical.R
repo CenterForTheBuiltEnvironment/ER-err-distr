@@ -21,7 +21,7 @@ theme_set(theme_minimal())
 
 # define base ggplot theme
 theme_update(plot.title = element_text(size = 16, colour = "grey20", face = "bold", hjust = 0.5),
-             plot.subtitle = element_text(size = 14, colour = "grey20", face = "italic", hjust = 0.5, margin = margin(b = 10)),
+             plot.subtitle = element_text(size = 13, colour = "grey20", face = "italic", hjust = 0.5, margin = margin(b = 10)),
              plot.caption = element_text(size = 10, colour = "grey20", face = "italic", hjust = 0.5),
              plot.background = element_rect(fill = "white", colour = NA),
              panel.grid.minor = element_blank(),
@@ -266,8 +266,9 @@ final_plot <- ggarrange(p1, p2, p3,
                         common.legend = TRUE, 
                         legend = "bottom")
 
+y_axis <- expression(Emissions ~ rate ~ (10^7 ~ MWh))
 annotate_figure(final_plot, 
-                left = text_grob("Energy Generation (×10 million MWh)", 
+                left = text_grob(y_axis, 
                                  rot = 90, vjust = 1, size = 12),
                 top = text_grob("Energy generation by different sources from the grid", size = 14))
 
@@ -534,10 +535,10 @@ final_plot <- ggarrange(p1, p2, p3,
                         common.legend = T, 
                         legend = "bottom")
 
+y_axis <- expression(Emissions ~ rate ~ (gCO[2] ~ e/kWh))
 
 annotate_figure(final_plot, 
-                left = text_grob("Emissions rate (gCO2e/kWh)", 
-                                 rot = 90, vjust = 1, size = 12),
+                left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly average carbon emissions rate at {gea_example}"), size = 14))
 
 ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 8, width = 8, dpi = 300)
@@ -577,7 +578,8 @@ for (perc in c(0, 100)){
     er_hourly_med <- as.data.frame(t(apply(er_hourly, 2, median))) %>% 
       pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
       separate(year, into = c("scenario", "year"), sep = "-") %>% 
-      filter(year %in% c(2025, 2050))
+      filter(year %in% c(2025, 2050)) %>% 
+      mutate(label = paste0(round(er, 2), "*~tCO[2]*e"))
     
     # Calculate annual error distribution
     annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
@@ -623,73 +625,42 @@ for (perc in c(0, 100)){
              type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
       ggplot(aes(x = year, y = error)) +
       geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey20", linewidth = 0.2, aes(fill = type)) +
-      geom_text(data = er_hourly_med, aes(x = year, y = 40, label = paste0("Hourly med:\n", round(er, digits = 2), " tCO2e")), size = 3.5) +
+      geom_text(data = er_hourly_med, aes(x = year, y = 40, label = label), parse = T, size = 3.5) +
       scale_y_continuous(expand = c(0, 0), 
                          breaks = seq(0, 40, by = 10), 
                          labels = number_format(suffix = " %")) +
-      coord_cartesian(ylim = c(0, 50)) +
+      coord_cartesian(ylim = c(0, 45)) +
       scale_fill_manual(values = ls_colors) +
       scale_color_manual(values = ls_colors) 
     
     if (z_index %% 2 == 1){
       
-      if (z_index / 2 <= 1){
         
-        p <- p + 
-          labs(x = NULL, 
-               y = str_glue("{perc}% PV generation"), 
-               color = NULL, 
-               fill = NULL, 
-               subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      } else {
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = str_glue("{perc}% PV generation"), 
-               color = NULL, 
-               fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      }
+      p <- p + 
+        labs(x = NULL, 
+             y = "Fractional error distribution", 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
     
       
     } else {
-      
-      if (z_index / 2 <= 1){
         
-        p <- p + 
-          labs(x = NULL, 
-               y = NULL, 
-               color = NULL, 
-               fill = NULL, 
-               subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                axis.text.y = element_blank(), 
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      } else {
-      
-        p <- p +
-          labs(x = NULL, 
-               y = NULL, 
-               color = NULL, 
-               fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                axis.text.y = element_blank(), 
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-      }
+      p <- p + 
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              axis.text.y = element_blank(), 
+              plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
       
     }
     
@@ -758,7 +729,8 @@ for (perc in c(25, 100)){
       pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
       separate(year, into = c("scenario", "year"), sep = "-") %>% 
       filter(year %in% c(2025, 2050)) %>% 
-      mutate(pos = ifelse(perc == 25, 10000, 340))
+      mutate(pos = ifelse(perc == 25, 10000, 340), 
+             label = paste0(round(er, 2), "*~tCO[2]*e"))
       
     error_med <- df_error %>% 
       group_by(year, type, scenario) %>% 
@@ -772,7 +744,7 @@ for (perc in c(25, 100)){
              type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
       ggplot(aes(x = year, y = error)) +
       geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey60", linewidth = 0.2, aes(fill = type)) +
-      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = paste0("Hourly med:\n", round(er, digits = 2), " tCO2e")), size = 4) +
+      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = label), parse = T, size = 4) +
       geom_text(data = error_med, aes(x = year, y = med, label = paste0(round(med, digits = 0), "%"), group = type), position = position_dodge(width = 0.8), size = 5) +
       scale_y_continuous(expand = c(0, 0), 
                          breaks = breaks, 
@@ -784,63 +756,32 @@ for (perc in c(25, 100)){
     
     if (z_index %% 2 == 1){
       
-      if (z_index / 2 <= 1){
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = str_glue("{perc}% PV generation"), 
-               color = NULL, 
-               fill = NULL, 
-               subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      } else {
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = str_glue("{perc}% PV generation"), 
-               color = NULL, 
-               fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      }
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = "Fractional error distribution", 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
       
       
     } else {
       
-      if (z_index / 2 <= 1){
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = NULL, 
-               color = NULL, 
-               fill = NULL, 
-               subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                axis.text.y = element_blank(), 
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      } else {
-        
-        p <- p +
-          labs(x = NULL, 
-               y = NULL, 
-               color = NULL, 
-               fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                axis.text.y = element_blank(), 
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-      }
+      p <- p + 
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              axis.text.y = element_blank(), 
+              plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
       
     }
     
@@ -919,7 +860,8 @@ for (perc in c(25, 100)){
       pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
       separate(year, into = c("scenario", "year"), sep = "-") %>% 
       filter(year %in% c(2025, 2050)) %>% 
-      mutate(pos = ifelse(perc == 25, 2500, 55))
+      mutate(pos = ifelse(perc == 25, 2500, 60), 
+             label = paste0(round(er, 2), "*~tCO[2]*e"))
     
     error_med <- df_error %>% 
       group_by(year, type, scenario) %>% 
@@ -933,7 +875,7 @@ for (perc in c(25, 100)){
              type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
       ggplot(aes(x = year, y = error)) +
       geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey60", linewidth = 0.2, aes(fill = type)) +
-      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = paste0("Hourly med:\n", round(er, digits = 2), " tCO2e")), size = 4) +
+      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = label), parse = T, size = 4) +
       geom_text(data = error_med, aes(x = year, y = med, label = paste0(round(med, digits = 0), "%"), group = type), position = position_dodge(width = 0.8), size = 5) +
       scale_y_continuous(expand = c(0, 0), 
                          breaks = breaks, 
@@ -945,63 +887,32 @@ for (perc in c(25, 100)){
     
     if (z_index %% 2 == 1){
       
-      if (z_index / 2 <= 1){
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = str_glue("{perc}% PV generation"), 
-               color = NULL, 
-               fill = NULL, 
-               subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      } else {
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = str_glue("{perc}% PV generation"), 
-               color = NULL, 
-               fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      }
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = "Fractional error distribution", 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
       
       
     } else {
       
-      if (z_index / 2 <= 1){
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = NULL, 
-               color = NULL, 
-               fill = NULL, 
-               subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                axis.text.y = element_blank(), 
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      } else {
-        
-        p <- p +
-          labs(x = NULL, 
-               y = NULL, 
-               color = NULL, 
-               fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                axis.text.y = element_blank(), 
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-      }
+      p <- p + 
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              axis.text.y = element_blank(), 
+              plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
       
     }
     
@@ -1125,9 +1036,10 @@ final_plot <- ggarrange(p1, p2, p3,
                         common.legend = T, 
                         legend = "bottom")
 
+y_axis <- expression(Emissions ~ rate ~ (gCO[2] ~ e/kWh))
+
 annotate_figure(final_plot, 
-                left = text_grob("Emissions rate (gCO2e/kWh)", 
-                                 rot = 90, vjust = 1, size = 12),
+                left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly average carbon emissions rate at {gea_example}"), size = 14))
 
 ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 8, width = 8, dpi = 300)
@@ -1167,7 +1079,8 @@ for (perc in c(0, 100)){
     er_hourly_med <- as.data.frame(t(apply(er_hourly, 2, median))) %>% 
       pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
       separate(year, into = c("scenario", "year"), sep = "-") %>% 
-      filter(year %in% c(2025, 2050))
+      filter(year %in% c(2025, 2050)) %>% 
+      mutate(label = paste0(round(er, 2), "*~tCO[2]*e"))
     
     # Calculate annual error distribution
     annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
@@ -1213,8 +1126,7 @@ for (perc in c(0, 100)){
              type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
       ggplot(aes(x = year, y = error)) +
       geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey20", linewidth = 0.2, aes(fill = type)) +
-      
-      geom_text(data = er_hourly_med, aes(x = year, y = 40, label = paste0("Hourly med:\n", round(er, digits = 2), " tCO2e")), size = 3.5) +
+      geom_text(data = er_hourly_med, aes(x = year, y = 40, label = label), parse = T, size = 3.5) +
       scale_y_continuous(expand = c(0, 0), 
                          breaks = seq(0, 40, by = 10), 
                          labels = number_format(suffix = " %")) +
@@ -1224,63 +1136,32 @@ for (perc in c(0, 100)){
     
     if (z_index %% 2 == 1){
       
-      if (z_index / 2 <= 1){
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = str_glue("{perc}% PV generation"), 
-               color = NULL, 
-               fill = NULL, 
-               subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      } else {
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = str_glue("{perc}% PV generation"), 
-               color = NULL, 
-               fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      }
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = "Fractional error distribution", 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
       
       
     } else {
       
-      if (z_index / 2 <= 1){
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = NULL, 
-               color = NULL, 
-               fill = NULL, 
-               subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                axis.text.y = element_blank(), 
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      } else {
-        
-        p <- p +
-          labs(x = NULL, 
-               y = NULL, 
-               color = NULL, 
-               fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                axis.text.y = element_blank(), 
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-      }
+      p <- p + 
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              axis.text.y = element_blank(), 
+              plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
       
     }
     
@@ -1349,7 +1230,8 @@ for (perc in c(25, 100)){
       pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
       separate(year, into = c("scenario", "year"), sep = "-") %>% 
       filter(year %in% c(2025, 2050)) %>% 
-      mutate(pos = ifelse(perc == 25, 1000, 200))
+      mutate(pos = ifelse(perc == 25, 1000, 200), 
+             label = paste0(round(er, 2), "*~tCO[2]*e"))
     
     error_med <- df_error %>% 
       group_by(year, type, scenario) %>% 
@@ -1363,7 +1245,7 @@ for (perc in c(25, 100)){
              type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
       ggplot(aes(x = year, y = error)) +
       geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey60", linewidth = 0.2, aes(fill = type)) +
-      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = paste0("Hourly med:\n", round(er, digits = 2), " tCO2e")), size = 4) +
+      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = label), parse = T, size = 4) +
       geom_text(data = error_med, aes(x = year, y = med, label = paste0(round(med, digits = 0), "%"), group = type), position = position_dodge(width = 0.8), size = 5) +
       scale_y_continuous(expand = c(0, 0), 
                          breaks = breaks, 
@@ -1375,63 +1257,32 @@ for (perc in c(25, 100)){
     
     if (z_index %% 2 == 1){
       
-      if (z_index / 2 <= 1){
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = str_glue("{perc}% PV generation"), 
-               color = NULL, 
-               fill = NULL, 
-               subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      } else {
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = str_glue("{perc}% PV generation"), 
-               color = NULL, 
-               fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      }
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = "Fractional error distribution", 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
       
       
     } else {
       
-      if (z_index / 2 <= 1){
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = NULL, 
-               color = NULL, 
-               fill = NULL, 
-               subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                axis.text.y = element_blank(), 
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      } else {
-        
-        p <- p +
-          labs(x = NULL, 
-               y = NULL, 
-               color = NULL, 
-               fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                axis.text.y = element_blank(), 
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-      }
+      p <- p + 
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              axis.text.y = element_blank(), 
+              plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
       
     }
     
@@ -1509,7 +1360,8 @@ for (perc in c(25, 100)){
       pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
       separate(year, into = c("scenario", "year"), sep = "-") %>% 
       filter(year %in% c(2025, 2050)) %>% 
-      mutate(pos = ifelse(perc == 25, 200, 15))
+      mutate(pos = ifelse(perc == 25, 200, 15), 
+             label = paste0(round(er, 2), "*~tCO[2]*e"))
     
     error_med <- df_error %>% 
       group_by(year, type, scenario) %>% 
@@ -1523,7 +1375,7 @@ for (perc in c(25, 100)){
              type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
       ggplot(aes(x = year, y = error)) +
       geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey60", linewidth = 0.2, aes(fill = type)) +
-      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = paste0("Hourly med:\n", round(er, digits = 2), " tCO2e")), size = 4) +
+      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = label), parse = T, size = 4) +
       geom_text(data = error_med, aes(x = year, y = med, label = paste0(round(med, digits = 0), "%"), group = type), position = position_dodge(width = 0.8), size = 5) +
       scale_y_continuous(expand = c(0, 0), 
                          breaks = breaks, 
@@ -1535,63 +1387,32 @@ for (perc in c(25, 100)){
     
     if (z_index %% 2 == 1){
       
-      if (z_index / 2 <= 1){
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = str_glue("{perc}% PV generation"), 
-               color = NULL, 
-               fill = NULL, 
-               subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      } else {
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = str_glue("{perc}% PV generation"), 
-               color = NULL, 
-               fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      }
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = "Fractional error distribution", 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
       
       
     } else {
       
-      if (z_index / 2 <= 1){
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = NULL, 
-               color = NULL, 
-               fill = NULL, 
-               subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                axis.text.y = element_blank(), 
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      } else {
-        
-        p <- p +
-          labs(x = NULL, 
-               y = NULL, 
-               color = NULL, 
-               fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                axis.text.y = element_blank(), 
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-      }
+      p <- p + 
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              axis.text.y = element_blank(), 
+              plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
       
     }
     
@@ -1637,10 +1458,11 @@ p1 <- df_hourly %>%
              lty = "dashed", 
              linewidth = 1.2) +
   scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
-  scale_y_continuous(expand = c(0.01, 0),
+  scale_y_continuous(expand = c(0, 0),
                      breaks = seq(0, 800, by = 200), 
                      labels = c("0", "200", "400", "600", "800")) +
   scale_color_manual(values = ls_colors) +
+  coord_cartesian(ylim = c(0, 650)) +
   labs(x = NULL,
        y = NULL,
        color = NULL,
@@ -1666,10 +1488,11 @@ p2 <- df_hourly %>%
              lty = "dashed", 
              linewidth = 1.2) +
   scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
-  scale_y_continuous(expand = c(0.01, 0),
+  scale_y_continuous(expand = c(0, 0),
                      breaks = seq(0, 400, by = 100), 
                      labels = c("0", "100", "200", "300", "400")) +
   scale_color_manual(values = ls_colors) +
+  coord_cartesian(ylim = c(0, 450)) +
   labs(x = NULL,
        y = NULL,
        color = NULL,
@@ -1694,10 +1517,11 @@ p3 <- df_hourly %>%
              lty = "dashed", 
              linewidth = 1.2) +
   scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
-  scale_y_continuous(expand = c(0.01, 0),
+  scale_y_continuous(expand = c(0, 0),
                      breaks = seq(0, 400, by = 100), 
                      labels = c("0", "100", "200", "300", "400")) +
   scale_color_manual(values = ls_colors) +
+  coord_cartesian(ylim = c(0, 420)) +
   labs(x = NULL,
        y = NULL,
        color = NULL,
@@ -1715,9 +1539,10 @@ final_plot <- ggarrange(p1, p2, p3,
                         common.legend = T, 
                         legend = "bottom")
 
+y_axis <- expression(Emissions ~ rate ~ (gCO[2] ~ e/kWh))
+
 annotate_figure(final_plot, 
-                left = text_grob("Emissions rate (gCO2e/kWh)", 
-                                 rot = 90, vjust = 1, size = 12),
+                left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly average carbon emissions rate at {gea_example}"), size = 14))
 
 ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 8, width = 8, dpi = 300)
@@ -1757,7 +1582,8 @@ for (perc in c(0, 100)){
     er_hourly_med <- as.data.frame(t(apply(er_hourly, 2, median))) %>% 
       pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
       separate(year, into = c("scenario", "year"), sep = "-") %>% 
-      filter(year %in% c(2025, 2050))
+      filter(year %in% c(2025, 2050)) %>% 
+      mutate(label = paste0(round(er, 2), "*~tCO[2]*e"))
     
     # Calculate annual error distribution
     annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
@@ -1803,8 +1629,7 @@ for (perc in c(0, 100)){
              type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
       ggplot(aes(x = year, y = error)) +
       geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey20", linewidth = 0.2, aes(fill = type)) +
-      
-      geom_text(data = er_hourly_med, aes(x = year, y = 20, label = paste0("Hourly med:\n", round(er, digits = 2), " tCO2e")), size = 3.5) +
+      geom_text(data = er_hourly_med, aes(x = year, y = 20, label = label), parse = T, size = 3.5) +
       scale_y_continuous(expand = c(0, 0), 
                          breaks = seq(0, 20, by = 5), 
                          labels = number_format(suffix = " %")) +
@@ -1814,63 +1639,32 @@ for (perc in c(0, 100)){
     
     if (z_index %% 2 == 1){
       
-      if (z_index / 2 <= 1){
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = str_glue("{perc}% PV generation"), 
-               color = NULL, 
-               fill = NULL, 
-               subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      } else {
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = str_glue("{perc}% PV generation"), 
-               color = NULL, 
-               fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      }
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = "Fractional error distribution", 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
       
       
     } else {
       
-      if (z_index / 2 <= 1){
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = NULL, 
-               color = NULL, 
-               fill = NULL, 
-               subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                axis.text.y = element_blank(), 
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      } else {
-        
-        p <- p +
-          labs(x = NULL, 
-               y = NULL, 
-               color = NULL, 
-               fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                axis.text.y = element_blank(), 
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-      }
+      p <- p + 
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              axis.text.y = element_blank(), 
+              plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
       
     }
     
@@ -1939,7 +1733,8 @@ for (perc in c(25, 100)){
       pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
       separate(year, into = c("scenario", "year"), sep = "-") %>% 
       filter(year %in% c(2025, 2050)) %>% 
-      mutate(pos = ifelse(perc == 25, 180, 68))
+      mutate(pos = ifelse(perc == 25, 180, 68), 
+             label = paste0(round(er, 2), "*~tCO[2]*e"))
     
     error_med <- df_error %>% 
       group_by(year, type, scenario) %>% 
@@ -1953,7 +1748,7 @@ for (perc in c(25, 100)){
              type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
       ggplot(aes(x = year, y = error)) +
       geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey60", linewidth = 0.2, aes(fill = type)) +
-      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = paste0("Hourly med:\n", round(er, digits = 2), " tCO2e")), size = 4) +
+      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = label), parse = T, size = 4) +
       geom_text(data = error_med, aes(x = year, y = med, label = paste0(round(med, digits = 0), "%"), group = type), position = position_dodge(width = 0.8), size = 5) +
       scale_y_continuous(expand = c(0, 0), 
                          breaks = breaks, 
@@ -1965,63 +1760,32 @@ for (perc in c(25, 100)){
     
     if (z_index %% 2 == 1){
       
-      if (z_index / 2 <= 1){
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = str_glue("{perc}% PV generation"), 
-               color = NULL, 
-               fill = NULL, 
-               subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      } else {
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = str_glue("{perc}% PV generation"), 
-               color = NULL, 
-               fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      }
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = "Fractional error distribution", 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
       
       
     } else {
       
-      if (z_index / 2 <= 1){
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = NULL, 
-               color = NULL, 
-               fill = NULL, 
-               subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                axis.text.y = element_blank(), 
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      } else {
-        
-        p <- p +
-          labs(x = NULL, 
-               y = NULL, 
-               color = NULL, 
-               fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                axis.text.y = element_blank(), 
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-      }
+      p <- p + 
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              axis.text.y = element_blank(), 
+              plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
       
     }
     
@@ -2099,7 +1863,8 @@ for (perc in c(25, 100)){
       pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
       separate(year, into = c("scenario", "year"), sep = "-") %>% 
       filter(year %in% c(2025, 2050)) %>% 
-      mutate(pos = ifelse(perc == 25, 110, 30))
+      mutate(pos = ifelse(perc == 25, 110, 30), 
+             label = paste0(round(er, 2), "*~tCO[2]*e"))
     
     error_med <- df_error %>% 
       group_by(year, type, scenario) %>% 
@@ -2113,7 +1878,7 @@ for (perc in c(25, 100)){
              type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
       ggplot(aes(x = year, y = error)) +
       geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey60", linewidth = 0.2, aes(fill = type)) +
-      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = paste0("Hourly med:\n", round(er, digits = 2), " tCO2e")), size = 4) +
+      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = label), parse = T, size = 4) +
       geom_text(data = error_med, aes(x = year, y = med, label = paste0(round(med, digits = 0), "%"), group = type), position = position_dodge(width = 0.8), size = 5) +
       scale_y_continuous(expand = c(0, 0), 
                          breaks = breaks, 
@@ -2125,63 +1890,32 @@ for (perc in c(25, 100)){
     
     if (z_index %% 2 == 1){
       
-      if (z_index / 2 <= 1){
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = str_glue("{perc}% PV generation"), 
-               color = NULL, 
-               fill = NULL, 
-               subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      } else {
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = str_glue("{perc}% PV generation"), 
-               color = NULL, 
-               fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      }
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = "Fractional error distribution", 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
       
       
     } else {
       
-      if (z_index / 2 <= 1){
-        
-        p <- p + 
-          labs(x = NULL, 
-               y = NULL, 
-               color = NULL, 
-               fill = NULL, 
-               subtitle = str_glue("{z}")) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                axis.text.y = element_blank(), 
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-        
-      } else {
-        
-        p <- p +
-          labs(x = NULL, 
-               y = NULL, 
-               color = NULL, 
-               fill = NULL) +
-          theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
-                legend.direction = "horizontal",
-                legend.position = "bottom",
-                axis.text.y = element_blank(), 
-                plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
-      }
+      p <- p + 
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              axis.text.y = element_blank(), 
+              plot.margin = margin(t = 1, r = 1, b = 0, l = 1, unit = "mm"))
       
     }
     
@@ -2204,3 +1938,4 @@ ggarrange(plotlist = plot_list,
                   subtitle = str_glue("{gea_example}"))
 
 ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = paste0(figs_path, str_glue("{gea_example}/{emissions}")), units = "in", height = 6, width = 10, dpi = 300)
+
