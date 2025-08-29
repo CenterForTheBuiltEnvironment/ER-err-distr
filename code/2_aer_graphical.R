@@ -580,7 +580,7 @@ for (perc in c(0, 100)){
       separate(year, into = c("scenario", "year"), sep = "-") %>% 
       filter(year %in% c(2025, 2050)) %>% 
       mutate(er = ifelse(er < 0.1, "'< 0.1'", round(er, 1)), 
-             label = paste0(round(er, 1), "*~tCO[2]*e"))
+             label = paste0(er, "*~tCO[2]*e"))
     
     # Calculate annual error distribution
     annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
@@ -984,7 +984,7 @@ for (perc in c(0, 100)){
       separate(year, into = c("scenario", "year"), sep = "-") %>% 
       filter(year %in% c(2025, 2050)) %>% 
       mutate(er = ifelse(er < 0.1, "'< 0.1'", round(er, 1)), 
-             label = paste0(round(er, 1), "*~tCO[2]*e"))
+             label = paste0(er, "*~tCO[2]*e"))
     
     # Calculate annual error distribution
     annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
@@ -1392,7 +1392,7 @@ for (perc in c(0, 100)){
       separate(year, into = c("scenario", "year"), sep = "-") %>% 
       filter(year %in% c(2025, 2050)) %>% 
       mutate(er = ifelse(er < 0.1, "'< 0.1'", round(er, 1)), 
-             label = paste0(round(er, 1), "*~tCO[2]*e"))
+             label = paste0(er, "*~tCO[2]*e"))
     
     # Calculate annual error distribution
     annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
@@ -1793,7 +1793,7 @@ for (perc in c(0, 100)){
       separate(year, into = c("scenario", "year"), sep = "-") %>% 
       filter(year %in% c(2025, 2050)) %>% 
       mutate(er = ifelse(er < 0.1, "'< 0.1'", round(er, 1)), 
-             label = paste0(round(er, 1), "*~tCO[2]*e"))
+             label = paste0(er, "*~tCO[2]*e"))
     
     # Calculate annual error distribution
     annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
@@ -2193,7 +2193,7 @@ for (perc in c(0, 100)){
       separate(year, into = c("scenario", "year"), sep = "-") %>% 
       filter(year %in% c(2025, 2050)) %>% 
       mutate(er = ifelse(er < 0.1, "'< 0.1'", round(er, 1)), 
-             label = paste0(round(er, 1), "*~tCO[2]*e"))
+             label = paste0(er, "*~tCO[2]*e"))
     
     # Calculate annual error distribution
     annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
@@ -2594,7 +2594,7 @@ for (perc in c(0, 100)){
       separate(year, into = c("scenario", "year"), sep = "-") %>% 
       filter(year %in% c(2025, 2050)) %>% 
       mutate(er = ifelse(er < 0.1, "'< 0.1'", round(er, 1)), 
-             label = paste0(round(er, 1), "*~tCO[2]*e"))
+             label = paste0(er, "*~tCO[2]*e"))
     
     # Calculate annual error distribution
     annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
@@ -2994,7 +2994,7 @@ for (perc in c(0, 100)){
       separate(year, into = c("scenario", "year"), sep = "-") %>% 
       filter(year %in% c(2025, 2050)) %>% 
       mutate(er = ifelse(er < 0.1, "'< 0.1'", round(er, 1)), 
-             label = paste0(round(er, 1), "*~tCO[2]*e"))
+             label = paste0(er, "*~tCO[2]*e"))
     
     # Calculate annual error distribution
     annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
@@ -3394,7 +3394,7 @@ for (perc in c(0, 100)){
       separate(year, into = c("scenario", "year"), sep = "-") %>% 
       filter(year %in% c(2025, 2050)) %>% 
       mutate(er = ifelse(er < 0.1, "'< 0.1'", round(er, 1)), 
-             label = paste0(round(er, 1), "*~tCO[2]*e"))
+             label = paste0(er, "*~tCO[2]*e"))
     
     # Calculate annual error distribution
     annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
@@ -3596,6 +3596,2813 @@ for (perc in c(25, 100)){
                          trans = "log10", 
                          breaks = breaks, 
                          labels = c("0.1 %", "1 %", "10 %", "100 %", "1000 %")) +
+      scale_x_discrete(expand = c(-0.1, 0)) +
+      coord_cartesian(ylim = ylim) +
+      scale_fill_manual(values = ls_colors) +
+      scale_color_manual(values = ls_colors)
+    
+    
+    if (z_index %% 2 == 1){
+      
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = "Fractional error distribution", 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+      
+    } else {
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              axis.text.y = element_blank(), 
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+    }
+    
+    plot_list[[z_index]] <- p
+    
+    z_index <- z_index + 1
+    
+  }
+  
+  
+}
+
+ggarrange(plotlist = plot_list, 
+          ncol = 2, nrow = 2,
+          align = "hv",
+          common.legend = TRUE,
+          labels = c("a)", "b)", "c)", "d)"),
+          legend = "bottom") +
+  plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
+                  subtitle = str_glue("{gea_example}"))
+
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+
+
+
+
+
+#### NYISO ####
+gea_example <- "NYISO"
+
+# all scenarios at hourly resolution at 2050
+p1 <- df_hourly %>% 
+  filter(year == 2025, 
+         gea == gea_example, 
+         scenario == "MidCase") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2025, 
+                      gea == gea_example,
+                      scenario == "MidCase"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(breaks = seq(0, 600, by = 200)) +
+  coord_cartesian(ylim = c(0, 600)) +
+  scale_color_manual(values = ls_colors) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "MidCase - 2025") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.1),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        axis.text.x = element_blank(), 
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+p2 <- df_hourly %>% 
+  filter(year == 2050, 
+         gea == gea_example, 
+         scenario == "MidCase") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2050, 
+                      gea == gea_example,
+                      scenario == "MidCase"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed",
+             linewidth = 1.2) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(breaks = seq(0, 400, by = 200)) +
+  coord_cartesian(ylim = c(0, 450)) +
+  scale_color_manual(values = ls_colors) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "MidCase - 2050") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.1),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        axis.text.x = element_blank(),
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+p3 <- df_hourly %>% 
+  filter(year == 2050, 
+         gea == gea_example, 
+         scenario == "LowRECost_HighNGPrice") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2050, 
+                      gea == gea_example,
+                      scenario == "LowRECost_HighNGPrice"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(breaks = seq(0, 400, by = 200)) +
+  coord_cartesian(ylim = c(0, 450)) +
+  scale_color_manual(values = ls_colors) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "LowRECost_HighNGPrice - 2050") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.1),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+final_plot <- ggarrange(p1, p2, p3,
+                        nrow = 3, 
+                        labels = c("a)", "b)", "c)"), 
+                        common.legend = T, 
+                        legend = "bottom")
+
+y_axis <- expression(Emissions ~ rate ~ (gCO[2] ~ e/kWh))
+
+annotate_figure(final_plot, 
+                left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
+                top = text_grob(str_glue("Hourly average carbon emissions rate at {gea_example}"), size = 14))
+
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
+
+# summary
+sce_example <- c("MidCase", "LowRECost_HighNGPrice")
+
+# operational
+# subfigs_path <- paste0(figs_path, str_glue("operational/{g}/"))
+z_index <- 1
+plot_list <- list()
+for (perc in c(0, 100)){
+  
+  
+  for (z in sce_example){
+    
+    er_hourly <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/hourly.rds"))) %>% 
+      select(contains(z))
+    
+    colname <- colnames(er_hourly)
+    
+    er_annual <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/annual.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_tod <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/tod.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_month_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/month_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/season.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/season_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_hourly_med <- as.data.frame(t(apply(er_hourly, 2, median))) %>% 
+      pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
+      separate(year, into = c("scenario", "year"), sep = "-") %>% 
+      filter(year %in% c(2025, 2050)) %>% 
+      mutate(er = ifelse(er < 0.1, "'< 0.1'", round(er, 1)), 
+             label = paste0(er, "*~tCO[2]*e"))
+    
+    # Calculate annual error distribution
+    annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
+    
+    # Calculate tod error distribution
+    tod_err <- abs((er_tod - er_hourly) / er_hourly * 100)
+    
+    # Calculate month-hour error distribution
+    month_hour_err <- abs((er_month_hour - er_hourly) / er_hourly * 100)
+    
+    # Calculate season error distribution
+    season_err <- abs((er_season - er_hourly) / er_hourly * 100)
+    
+    # Calculate season-hour error distribution
+    season_hour_err <- abs((er_season_hour - er_hourly) / er_hourly * 100)
+    
+    # Combine plots for all
+    df_error <- bind_rows(
+      annual_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Annual avg."), 
+      season_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season avg."), 
+      tod_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Time-of-day avg."),
+      season_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season-hour avg."),
+      month_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Month-hour avg.")) %>% 
+      filter(year %in% c(2025, 2050))
+    
+    p <- df_error %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
+      ggplot(aes(x = year, y = error)) +
+      geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey20", linewidth = 0.2, aes(fill = type)) +
+      geom_text(data = er_hourly_med, aes(x = year, y = 10, label = label), parse = T, size = 3.5) +
+      scale_y_continuous(expand = c(0, 0), 
+                         breaks = seq(0, 10, by = 5), 
+                         labels = number_format(suffix = " %")) +
+      scale_x_discrete(expand = c(-0.1, 0)) +
+      coord_cartesian(ylim = c(0, 11)) +
+      scale_fill_manual(values = ls_colors) +
+      scale_color_manual(values = ls_colors) 
+    
+    if (z_index %% 2 == 1){
+      
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = "Fractional error distribution", 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+      
+    } else {
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              axis.text.y = element_blank(), 
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+    }
+    
+    plot_list[[z_index]] <- p
+    
+    z_index <- z_index + 1
+    
+  }
+  
+}
+
+ggarrange(plotlist = plot_list, 
+          ncol = 2, nrow = 2,
+          align = "hv",
+          common.legend = TRUE,
+          labels = c("a)", "b)", "c)", "d)"),
+          legend = "bottom") +
+  plot_annotation(title = "Error distribution of operational carbon emissions accounting", 
+                  subtitle = str_glue("{gea_example}"))
+
+ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+
+
+# avoided
+z_index <- 1
+plot_list <- list()
+for (perc in c(25, 100)){
+  
+  
+  for (z in sce_example){
+    
+    er_hourly <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/hourly.rds"))) %>% 
+      select(contains(z))
+    
+    colname <- colnames(er_hourly)
+    
+    er_annual <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/annual.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_tod <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/tod.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_month_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/month_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/season.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/season_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    # Calculate annual error distribution
+    annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
+    
+    # Calculate tod error distribution
+    tod_err <- abs((er_tod - er_hourly) / er_hourly * 100)
+    
+    # Calculate month-hour error distribution
+    month_hour_err <- abs((er_month_hour - er_hourly) / er_hourly * 100)
+    
+    # Calculate season error distribution
+    season_err <- abs((er_season - er_hourly) / er_hourly * 100)
+    
+    # Calculate season-hour error distribution
+    season_hour_err <- abs((er_season_hour - er_hourly) / er_hourly * 100)
+    
+    # Combine plots for all
+    df_error <- bind_rows(
+      annual_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Annual avg."), 
+      season_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season avg."), 
+      tod_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Time-of-day avg."),
+      season_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season-hour avg."),
+      month_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Month-hour avg.")) %>% 
+      filter(year %in% c(2025, 2050))
+    
+    breaks <- c(0.1, 1, 10, 100)
+    ylim <- if (perc == 25) c(0.1, 300) else c(0.1, 80)
+    
+    er_hourly_med <- as.data.frame(t(apply(er_hourly, 2, median))) %>% 
+      pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
+      separate(year, into = c("scenario", "year"), sep = "-") %>% 
+      filter(year %in% c(2025, 2050)) %>% 
+      mutate(pos = ifelse(perc == 25, 100, 40), 
+             er = ifelse(er < 0.1, "'< 0.1'", round(er, 1)), 
+             label = paste0(er, "*~tCO[2]*e"))
+    
+    error_med <- df_error %>% 
+      group_by(year, type, scenario) %>% 
+      summarise(med = median(error)) %>% 
+      ungroup() %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) 
+    
+    p <- df_error %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
+      ggplot(aes(x = year, y = error)) +
+      geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey60", linewidth = 0.2, aes(fill = type)) +
+      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = label), parse = T, size = 4) +
+      geom_text(data = error_med, aes(x = year, y = med, label = paste0(round(med, digits = 0), "%"), group = type), position = position_dodge(width = 0.8), size = 4.5) +
+      scale_y_continuous(expand = c(0, 0), 
+                         trans = "log10", 
+                         breaks = breaks, 
+                         labels = c("0.1 %", "1 %", "10 %", "100 %")) +
+      scale_x_discrete(expand = c(-0.1, 0)) +
+      coord_cartesian(ylim = ylim) +
+      scale_fill_manual(values = ls_colors) +
+      scale_color_manual(values = ls_colors)
+    
+    
+    if (z_index %% 2 == 1){
+      
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = "Fractional error distribution", 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+      
+    } else {
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              axis.text.y = element_blank(), 
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+    }
+    
+    plot_list[[z_index]] <- p
+    
+    z_index <- z_index + 1
+    
+  }
+  
+  
+}
+
+ggarrange(plotlist = plot_list, 
+          ncol = 2, nrow = 2,
+          align = "hv",
+          common.legend = TRUE,
+          labels = c("a)", "b)", "c)", "d)"),
+          legend = "bottom") +
+  plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
+                  subtitle = str_glue("{gea_example}"))
+
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+
+
+
+
+
+#### PJM WEST ####
+gea_example <- "PJM_West"
+
+# all scenarios at hourly resolution at 2050
+p1 <- df_hourly %>% 
+  filter(year == 2025, 
+         gea == gea_example, 
+         scenario == "MidCase") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2025, 
+                      gea == gea_example,
+                      scenario == "MidCase"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(breaks = seq(0, 400, by = 200)) +
+  scale_color_manual(values = ls_colors) +
+  coord_cartesian(ylim = c(0, 450)) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "MidCase - 2025") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.1),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        axis.text.x = element_blank(), 
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+p2 <- df_hourly %>% 
+  filter(year == 2050, 
+         gea == gea_example, 
+         scenario == "MidCase") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2050, 
+                      gea == gea_example,
+                      scenario == "MidCase"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(breaks = seq(0, 400, by = 100)) +
+  scale_color_manual(values = ls_colors) +
+  coord_cartesian(ylim = c(0, 450)) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "MidCase - 2050") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.1),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+p3 <- df_hourly %>% 
+  filter(year == 2050, 
+         gea == gea_example, 
+         scenario == "LowRECost_HighNGPrice") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2050, 
+                      gea == gea_example,
+                      scenario == "LowRECost_HighNGPrice"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(breaks = seq(0, 400, by = 100)) +
+  scale_color_manual(values = ls_colors) +
+  coord_cartesian(ylim = c(0, 420)) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "LowRECost_HighNGPrice - 2050") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.1),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        axis.text.x = element_blank(), 
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+final_plot <- ggarrange(p1, p2, p3,
+                        nrow = 3, 
+                        labels = c("a)", "b)", "c)"), 
+                        common.legend = T, 
+                        legend = "bottom")
+
+y_axis <- expression(Emissions ~ rate ~ (gCO[2] ~ e/kWh))
+
+annotate_figure(final_plot, 
+                left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
+                top = text_grob(str_glue("Hourly average carbon emissions rate at {gea_example}"), size = 14))
+
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
+
+# summary
+sce_example <- c("MidCase", "LowRECost_HighNGPrice")
+
+# operational
+# subfigs_path <- paste0(figs_path, str_glue("operational/{g}/"))
+z_index <- 1
+plot_list <- list()
+for (perc in c(0, 100)){
+  
+  
+  for (z in sce_example){
+    
+    er_hourly <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/hourly.rds"))) %>% 
+      select(contains(z))
+    
+    colname <- colnames(er_hourly)
+    
+    er_annual <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/annual.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_tod <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/tod.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_month_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/month_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/season.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/season_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_hourly_med <- as.data.frame(t(apply(er_hourly, 2, median))) %>% 
+      pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
+      separate(year, into = c("scenario", "year"), sep = "-") %>% 
+      filter(year %in% c(2025, 2050)) %>% 
+      mutate(er = ifelse(er < 0.1, "'< 0.1'", round(er, 1)), 
+             label = paste0(er, "*~tCO[2]*e"))
+    
+    # Calculate annual error distribution
+    annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
+    
+    # Calculate tod error distribution
+    tod_err <- abs((er_tod - er_hourly) / er_hourly * 100)
+    
+    # Calculate month-hour error distribution
+    month_hour_err <- abs((er_month_hour - er_hourly) / er_hourly * 100)
+    
+    # Calculate season error distribution
+    season_err <- abs((er_season - er_hourly) / er_hourly * 100)
+    
+    # Calculate season-hour error distribution
+    season_hour_err <- abs((er_season_hour - er_hourly) / er_hourly * 100)
+    
+    # Combine plots for all
+    df_error <- bind_rows(
+      annual_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Annual avg."), 
+      season_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season avg."), 
+      tod_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Time-of-day avg."),
+      season_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season-hour avg."),
+      month_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Month-hour avg.")) %>% 
+      filter(year %in% c(2025, 2050))
+    
+    p <- df_error %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
+      ggplot(aes(x = year, y = error)) +
+      geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey20", linewidth = 0.2, aes(fill = type)) +
+      geom_text(data = er_hourly_med, aes(x = year, y = 60, label = label), parse = T, size = 3.5) +
+      scale_y_continuous(expand = c(0, 0), 
+                         breaks = seq(0, 60, by = 20), 
+                         labels = number_format(suffix = " %")) +
+      scale_x_discrete(expand = c(-0.1, 0)) +
+      coord_cartesian(ylim = c(0, 62)) +
+      scale_fill_manual(values = ls_colors) +
+      scale_color_manual(values = ls_colors) 
+    
+    if (z_index %% 2 == 1){
+      
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = "Fractional error distribution", 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+      
+    } else {
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              axis.text.y = element_blank(), 
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+    }
+    
+    plot_list[[z_index]] <- p
+    
+    z_index <- z_index + 1
+    
+  }
+  
+}
+
+ggarrange(plotlist = plot_list, 
+          ncol = 2, nrow = 2,
+          align = "hv",
+          common.legend = TRUE,
+          labels = c("a)", "b)", "c)", "d)"),
+          legend = "bottom") +
+  plot_annotation(title = "Error distribution of operational carbon emissions accounting", 
+                  subtitle = str_glue("{gea_example}"))
+
+ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+
+
+# avoided
+z_index <- 1
+plot_list <- list()
+for (perc in c(25, 100)){
+  
+  
+  for (z in sce_example){
+    
+    er_hourly <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/hourly.rds"))) %>% 
+      select(contains(z))
+    
+    colname <- colnames(er_hourly)
+    
+    er_annual <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/annual.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_tod <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/tod.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_month_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/month_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/season.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/season_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    # Calculate annual error distribution
+    annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
+    
+    # Calculate tod error distribution
+    tod_err <- abs((er_tod - er_hourly) / er_hourly * 100)
+    
+    # Calculate month-hour error distribution
+    month_hour_err <- abs((er_month_hour - er_hourly) / er_hourly * 100)
+    
+    # Calculate season error distribution
+    season_err <- abs((er_season - er_hourly) / er_hourly * 100)
+    
+    # Calculate season-hour error distribution
+    season_hour_err <- abs((er_season_hour - er_hourly) / er_hourly * 100)
+    
+    # Combine plots for all
+    df_error <- bind_rows(
+      annual_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Annual avg."), 
+      season_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season avg."), 
+      tod_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Time-of-day avg."),
+      season_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season-hour avg."),
+      month_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Month-hour avg.")) %>% 
+      filter(year %in% c(2025, 2050))
+    
+    breaks <- c(0.1, 1, 10, 100, 1000)
+    ylim <- if (perc == 25) c(0.1, 800) else c(0.1, 300)
+    
+    er_hourly_med <- as.data.frame(t(apply(er_hourly, 2, median))) %>% 
+      pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
+      separate(year, into = c("scenario", "year"), sep = "-") %>% 
+      filter(year %in% c(2025, 2050)) %>% 
+      mutate(pos = ifelse(perc == 25, 500, 200), 
+             er = ifelse(er < 0.1, "'< 0.1'", round(er, 1)), 
+             label = paste0(er, "*~tCO[2]*e"))
+    
+    error_med <- df_error %>% 
+      group_by(year, type, scenario) %>% 
+      summarise(med = median(error)) %>% 
+      ungroup() %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) 
+    
+    p <- df_error %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
+      ggplot(aes(x = year, y = error)) +
+      geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey60", linewidth = 0.2, aes(fill = type)) +
+      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = label), parse = T, size = 4) +
+      geom_text(data = error_med, aes(x = year, y = med, label = paste0(round(med, digits = 0), "%"), group = type), position = position_dodge(width = 0.8), size = 4.5) +
+      scale_y_continuous(expand = c(0, 0), 
+                         trans = "log10", 
+                         breaks = breaks, 
+                         labels = c("0.1 %", "1 %", "10 %", "100 %", "1000 %")) +
+      scale_x_discrete(expand = c(-0.1, 0)) +
+      coord_cartesian(ylim = ylim) +
+      scale_fill_manual(values = ls_colors) +
+      scale_color_manual(values = ls_colors)
+    
+    
+    if (z_index %% 2 == 1){
+      
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = "Fractional error distribution", 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+      
+    } else {
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              axis.text.y = element_blank(), 
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+    }
+    
+    plot_list[[z_index]] <- p
+    
+    z_index <- z_index + 1
+    
+  }
+  
+  
+}
+
+ggarrange(plotlist = plot_list, 
+          ncol = 2, nrow = 2,
+          align = "hv",
+          common.legend = TRUE,
+          labels = c("a)", "b)", "c)", "d)"),
+          legend = "bottom") +
+  plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
+                  subtitle = str_glue("{gea_example}"))
+
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+
+
+
+
+
+#### SERTP ####
+gea_example <- "SERTP"
+
+# all scenarios at hourly resolution at 2050
+p1 <- df_hourly %>% 
+  filter(year == 2025, 
+         gea == gea_example, 
+         scenario == "MidCase") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2025, 
+                      gea == gea_example,
+                      scenario == "MidCase"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(breaks = seq(0, 600, by = 200)) +
+  scale_color_manual(values = ls_colors) +
+  coord_cartesian(ylim = c(0, 600)) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "MidCase - 2025") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.1),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        axis.text.x = element_blank(), 
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+p2 <- df_hourly %>% 
+  filter(year == 2050, 
+         gea == gea_example, 
+         scenario == "MidCase") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2050, 
+                      gea == gea_example,
+                      scenario == "MidCase"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(breaks = seq(0, 300, by = 100)) +
+  scale_color_manual(values = ls_colors) +
+  coord_cartesian(ylim = c(0, 350)) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "MidCase - 2050") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.1),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+p3 <- df_hourly %>% 
+  filter(year == 2050, 
+         gea == gea_example, 
+         scenario == "LowRECost_HighNGPrice") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2050, 
+                      gea == gea_example,
+                      scenario == "LowRECost_HighNGPrice"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(breaks = seq(0, 300, by = 100)) +
+  scale_color_manual(values = ls_colors) +
+  coord_cartesian(ylim = c(0, 350)) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "LowRECost_HighNGPrice - 2050") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.1),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        axis.text.x = element_blank(), 
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+final_plot <- ggarrange(p1, p2, p3,
+                        nrow = 3, 
+                        labels = c("a)", "b)", "c)"), 
+                        common.legend = T, 
+                        legend = "bottom")
+
+y_axis <- expression(Emissions ~ rate ~ (gCO[2] ~ e/kWh))
+
+annotate_figure(final_plot, 
+                left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
+                top = text_grob(str_glue("Hourly average carbon emissions rate at {gea_example}"), size = 14))
+
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
+
+# summary
+sce_example <- c("MidCase", "LowRECost_HighNGPrice")
+
+# operational
+# subfigs_path <- paste0(figs_path, str_glue("operational/{g}/"))
+z_index <- 1
+plot_list <- list()
+for (perc in c(0, 100)){
+  
+  
+  for (z in sce_example){
+    
+    er_hourly <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/hourly.rds"))) %>% 
+      select(contains(z))
+    
+    colname <- colnames(er_hourly)
+    
+    er_annual <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/annual.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_tod <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/tod.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_month_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/month_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/season.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/season_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_hourly_med <- as.data.frame(t(apply(er_hourly, 2, median))) %>% 
+      pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
+      separate(year, into = c("scenario", "year"), sep = "-") %>% 
+      filter(year %in% c(2025, 2050)) %>% 
+      mutate(er = ifelse(er < 0.1, "'< 0.1'", round(er, 1)), 
+             label = paste0(er, "*~tCO[2]*e"))
+    
+    # Calculate annual error distribution
+    annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
+    
+    # Calculate tod error distribution
+    tod_err <- abs((er_tod - er_hourly) / er_hourly * 100)
+    
+    # Calculate month-hour error distribution
+    month_hour_err <- abs((er_month_hour - er_hourly) / er_hourly * 100)
+    
+    # Calculate season error distribution
+    season_err <- abs((er_season - er_hourly) / er_hourly * 100)
+    
+    # Calculate season-hour error distribution
+    season_hour_err <- abs((er_season_hour - er_hourly) / er_hourly * 100)
+    
+    # Combine plots for all
+    df_error <- bind_rows(
+      annual_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Annual avg."), 
+      season_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season avg."), 
+      tod_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Time-of-day avg."),
+      season_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season-hour avg."),
+      month_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Month-hour avg.")) %>% 
+      filter(year %in% c(2025, 2050))
+    
+    p <- df_error %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
+      ggplot(aes(x = year, y = error)) +
+      geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey20", linewidth = 0.2, aes(fill = type)) +
+      geom_text(data = er_hourly_med, aes(x = year, y = 40, label = label), parse = T, size = 3.5) +
+      scale_y_continuous(expand = c(0, 0), 
+                         breaks = seq(0, 40, by = 10), 
+                         labels = number_format(suffix = " %")) +
+      scale_x_discrete(expand = c(-0.1, 0)) +
+      coord_cartesian(ylim = c(0, 42)) +
+      scale_fill_manual(values = ls_colors) +
+      scale_color_manual(values = ls_colors) 
+    
+    if (z_index %% 2 == 1){
+      
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = "Fractional error distribution", 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+      
+    } else {
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              axis.text.y = element_blank(), 
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+    }
+    
+    plot_list[[z_index]] <- p
+    
+    z_index <- z_index + 1
+    
+  }
+  
+}
+
+ggarrange(plotlist = plot_list, 
+          ncol = 2, nrow = 2,
+          align = "hv",
+          common.legend = TRUE,
+          labels = c("a)", "b)", "c)", "d)"),
+          legend = "bottom") +
+  plot_annotation(title = "Error distribution of operational carbon emissions accounting", 
+                  subtitle = str_glue("{gea_example}"))
+
+ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+
+
+# avoided
+z_index <- 1
+plot_list <- list()
+for (perc in c(25, 100)){
+  
+  
+  for (z in sce_example){
+    
+    er_hourly <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/hourly.rds"))) %>% 
+      select(contains(z))
+    
+    colname <- colnames(er_hourly)
+    
+    er_annual <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/annual.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_tod <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/tod.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_month_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/month_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/season.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/season_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    # Calculate annual error distribution
+    annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
+    
+    # Calculate tod error distribution
+    tod_err <- abs((er_tod - er_hourly) / er_hourly * 100)
+    
+    # Calculate month-hour error distribution
+    month_hour_err <- abs((er_month_hour - er_hourly) / er_hourly * 100)
+    
+    # Calculate season error distribution
+    season_err <- abs((er_season - er_hourly) / er_hourly * 100)
+    
+    # Calculate season-hour error distribution
+    season_hour_err <- abs((er_season_hour - er_hourly) / er_hourly * 100)
+    
+    # Combine plots for all
+    df_error <- bind_rows(
+      annual_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Annual avg."), 
+      season_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season avg."), 
+      tod_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Time-of-day avg."),
+      season_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season-hour avg."),
+      month_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Month-hour avg.")) %>% 
+      filter(year %in% c(2025, 2050))
+    
+    breaks <- c(0.1, 1, 10, 100, 1000, 10000)
+    ylim <- if (perc == 25) c(0.1, 4000) else c(0.1, 800)
+    
+    er_hourly_med <- as.data.frame(t(apply(er_hourly, 2, median))) %>% 
+      pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
+      separate(year, into = c("scenario", "year"), sep = "-") %>% 
+      filter(year %in% c(2025, 2050)) %>% 
+      mutate(pos = ifelse(perc == 25, 2000, 500), 
+             er = ifelse(er < 0.1, "'< 0.1'", round(er, 1)), 
+             label = paste0(er, "*~tCO[2]*e"))
+    
+    error_med <- df_error %>% 
+      group_by(year, type, scenario) %>% 
+      summarise(med = median(error)) %>% 
+      ungroup() %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) 
+    
+    p <- df_error %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
+      ggplot(aes(x = year, y = error)) +
+      geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey60", linewidth = 0.2, aes(fill = type)) +
+      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = label), parse = T, size = 4) +
+      geom_text(data = error_med, aes(x = year, y = med, label = paste0(round(med, digits = 0), "%"), group = type), position = position_dodge(width = 0.8), size = 4.5) +
+      scale_y_continuous(expand = c(0, 0), 
+                         trans = "log10", 
+                         breaks = breaks, 
+                         labels = c("0.1 %", "1 %", "10 %", "100 %", "1000 %", "10000 %")) +
+      scale_x_discrete(expand = c(-0.1, 0)) +
+      coord_cartesian(ylim = ylim) +
+      scale_fill_manual(values = ls_colors) +
+      scale_color_manual(values = ls_colors)
+    
+    
+    if (z_index %% 2 == 1){
+      
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = "Fractional error distribution", 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+      
+    } else {
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              axis.text.y = element_blank(), 
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+    }
+    
+    plot_list[[z_index]] <- p
+    
+    z_index <- z_index + 1
+    
+  }
+  
+  
+}
+
+ggarrange(plotlist = plot_list, 
+          ncol = 2, nrow = 2,
+          align = "hv",
+          common.legend = TRUE,
+          labels = c("a)", "b)", "c)", "d)"),
+          legend = "bottom") +
+  plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
+                  subtitle = str_glue("{gea_example}"))
+
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+
+
+
+
+
+#### SPP_North ####
+gea_example <- "SPP_North"
+
+# all scenarios at hourly resolution at 2050
+p1 <- df_hourly %>% 
+  filter(year == 2025, 
+         gea == gea_example, 
+         scenario == "MidCase") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2025, 
+                      gea == gea_example,
+                      scenario == "MidCase"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(breaks = seq(0, 800, by = 200)) +
+  scale_color_manual(values = ls_colors) +
+  coord_cartesian(ylim = c(0, 850)) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "MidCase - 2025") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.1),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        axis.text.x = element_blank(), 
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+p2 <- df_hourly %>% 
+  filter(year == 2050, 
+         gea == gea_example, 
+         scenario == "MidCase") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2050, 
+                      gea == gea_example,
+                      scenario == "MidCase"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(breaks = seq(0, 200, by = 100)) +
+  scale_color_manual(values = ls_colors) +
+  coord_cartesian(ylim = c(0, 250)) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "MidCase - 2050") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.1),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+p3 <- df_hourly %>% 
+  filter(year == 2050, 
+         gea == gea_example, 
+         scenario == "LowRECost_HighNGPrice") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2050, 
+                      gea == gea_example,
+                      scenario == "LowRECost_HighNGPrice"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(breaks = seq(0, 100, by = 50)) +
+  scale_color_manual(values = ls_colors) +
+  coord_cartesian(ylim = c(0, 150)) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "LowRECost_HighNGPrice - 2050") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.1),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        axis.text.x = element_blank(), 
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+final_plot <- ggarrange(p1, p2, p3,
+                        nrow = 3, 
+                        labels = c("a)", "b)", "c)"), 
+                        common.legend = T, 
+                        legend = "bottom")
+
+y_axis <- expression(Emissions ~ rate ~ (gCO[2] ~ e/kWh))
+
+annotate_figure(final_plot, 
+                left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
+                top = text_grob(str_glue("Hourly average carbon emissions rate at {gea_example}"), size = 14))
+
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
+
+# summary
+sce_example <- c("MidCase", "LowRECost_HighNGPrice")
+
+# operational
+# subfigs_path <- paste0(figs_path, str_glue("operational/{g}/"))
+z_index <- 1
+plot_list <- list()
+for (perc in c(0, 100)){
+  
+  
+  for (z in sce_example){
+    
+    er_hourly <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/hourly.rds"))) %>% 
+      select(contains(z))
+    
+    colname <- colnames(er_hourly)
+    
+    er_annual <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/annual.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_tod <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/tod.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_month_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/month_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/season.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/season_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_hourly_med <- as.data.frame(t(apply(er_hourly, 2, median))) %>% 
+      pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
+      separate(year, into = c("scenario", "year"), sep = "-") %>% 
+      filter(year %in% c(2025, 2050)) %>% 
+      mutate(er = ifelse(er < 0.1, "'< 0.1'", round(er, 1)), 
+             label = paste0(er, "*~tCO[2]*e"))
+    
+    # Calculate annual error distribution
+    annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
+    
+    # Calculate tod error distribution
+    tod_err <- abs((er_tod - er_hourly) / er_hourly * 100)
+    
+    # Calculate month-hour error distribution
+    month_hour_err <- abs((er_month_hour - er_hourly) / er_hourly * 100)
+    
+    # Calculate season error distribution
+    season_err <- abs((er_season - er_hourly) / er_hourly * 100)
+    
+    # Calculate season-hour error distribution
+    season_hour_err <- abs((er_season_hour - er_hourly) / er_hourly * 100)
+    
+    # Combine plots for all
+    df_error <- bind_rows(
+      annual_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Annual avg."), 
+      season_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season avg."), 
+      tod_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Time-of-day avg."),
+      season_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season-hour avg."),
+      month_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Month-hour avg.")) %>% 
+      filter(year %in% c(2025, 2050))
+    
+    p <- df_error %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
+      ggplot(aes(x = year, y = error)) +
+      geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey20", linewidth = 0.2, aes(fill = type)) +
+      geom_text(data = er_hourly_med, aes(x = year, y = 60, label = label), parse = T, size = 3.5) +
+      scale_y_continuous(expand = c(0, 0), 
+                         breaks = seq(0, 60, by = 20), 
+                         labels = number_format(suffix = " %")) +
+      scale_x_discrete(expand = c(-0.1, 0)) +
+      coord_cartesian(ylim = c(0, 62)) +
+      scale_fill_manual(values = ls_colors) +
+      scale_color_manual(values = ls_colors) 
+    
+    if (z_index %% 2 == 1){
+      
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = "Fractional error distribution", 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+      
+    } else {
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              axis.text.y = element_blank(), 
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+    }
+    
+    plot_list[[z_index]] <- p
+    
+    z_index <- z_index + 1
+    
+  }
+  
+}
+
+ggarrange(plotlist = plot_list, 
+          ncol = 2, nrow = 2,
+          align = "hv",
+          common.legend = TRUE,
+          labels = c("a)", "b)", "c)", "d)"),
+          legend = "bottom") +
+  plot_annotation(title = "Error distribution of operational carbon emissions accounting", 
+                  subtitle = str_glue("{gea_example}"))
+
+ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+
+
+# avoided
+z_index <- 1
+plot_list <- list()
+for (perc in c(25, 100)){
+  
+  
+  for (z in sce_example){
+    
+    er_hourly <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/hourly.rds"))) %>% 
+      select(contains(z))
+    
+    colname <- colnames(er_hourly)
+    
+    er_annual <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/annual.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_tod <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/tod.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_month_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/month_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/season.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/season_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    # Calculate annual error distribution
+    annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
+    
+    # Calculate tod error distribution
+    tod_err <- abs((er_tod - er_hourly) / er_hourly * 100)
+    
+    # Calculate month-hour error distribution
+    month_hour_err <- abs((er_month_hour - er_hourly) / er_hourly * 100)
+    
+    # Calculate season error distribution
+    season_err <- abs((er_season - er_hourly) / er_hourly * 100)
+    
+    # Calculate season-hour error distribution
+    season_hour_err <- abs((er_season_hour - er_hourly) / er_hourly * 100)
+    
+    # Combine plots for all
+    df_error <- bind_rows(
+      annual_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Annual avg."), 
+      season_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season avg."), 
+      tod_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Time-of-day avg."),
+      season_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season-hour avg."),
+      month_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Month-hour avg.")) %>% 
+      filter(year %in% c(2025, 2050))
+    
+    breaks <- c(0.1, 1, 10, 100, 1000, 10000)
+    ylim <- if (perc == 25) c(0.1, 4000) else c(0.1, 800)
+    
+    er_hourly_med <- as.data.frame(t(apply(er_hourly, 2, median))) %>% 
+      pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
+      separate(year, into = c("scenario", "year"), sep = "-") %>% 
+      filter(year %in% c(2025, 2050)) %>% 
+      mutate(pos = ifelse(perc == 25, 2000, 500), 
+             er = ifelse(er < 0.1, "'< 0.1'", round(er, 1)), 
+             label = paste0(er, "*~tCO[2]*e"))
+    
+    error_med <- df_error %>% 
+      group_by(year, type, scenario) %>% 
+      summarise(med = median(error)) %>% 
+      ungroup() %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) 
+    
+    p <- df_error %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
+      ggplot(aes(x = year, y = error)) +
+      geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey60", linewidth = 0.2, aes(fill = type)) +
+      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = label), parse = T, size = 4) +
+      geom_text(data = error_med, aes(x = year, y = med, label = paste0(round(med, digits = 0), "%"), group = type), position = position_dodge(width = 0.8), size = 4.5) +
+      scale_y_continuous(expand = c(0, 0), 
+                         trans = "log10", 
+                         breaks = breaks, 
+                         labels = c("0.1 %", "1 %", "10 %", "100 %", "1000 %", "10000 %")) +
+      scale_x_discrete(expand = c(-0.1, 0)) +
+      coord_cartesian(ylim = ylim) +
+      scale_fill_manual(values = ls_colors) +
+      scale_color_manual(values = ls_colors)
+    
+    
+    if (z_index %% 2 == 1){
+      
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = "Fractional error distribution", 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+      
+    } else {
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              axis.text.y = element_blank(), 
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+    }
+    
+    plot_list[[z_index]] <- p
+    
+    z_index <- z_index + 1
+    
+  }
+  
+  
+}
+
+ggarrange(plotlist = plot_list, 
+          ncol = 2, nrow = 2,
+          align = "hv",
+          common.legend = TRUE,
+          labels = c("a)", "b)", "c)", "d)"),
+          legend = "bottom") +
+  plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
+                  subtitle = str_glue("{gea_example}"))
+
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+
+
+
+
+
+#### SPP_South ####
+gea_example <- "SPP_South"
+
+# all scenarios at hourly resolution at 2050
+p1 <- df_hourly %>% 
+  filter(year == 2025, 
+         gea == gea_example, 
+         scenario == "MidCase") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2025, 
+                      gea == gea_example,
+                      scenario == "MidCase"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(breaks = seq(0, 800, by = 200)) +
+  scale_color_manual(values = ls_colors) +
+  coord_cartesian(ylim = c(0, 800)) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "MidCase - 2025") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.1),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        axis.text.x = element_blank(), 
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+p2 <- df_hourly %>% 
+  filter(year == 2050, 
+         gea == gea_example, 
+         scenario == "MidCase") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2050, 
+                      gea == gea_example,
+                      scenario == "MidCase"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(breaks = seq(0, 300, by = 100)) +
+  scale_color_manual(values = ls_colors) +
+  coord_cartesian(ylim = c(0, 350)) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "MidCase - 2050") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.1),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+p3 <- df_hourly %>% 
+  filter(year == 2050, 
+         gea == gea_example, 
+         scenario == "LowRECost_HighNGPrice") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2050, 
+                      gea == gea_example,
+                      scenario == "LowRECost_HighNGPrice"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(breaks = seq(0, 200, by = 100)) +
+  scale_color_manual(values = ls_colors) +
+  coord_cartesian(ylim = c(0, 250)) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "LowRECost_HighNGPrice - 2050") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.1),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        axis.text.x = element_blank(), 
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+final_plot <- ggarrange(p1, p2, p3,
+                        nrow = 3, 
+                        labels = c("a)", "b)", "c)"), 
+                        common.legend = T, 
+                        legend = "bottom")
+
+y_axis <- expression(Emissions ~ rate ~ (gCO[2] ~ e/kWh))
+
+annotate_figure(final_plot, 
+                left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
+                top = text_grob(str_glue("Hourly average carbon emissions rate at {gea_example}"), size = 14))
+
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
+
+# summary
+sce_example <- c("MidCase", "LowRECost_HighNGPrice")
+
+# operational
+# subfigs_path <- paste0(figs_path, str_glue("operational/{g}/"))
+z_index <- 1
+plot_list <- list()
+for (perc in c(0, 100)){
+  
+  
+  for (z in sce_example){
+    
+    er_hourly <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/hourly.rds"))) %>% 
+      select(contains(z))
+    
+    colname <- colnames(er_hourly)
+    
+    er_annual <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/annual.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_tod <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/tod.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_month_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/month_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/season.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/season_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_hourly_med <- as.data.frame(t(apply(er_hourly, 2, median))) %>% 
+      pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
+      separate(year, into = c("scenario", "year"), sep = "-") %>% 
+      filter(year %in% c(2025, 2050)) %>% 
+      mutate(er = ifelse(er < 0.1, "'< 0.1'", round(er, 1)), 
+             label = paste0(er, "*~tCO[2]*e"))
+    
+    # Calculate annual error distribution
+    annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
+    
+    # Calculate tod error distribution
+    tod_err <- abs((er_tod - er_hourly) / er_hourly * 100)
+    
+    # Calculate month-hour error distribution
+    month_hour_err <- abs((er_month_hour - er_hourly) / er_hourly * 100)
+    
+    # Calculate season error distribution
+    season_err <- abs((er_season - er_hourly) / er_hourly * 100)
+    
+    # Calculate season-hour error distribution
+    season_hour_err <- abs((er_season_hour - er_hourly) / er_hourly * 100)
+    
+    # Combine plots for all
+    df_error <- bind_rows(
+      annual_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Annual avg."), 
+      season_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season avg."), 
+      tod_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Time-of-day avg."),
+      season_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season-hour avg."),
+      month_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Month-hour avg.")) %>% 
+      filter(year %in% c(2025, 2050))
+    
+    p <- df_error %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
+      ggplot(aes(x = year, y = error)) +
+      geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey20", linewidth = 0.2, aes(fill = type)) +
+      geom_text(data = er_hourly_med, aes(x = year, y = 60, label = label), parse = T, size = 3.5) +
+      scale_y_continuous(expand = c(0, 0), 
+                         breaks = seq(0, 60, by = 20), 
+                         labels = number_format(suffix = " %")) +
+      scale_x_discrete(expand = c(-0.1, 0)) +
+      coord_cartesian(ylim = c(0, 62)) +
+      scale_fill_manual(values = ls_colors) +
+      scale_color_manual(values = ls_colors) 
+    
+    if (z_index %% 2 == 1){
+      
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = "Fractional error distribution", 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+      
+    } else {
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              axis.text.y = element_blank(), 
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+    }
+    
+    plot_list[[z_index]] <- p
+    
+    z_index <- z_index + 1
+    
+  }
+  
+}
+
+ggarrange(plotlist = plot_list, 
+          ncol = 2, nrow = 2,
+          align = "hv",
+          common.legend = TRUE,
+          labels = c("a)", "b)", "c)", "d)"),
+          legend = "bottom") +
+  plot_annotation(title = "Error distribution of operational carbon emissions accounting", 
+                  subtitle = str_glue("{gea_example}"))
+
+ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+
+
+# avoided
+z_index <- 1
+plot_list <- list()
+for (perc in c(25, 100)){
+  
+  
+  for (z in sce_example){
+    
+    er_hourly <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/hourly.rds"))) %>% 
+      select(contains(z))
+    
+    colname <- colnames(er_hourly)
+    
+    er_annual <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/annual.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_tod <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/tod.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_month_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/month_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/season.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/season_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    # Calculate annual error distribution
+    annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
+    
+    # Calculate tod error distribution
+    tod_err <- abs((er_tod - er_hourly) / er_hourly * 100)
+    
+    # Calculate month-hour error distribution
+    month_hour_err <- abs((er_month_hour - er_hourly) / er_hourly * 100)
+    
+    # Calculate season error distribution
+    season_err <- abs((er_season - er_hourly) / er_hourly * 100)
+    
+    # Calculate season-hour error distribution
+    season_hour_err <- abs((er_season_hour - er_hourly) / er_hourly * 100)
+    
+    # Combine plots for all
+    df_error <- bind_rows(
+      annual_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Annual avg."), 
+      season_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season avg."), 
+      tod_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Time-of-day avg."),
+      season_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season-hour avg."),
+      month_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Month-hour avg.")) %>% 
+      filter(year %in% c(2025, 2050))
+    
+    breaks <- c(0.1, 1, 10, 100, 1000, 10000)
+    ylim <- if (perc == 25) c(0.1, 4000) else c(0.1, 800)
+    
+    er_hourly_med <- as.data.frame(t(apply(er_hourly, 2, median))) %>% 
+      pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
+      separate(year, into = c("scenario", "year"), sep = "-") %>% 
+      filter(year %in% c(2025, 2050)) %>% 
+      mutate(pos = ifelse(perc == 25, 2000, 500), 
+             er = ifelse(er < 0.1, "'< 0.1'", round(er, 1)), 
+             label = paste0(er, "*~tCO[2]*e"))
+    
+    error_med <- df_error %>% 
+      group_by(year, type, scenario) %>% 
+      summarise(med = median(error)) %>% 
+      ungroup() %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) 
+    
+    p <- df_error %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
+      ggplot(aes(x = year, y = error)) +
+      geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey60", linewidth = 0.2, aes(fill = type)) +
+      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = label), parse = T, size = 4) +
+      geom_text(data = error_med, aes(x = year, y = med, label = paste0(round(med, digits = 0), "%"), group = type), position = position_dodge(width = 0.8), size = 4.5) +
+      scale_y_continuous(expand = c(0, 0), 
+                         trans = "log10", 
+                         breaks = breaks, 
+                         labels = c("0.1 %", "1 %", "10 %", "100 %", "1000 %", "10000 %")) +
+      scale_x_discrete(expand = c(-0.1, 0)) +
+      coord_cartesian(ylim = ylim) +
+      scale_fill_manual(values = ls_colors) +
+      scale_color_manual(values = ls_colors)
+    
+    
+    if (z_index %% 2 == 1){
+      
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = "Fractional error distribution", 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+      
+    } else {
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              axis.text.y = element_blank(), 
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+    }
+    
+    plot_list[[z_index]] <- p
+    
+    z_index <- z_index + 1
+    
+  }
+  
+  
+}
+
+ggarrange(plotlist = plot_list, 
+          ncol = 2, nrow = 2,
+          align = "hv",
+          common.legend = TRUE,
+          labels = c("a)", "b)", "c)", "d)"),
+          legend = "bottom") +
+  plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
+                  subtitle = str_glue("{gea_example}"))
+
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+
+
+
+
+
+#### WestConnect_North ####
+gea_example <- "WestConnect_North"
+
+# all scenarios at hourly resolution at 2050
+p1 <- df_hourly %>% 
+  filter(year == 2025, 
+         gea == gea_example, 
+         scenario == "MidCase") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2025, 
+                      gea == gea_example,
+                      scenario == "MidCase"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(breaks = seq(0, 800, by = 200)) +
+  scale_color_manual(values = ls_colors) +
+  coord_cartesian(ylim = c(0, 850)) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "MidCase - 2025") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.1),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        axis.text.x = element_blank(), 
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+p2 <- df_hourly %>% 
+  filter(year == 2050, 
+         gea == gea_example, 
+         scenario == "MidCase") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2050, 
+                      gea == gea_example,
+                      scenario == "MidCase"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(breaks = seq(0, 200, by = 100)) +
+  scale_color_manual(values = ls_colors) +
+  coord_cartesian(ylim = c(0, 250)) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "MidCase - 2050") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.1),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+p3 <- df_hourly %>% 
+  filter(year == 2050, 
+         gea == gea_example, 
+         scenario == "LowRECost_HighNGPrice") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2050, 
+                      gea == gea_example,
+                      scenario == "LowRECost_HighNGPrice"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(breaks = seq(0, 100, by = 50)) +
+  scale_color_manual(values = ls_colors) +
+  coord_cartesian(ylim = c(0, 150)) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "LowRECost_HighNGPrice - 2050") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.1),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        axis.text.x = element_blank(), 
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+final_plot <- ggarrange(p1, p2, p3,
+                        nrow = 3, 
+                        labels = c("a)", "b)", "c)"), 
+                        common.legend = T, 
+                        legend = "bottom")
+
+y_axis <- expression(Emissions ~ rate ~ (gCO[2] ~ e/kWh))
+
+annotate_figure(final_plot, 
+                left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
+                top = text_grob(str_glue("Hourly average carbon emissions rate at {gea_example}"), size = 14))
+
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
+
+# summary
+sce_example <- c("MidCase", "LowRECost_HighNGPrice")
+
+# operational
+# subfigs_path <- paste0(figs_path, str_glue("operational/{g}/"))
+z_index <- 1
+plot_list <- list()
+for (perc in c(0, 100)){
+  
+  
+  for (z in sce_example){
+    
+    er_hourly <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/hourly.rds"))) %>% 
+      select(contains(z))
+    
+    colname <- colnames(er_hourly)
+    
+    er_annual <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/annual.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_tod <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/tod.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_month_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/month_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/season.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/season_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_hourly_med <- as.data.frame(t(apply(er_hourly, 2, median))) %>% 
+      pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
+      separate(year, into = c("scenario", "year"), sep = "-") %>% 
+      filter(year %in% c(2025, 2050)) %>% 
+      mutate(er = ifelse(er < 0.1, "'< 0.1'", round(er, 1)), 
+             label = paste0(er, "*~tCO[2]*e"))
+    
+    # Calculate annual error distribution
+    annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
+    
+    # Calculate tod error distribution
+    tod_err <- abs((er_tod - er_hourly) / er_hourly * 100)
+    
+    # Calculate month-hour error distribution
+    month_hour_err <- abs((er_month_hour - er_hourly) / er_hourly * 100)
+    
+    # Calculate season error distribution
+    season_err <- abs((er_season - er_hourly) / er_hourly * 100)
+    
+    # Calculate season-hour error distribution
+    season_hour_err <- abs((er_season_hour - er_hourly) / er_hourly * 100)
+    
+    # Combine plots for all
+    df_error <- bind_rows(
+      annual_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Annual avg."), 
+      season_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season avg."), 
+      tod_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Time-of-day avg."),
+      season_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season-hour avg."),
+      month_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Month-hour avg.")) %>% 
+      filter(year %in% c(2025, 2050))
+    
+    p <- df_error %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
+      ggplot(aes(x = year, y = error)) +
+      geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey20", linewidth = 0.2, aes(fill = type)) +
+      geom_text(data = er_hourly_med, aes(x = year, y = 40, label = label), parse = T, size = 3.5) +
+      scale_y_continuous(expand = c(0, 0), 
+                         breaks = seq(0, 40, by = 10), 
+                         labels = number_format(suffix = " %")) +
+      scale_x_discrete(expand = c(-0.1, 0)) +
+      coord_cartesian(ylim = c(0, 42)) +
+      scale_fill_manual(values = ls_colors) +
+      scale_color_manual(values = ls_colors) 
+    
+    if (z_index %% 2 == 1){
+      
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = "Fractional error distribution", 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+      
+    } else {
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              axis.text.y = element_blank(), 
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+    }
+    
+    plot_list[[z_index]] <- p
+    
+    z_index <- z_index + 1
+    
+  }
+  
+}
+
+ggarrange(plotlist = plot_list, 
+          ncol = 2, nrow = 2,
+          align = "hv",
+          common.legend = TRUE,
+          labels = c("a)", "b)", "c)", "d)"),
+          legend = "bottom") +
+  plot_annotation(title = "Error distribution of operational carbon emissions accounting", 
+                  subtitle = str_glue("{gea_example}"))
+
+ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+
+
+# avoided
+z_index <- 1
+plot_list <- list()
+for (perc in c(25, 100)){
+  
+  
+  for (z in sce_example){
+    
+    er_hourly <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/hourly.rds"))) %>% 
+      select(contains(z))
+    
+    colname <- colnames(er_hourly)
+    
+    er_annual <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/annual.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_tod <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/tod.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_month_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/month_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/season.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/season_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    # Calculate annual error distribution
+    annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
+    
+    # Calculate tod error distribution
+    tod_err <- abs((er_tod - er_hourly) / er_hourly * 100)
+    
+    # Calculate month-hour error distribution
+    month_hour_err <- abs((er_month_hour - er_hourly) / er_hourly * 100)
+    
+    # Calculate season error distribution
+    season_err <- abs((er_season - er_hourly) / er_hourly * 100)
+    
+    # Calculate season-hour error distribution
+    season_hour_err <- abs((er_season_hour - er_hourly) / er_hourly * 100)
+    
+    # Combine plots for all
+    df_error <- bind_rows(
+      annual_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Annual avg."), 
+      season_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season avg."), 
+      tod_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Time-of-day avg."),
+      season_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season-hour avg."),
+      month_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Month-hour avg.")) %>% 
+      filter(year %in% c(2025, 2050))
+    
+    breaks <- c(0.1, 1, 10, 100, 1000, 10000, 100000)
+    ylim <- if (perc == 25) c(0.1, 400000) else c(0.1, 5000)
+    
+    er_hourly_med <- as.data.frame(t(apply(er_hourly, 2, median))) %>% 
+      pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
+      separate(year, into = c("scenario", "year"), sep = "-") %>% 
+      filter(year %in% c(2025, 2050)) %>% 
+      mutate(pos = ifelse(perc == 25, 250000, 2000), 
+             er = ifelse(er < 0.1, "'< 0.1'", round(er, 1)), 
+             label = paste0(er, "*~tCO[2]*e"))
+    
+    error_med <- df_error %>% 
+      group_by(year, type, scenario) %>% 
+      summarise(med = median(error)) %>% 
+      ungroup() %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) 
+    
+    p <- df_error %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
+      ggplot(aes(x = year, y = error)) +
+      geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey60", linewidth = 0.2, aes(fill = type)) +
+      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = label), parse = T, size = 4) +
+      geom_text(data = error_med, aes(x = year, y = med, label = paste0(round(med, digits = 0), "%"), group = type), position = position_dodge(width = 0.8), size = 4.5) +
+      scale_y_continuous(expand = c(0, 0), 
+                         trans = "log10", 
+                         breaks = breaks, 
+                         labels = c("0.1 %", "1 %", "10 %", "100 %", "1000 %", "10000 %", "100000 %")) +
+      scale_x_discrete(expand = c(-0.1, 0)) +
+      coord_cartesian(ylim = ylim) +
+      scale_fill_manual(values = ls_colors) +
+      scale_color_manual(values = ls_colors)
+    
+    
+    if (z_index %% 2 == 1){
+      
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = "Fractional error distribution", 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+      
+    } else {
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              axis.text.y = element_blank(), 
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+    }
+    
+    plot_list[[z_index]] <- p
+    
+    z_index <- z_index + 1
+    
+  }
+  
+  
+}
+
+ggarrange(plotlist = plot_list, 
+          ncol = 2, nrow = 2,
+          align = "hv",
+          common.legend = TRUE,
+          labels = c("a)", "b)", "c)", "d)"),
+          legend = "bottom") +
+  plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
+                  subtitle = str_glue("{gea_example}"))
+
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+
+
+
+
+
+#### WestConnect_South ####
+gea_example <- "WestConnect_South"
+
+# all scenarios at hourly resolution at 2050
+p1 <- df_hourly %>% 
+  filter(year == 2025, 
+         gea == gea_example, 
+         scenario == "MidCase") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2025, 
+                      gea == gea_example,
+                      scenario == "MidCase"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(breaks = seq(0, 600, by = 200)) +
+  scale_color_manual(values = ls_colors) +
+  coord_cartesian(ylim = c(0, 600)) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "MidCase - 2025") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.1),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        axis.text.x = element_blank(), 
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+p2 <- df_hourly %>% 
+  filter(year == 2050, 
+         gea == gea_example, 
+         scenario == "MidCase") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2050, 
+                      gea == gea_example,
+                      scenario == "MidCase"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(breaks = seq(0, 300, by = 100)) +
+  scale_color_manual(values = ls_colors) +
+  coord_cartesian(ylim = c(0, 350)) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "MidCase - 2050") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.1),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+p3 <- df_hourly %>% 
+  filter(year == 2050, 
+         gea == gea_example, 
+         scenario == "LowRECost_HighNGPrice") %>% 
+  ggplot() +
+  geom_line(aes(x = datetime, y = er), linewidth = 0.1, alpha = 0.6) +
+  geom_hline(data = df_annual %>% 
+               filter(year == 2050, 
+                      gea == gea_example,
+                      scenario == "LowRECost_HighNGPrice"), 
+             aes(yintercept = er, color = "Annual avg."), 
+             lty = "dashed", 
+             linewidth = 1.2) +
+  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_y_continuous(breaks = seq(0, 200, by = 100)) +
+  scale_color_manual(values = ls_colors) +
+  coord_cartesian(ylim = c(0, 250)) +
+  labs(x = NULL,
+       y = NULL,
+       color = NULL,
+       subtitle = "LowRECost_HighNGPrice - 2050") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.1),
+        axis.text = element_text(size = 12), 
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        axis.text.x = element_blank(), 
+        plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+
+final_plot <- ggarrange(p1, p2, p3,
+                        nrow = 3, 
+                        labels = c("a)", "b)", "c)"), 
+                        common.legend = T, 
+                        legend = "bottom")
+
+y_axis <- expression(Emissions ~ rate ~ (gCO[2] ~ e/kWh))
+
+annotate_figure(final_plot, 
+                left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
+                top = text_grob(str_glue("Hourly average carbon emissions rate at {gea_example}"), size = 14))
+
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
+
+# summary
+sce_example <- c("MidCase", "LowRECost_HighNGPrice")
+
+# operational
+# subfigs_path <- paste0(figs_path, str_glue("operational/{g}/"))
+z_index <- 1
+plot_list <- list()
+for (perc in c(0, 100)){
+  
+  
+  for (z in sce_example){
+    
+    er_hourly <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/hourly.rds"))) %>% 
+      select(contains(z))
+    
+    colname <- colnames(er_hourly)
+    
+    er_annual <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/annual.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_tod <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/tod.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_month_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/month_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/season.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/operational/{gea_example}/{perc}/season_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_hourly_med <- as.data.frame(t(apply(er_hourly, 2, median))) %>% 
+      pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
+      separate(year, into = c("scenario", "year"), sep = "-") %>% 
+      filter(year %in% c(2025, 2050)) %>% 
+      mutate(er = ifelse(er < 0.1, "'< 0.1'", round(er, 1)), 
+             label = paste0(er, "*~tCO[2]*e"))
+    
+    # Calculate annual error distribution
+    annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
+    
+    # Calculate tod error distribution
+    tod_err <- abs((er_tod - er_hourly) / er_hourly * 100)
+    
+    # Calculate month-hour error distribution
+    month_hour_err <- abs((er_month_hour - er_hourly) / er_hourly * 100)
+    
+    # Calculate season error distribution
+    season_err <- abs((er_season - er_hourly) / er_hourly * 100)
+    
+    # Calculate season-hour error distribution
+    season_hour_err <- abs((er_season_hour - er_hourly) / er_hourly * 100)
+    
+    # Combine plots for all
+    df_error <- bind_rows(
+      annual_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Annual avg."), 
+      season_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season avg."), 
+      tod_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Time-of-day avg."),
+      season_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season-hour avg."),
+      month_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Month-hour avg.")) %>% 
+      filter(year %in% c(2025, 2050))
+    
+    p <- df_error %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
+      ggplot(aes(x = year, y = error)) +
+      geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey20", linewidth = 0.2, aes(fill = type)) +
+      geom_text(data = er_hourly_med, aes(x = year, y = 60, label = label), parse = T, size = 3.5) +
+      scale_y_continuous(expand = c(0, 0), 
+                         breaks = seq(0, 60, by = 20), 
+                         labels = number_format(suffix = " %")) +
+      scale_x_discrete(expand = c(-0.1, 0)) +
+      coord_cartesian(ylim = c(0, 62)) +
+      scale_fill_manual(values = ls_colors) +
+      scale_color_manual(values = ls_colors) 
+    
+    if (z_index %% 2 == 1){
+      
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = "Fractional error distribution", 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+      
+    } else {
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              axis.text.y = element_blank(), 
+              plot.margin = margin(t = 1, r = 1, b = 15, l = 1, unit = "mm"))
+      
+    }
+    
+    plot_list[[z_index]] <- p
+    
+    z_index <- z_index + 1
+    
+  }
+  
+}
+
+ggarrange(plotlist = plot_list, 
+          ncol = 2, nrow = 2,
+          align = "hv",
+          common.legend = TRUE,
+          labels = c("a)", "b)", "c)", "d)"),
+          legend = "bottom") +
+  plot_annotation(title = "Error distribution of operational carbon emissions accounting", 
+                  subtitle = str_glue("{gea_example}"))
+
+ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+
+
+# avoided
+z_index <- 1
+plot_list <- list()
+for (perc in c(25, 100)){
+  
+  
+  for (z in sce_example){
+    
+    er_hourly <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/hourly.rds"))) %>% 
+      select(contains(z))
+    
+    colname <- colnames(er_hourly)
+    
+    er_annual <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/annual.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_tod <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/tod.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_month_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/month_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/season.rds"))) %>% 
+      select(all_of(colname))
+    
+    er_season_hour <- read_rds(str_glue(paste0(readfile_path, "/results/{emissions}/avoided/{gea_example}/{perc}/season_hour.rds"))) %>% 
+      select(all_of(colname))
+    
+    # Calculate annual error distribution
+    annual_err <- abs((er_annual - er_hourly) / er_hourly * 100)
+    
+    # Calculate tod error distribution
+    tod_err <- abs((er_tod - er_hourly) / er_hourly * 100)
+    
+    # Calculate month-hour error distribution
+    month_hour_err <- abs((er_month_hour - er_hourly) / er_hourly * 100)
+    
+    # Calculate season error distribution
+    season_err <- abs((er_season - er_hourly) / er_hourly * 100)
+    
+    # Calculate season-hour error distribution
+    season_hour_err <- abs((er_season_hour - er_hourly) / er_hourly * 100)
+    
+    # Combine plots for all
+    df_error <- bind_rows(
+      annual_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Annual avg."), 
+      season_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season avg."), 
+      tod_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Time-of-day avg."),
+      season_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Season-hour avg."),
+      month_hour_err %>% 
+        pivot_longer(everything(), names_to = "year", values_to = "error") %>% 
+        separate(year, into = c("scenario", "year"), sep = "-") %>% 
+        mutate(type = "Month-hour avg.")) %>% 
+      filter(year %in% c(2025, 2050))
+    
+    breaks <- c(0.1, 1, 10, 100, 1000, 10000)
+    ylim <- if (perc == 25) c(0.1, 8000) else c(0.1, 5000)
+    
+    er_hourly_med <- as.data.frame(t(apply(er_hourly, 2, median))) %>% 
+      pivot_longer(everything(), names_to = "year", values_to = "er") %>% 
+      separate(year, into = c("scenario", "year"), sep = "-") %>% 
+      filter(year %in% c(2025, 2050)) %>% 
+      mutate(pos = ifelse(perc == 25, 5000, 3000), 
+             er = ifelse(er < 0.1, "'< 0.1'", round(er, 1)), 
+             label = paste0(er, "*~tCO[2]*e"))
+    
+    error_med <- df_error %>% 
+      group_by(year, type, scenario) %>% 
+      summarise(med = median(error)) %>% 
+      ungroup() %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) 
+    
+    p <- df_error %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg."))) %>% 
+      ggplot(aes(x = year, y = error)) +
+      geom_lv(alpha = 0.4, k = 4, outlier.shape = NA, position = position_dodge(width = 0.8), color = "grey60", linewidth = 0.2, aes(fill = type)) +
+      geom_text(data = er_hourly_med, aes(x = year, y = pos, label = label), parse = T, size = 4) +
+      geom_text(data = error_med, aes(x = year, y = med, label = paste0(round(med, digits = 0), "%"), group = type), position = position_dodge(width = 0.8), size = 4.5) +
+      scale_y_continuous(expand = c(0, 0), 
+                         trans = "log10", 
+                         breaks = breaks, 
+                         labels = c("0.1 %", "1 %", "10 %", "100 %", "1000 %", "10000 %")) +
       scale_x_discrete(expand = c(-0.1, 0)) +
       coord_cartesian(ylim = ylim) +
       scale_fill_manual(values = ls_colors) +
