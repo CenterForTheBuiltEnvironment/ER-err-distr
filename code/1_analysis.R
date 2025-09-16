@@ -37,8 +37,8 @@ ls_colors <- c("Annual avg." = "#E68B81",
                
 )
 
-# emissions <- "aer"
-emissions <- "moer"
+emissions <- "aer"
+# emissions <- "moer"
 
 
 #### FUNCTION ####
@@ -76,24 +76,20 @@ run_interpo <- function(df_all, site_day){
 readfile_path <- "../readfiles/"
 output_path <- paste0(readfile_path, "results/", str_glue("{emissions}/"))
 
-gis <- read_csv(paste0(readfile_path, "gis.csv"))
-site_map <- read_csv(paste0(readfile_path, "site_map.csv"))
 solar_map <- read_csv(paste0(readfile_path, "solar_map.csv"))
 
 df_energy <- read_rds(paste0(readfile_path, "df_energy.rds")) %>% 
-  left_join(site_map, by = "site") %>% 
   filter(year(timestamp) == 2016, 
          date(timestamp) != "2016-02-29") %>% 
-  select(site = location, 
+  select(site, 
          timestamp, 
          type, 
          name, 
          eload)
 
 df_compr <- read_rds(paste0(readfile_path, "df_energy.rds")) %>% 
-  left_join(site_map, by = "site") %>% 
   filter(year(timestamp) == 2017) %>% 
-  select(site = location, 
+  select(site, 
          timestamp, 
          type, 
          name, 
@@ -103,16 +99,6 @@ df_meta <- read_rds(paste0(readfile_path, "df_meta.rds"))
 
 df_weather <- read_rds(paste0(readfile_path, "/weather/", "df_weather.rds")) %>% 
   filter(year(timestamp) == 2016)
-
-all_sites <- df_energy %>%
-  select(site) %>%
-  distinct() %>%
-  arrange(site)
-
-all_types <- df_energy %>%
-  select(type) %>%
-  mutate(type = as.factor(type)) %>%
-  distinct()
 
 # carbon emissions dataset
 df_annual <- read_rds(paste0(readfile_path, str_glue("/{emissions}/"), "df_annual.rds")) 
@@ -128,10 +114,6 @@ df_tod <- read_rds(paste0(readfile_path, str_glue("/{emissions}/"), "df_tod.rds"
 file_list <- paste0(readfile_path, str_glue("/{emissions}/"), "df_s", 1:8, "_hourly.rds")
 df_s_hourly <- map(file_list, readRDS)
 
-all_names <- df_energy %>%
-  select(name, site) %>% 
-  distinct()
-
 all_scenario <- df_annual %>% 
   select(scenario) %>% 
   distinct()
@@ -140,7 +122,7 @@ all_year <- df_annual %>%
   select(year) %>% 
   distinct()
 
-all_region <- unique(gis %>% drop_na() %>% .$gea)
+all_region <- unique(df_annual %>% .$gea)
 
 
 

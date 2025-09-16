@@ -14,3 +14,6 @@ Minneapolis.epw,Minneapolis,MISO_North,44.9778
 Des Moines.epw,Des Moines,MISO_Central,41.5868
 Atlanta.epw,Atlanta,SERTP,33.749
 Boston.epw,Boston,ISONE,42.3601
+Portland.epw,Portland,NorthernGrid_East,45.6
+Boise.epw,Boise,NorthernGrid_West,43.62
+Las Vegas.epw,Las Vegas,NorthernGrid_South,36.08
