@@ -155,8 +155,10 @@ df_gen <- read_rds(paste0(readfile_path, "df_gen.rds")) %>%
          foss = rowSums(across(c("coal_MWh", "gas-cc_MWh", "gas-ct_MWh"))), 
          foss_rt = round(rowSums(across(c("coal_MWh", "gas-cc_MWh", "gas-ct_MWh"))) / generation * 100, digits = 0),
          other = generation - solar - wind - foss, 
+         other_rt = round(other / generation * 100, digits = 0), 
          solar_pos = wind + foss + other + solar / 2, 
          wind_pos = foss + other + wind / 2, 
+         other_pos = foss + other / 2,
          foss_pos = foss / 2) %>% 
   mutate(scenario = factor(scenario, levels = c("MidCase", "LowRECost_HighNGPrice")), 
          gea = as.factor(gea), 
@@ -164,7 +166,7 @@ df_gen <- read_rds(paste0(readfile_path, "df_gen.rds")) %>%
 
 p1 <- df_gen %>% 
   filter(gea == "CAISO") %>% 
-  select(c(gea, year, scenario, other, solar, solar_rt, wind, wind_rt, foss, foss_rt, solar_pos, wind_pos, foss_pos)) %>% 
+  select(c(gea, year, scenario, other, other_rt, solar, solar_rt, wind, wind_rt, foss, foss_rt, other_pos, solar_pos, wind_pos, foss_pos)) %>% 
   pivot_longer(c(solar, wind, foss, other), names_to = "gen", values_to = "value") %>% 
   mutate(gen = factor(gen, levels = c("solar", "wind", "other", "foss")), 
          gen = recode_factor(gen, 
@@ -174,10 +176,12 @@ p1 <- df_gen %>%
                              "foss" = "Fossil")) %>% 
   ggplot() +
   geom_col(aes(x = year, y = value / 10000000, fill = gen), position = "stack") +
-  geom_text(aes(x = year, y = solar_pos / 10000000, label = paste0(solar_rt, "%")), check_overlap = T, size = 4) +
-  geom_text(aes(x = year, y = wind_pos / 10000000, label = paste0(wind_rt, "%")), check_overlap = T, size = 4) +
-  geom_text(aes(x = year, y = foss_pos / 10000000, label = paste0(foss_rt, "%")), check_overlap = T, color = "white", size = 4) +
+  geom_text(aes(x = year, y = solar_pos / 10000000, label = ifelse(solar_rt < 10, NA, paste0(solar_rt, "%"))), check_overlap = T, size = 4) +
+  geom_text(aes(x = year, y = wind_pos / 10000000, label = ifelse(wind_rt < 10, NA, paste0(wind_rt, "%"))), check_overlap = T, size = 4) +
+  geom_text(aes(x = year, y = other_pos / 10000000, label = ifelse(other_rt < 10, NA, paste0(other_rt, "%"))), check_overlap = T, color = "white", size = 4) +
+  geom_text(aes(x = year, y = foss_pos / 10000000, label = ifelse(foss_rt < 10, NA, paste0(foss_rt, "%"))), check_overlap = T, color = "white", size = 4) +
   facet_wrap(~scenario, nrow = 1) +
+  scale_y_continuous(breaks = seq(0, 100, by = 25)) +
   labs(x = NULL,
        y = NULL,
        fill = NULL,
@@ -190,7 +194,7 @@ p1 <- df_gen %>%
 
 p2 <- df_gen %>% 
   filter(gea == "ERCOT") %>% 
-  select(c(gea, year, scenario, other, solar, solar_rt, wind, wind_rt, foss, foss_rt, solar_pos, wind_pos, foss_pos)) %>% 
+  select(c(gea, year, scenario, other, other_rt, solar, solar_rt, wind, wind_rt, foss, other_pos, foss_rt, solar_pos, wind_pos, foss_pos)) %>% 
   pivot_longer(c(solar, wind, foss, other), names_to = "gen", values_to = "value") %>% 
   mutate(gen = factor(gen, levels = c("solar", "wind", "other", "foss")), 
          gen = recode_factor(gen, 
@@ -200,10 +204,12 @@ p2 <- df_gen %>%
                              "foss" = "Fossil")) %>% 
   ggplot() +
   geom_col(aes(x = year, y = value / 10000000, fill = gen), position = "stack") +
-  geom_text(aes(x = year, y = solar_pos / 10000000, label = paste0(solar_rt, "%")), check_overlap = T, size = 4) +
-  geom_text(aes(x = year, y = wind_pos / 10000000, label = paste0(wind_rt, "%")), check_overlap = T, size = 4) +
-  geom_text(aes(x = year, y = foss_pos / 10000000, label = paste0(foss_rt, "%")), check_overlap = T, color = "white", size = 4, position = position_nudge(y = 0.5)) +
+  geom_text(aes(x = year, y = solar_pos / 10000000, label = ifelse(solar_rt < 10, NA, paste0(solar_rt, "%"))), check_overlap = T, size = 4) +
+  geom_text(aes(x = year, y = wind_pos / 10000000, label = ifelse(wind_rt < 10, NA, paste0(wind_rt, "%"))), check_overlap = T, size = 4) +
+  geom_text(aes(x = year, y = other_pos / 10000000, label = ifelse(other_rt < 10, NA, paste0(other_rt, "%"))), check_overlap = T, color = "white", size = 4) +
+  geom_text(aes(x = year, y = foss_pos / 10000000, label = ifelse(foss_rt < 10, NA, paste0(foss_rt, "%"))), check_overlap = T, color = "white", size = 4) +
   facet_wrap(~scenario, nrow = 1) +
+  scale_y_continuous(breaks = seq(0, 100, by = 25)) +
   labs(x = NULL,
        y = NULL,
        fill = NULL,
@@ -218,7 +224,7 @@ p2 <- df_gen %>%
 
 p3 <- df_gen %>% 
   filter(gea == "PJM_East") %>% 
-  select(c(gea, year, scenario, other, solar, solar_rt, wind, wind_rt, foss, foss_rt, solar_pos, wind_pos, foss_pos)) %>% 
+  select(c(gea, year, scenario, other, other_rt, solar, solar_rt, wind, wind_rt, foss, foss_rt, other_pos, solar_pos, wind_pos, foss_pos)) %>% 
   pivot_longer(c(solar, wind, foss, other), names_to = "gen", values_to = "value") %>% 
   mutate(gen = factor(gen, levels = c("solar", "wind", "other", "foss")), 
          gen = recode_factor(gen, 
@@ -228,10 +234,12 @@ p3 <- df_gen %>%
                              "foss" = "Fossil")) %>% 
   ggplot() +
   geom_col(aes(x = year, y = value / 10000000, fill = gen), position = "stack") +
-  geom_text(aes(x = year, y = solar_pos / 10000000, label = paste0(solar_rt, "%")), check_overlap = T, size = 4, position = position_nudge(y = 0.25)) +
-  geom_text(aes(x = year, y = wind_pos / 10000000, label = paste0(wind_rt, "%")), check_overlap = T, size = 4, position = position_nudge(y = -0.25)) +
-  geom_text(aes(x = year, y = foss_pos / 10000000, label = paste0(foss_rt, "%")), check_overlap = T, color = "white", size = 4, position = position_nudge(y = 0.5)) +
+  geom_text(aes(x = year, y = solar_pos / 10000000, label = ifelse(solar_rt < 10, NA, paste0(solar_rt, "%"))), check_overlap = T, size = 4) +
+  geom_text(aes(x = year, y = wind_pos / 10000000, label = ifelse(wind_rt < 10, NA, paste0(wind_rt, "%"))), check_overlap = T, size = 4) +
+  geom_text(aes(x = year, y = other_pos / 10000000, label = ifelse(other_rt < 10, NA, paste0(other_rt, "%"))), check_overlap = T, color = "white", size = 4) +
+  geom_text(aes(x = year, y = foss_pos / 10000000, label = ifelse(foss_rt < 10, NA, paste0(foss_rt, "%"))), check_overlap = T, color = "white", size = 4) +
   facet_wrap(~scenario, nrow = 1) +
+  scale_y_continuous(breaks = seq(0, 100, by = 25)) +
   labs(x = NULL,
        y = NULL,
        fill = NULL,
@@ -245,10 +253,11 @@ p3 <- df_gen %>%
 
 final_plot <- ggarrange(p1, p2, p3, 
                         nrow = 3, 
+                        heights = c(1, 1, 1.2), 
                         common.legend = TRUE, 
                         legend = "bottom")
 
-y_axis <- expression(Emission ~ rates ~ (10^7 ~ MWh))
+y_axis <- expression(Grid ~ electricity ~ generation ~ (10^7 ~ MWh))
 annotate_figure(final_plot, 
                 left = text_grob(y_axis, 
                                  rot = 90, vjust = 1, size = 12),
@@ -408,7 +417,7 @@ df_hourly %>%
   geom_smooth(aes(x = datetime, y = er, color = type, group = year), linewidth = 0.8) +
   facet_wrap(~year, nrow = 3, scales = "free") +
   scale_color_manual(values = ls_colors) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(expand = c(0, 0),
                      breaks = breaks_pretty(n = 5)) +
   labs(x = NULL,
@@ -429,7 +438,7 @@ avg_annot <- df_annual %>%
   filter(gea == gea_example, 
          year %in% c(2025, 2050), 
          scenario %in% c("MidCase", "LowRECost_HighNGPrice")) %>% 
-  mutate(x_pos = if_else(year == 2025, as.POSIXct("2025-05-01 00:00:00"), as.POSIXct("2050-05-01 00:00:00")))
+  mutate(x_pos = if_else(year == 2025, as.POSIXct("2026-01-15 00:00:00"), as.POSIXct("2051-01-15 00:00:00")))
 
 p1 <- df_hourly %>% 
   filter(year == 2025, 
@@ -447,9 +456,12 @@ p1 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2025, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = paste0("(", er, ")")), 
-            size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = er), 
+            size = 5, 
+            show.legend = FALSE) +
+  scale_x_datetime(expand = c(0.05, 0), 
+                   labels = date_format("%b"), 
+                   date_breaks = "3 months") +
   scale_y_continuous(expand = c(0, 0),
                      breaks = seq(0, 400, by = 100), 
                      labels = c("0", "100", "200", "300", "400")) + 
@@ -482,9 +494,11 @@ p2 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), 
+                   labels = date_format("%b"), 
+                   date_breaks = "3 months") +
   scale_y_continuous(expand = c(0, 0),
                      breaks = seq(0, 150, by = 50), 
                      labels = c("0", "50", "100", "150")) +
@@ -517,9 +531,11 @@ p3 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "LowRECost_HighNGPrice"), 
-            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = paste0("(", er, ")")),
+            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = er),
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), 
+                   labels = date_format("%b"), 
+                   date_breaks = "3 months") +
   scale_y_continuous(expand = c(0, 0),
                      breaks = seq(0, 150, by = 50), 
                      labels = c("0", "50", "100", "150")) +
@@ -547,7 +563,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # Summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -857,7 +873,7 @@ avg_annot <- df_annual %>%
   filter(gea == gea_example, 
          year %in% c(2025, 2050), 
          scenario %in% c("MidCase", "LowRECost_HighNGPrice")) %>% 
-  mutate(x_pos = if_else(year == 2025, as.POSIXct("2025-05-01 00:00:00"), as.POSIXct("2050-05-01 00:00:00")))
+  mutate(x_pos = if_else(year == 2025, as.POSIXct("2026-01-15 00:00:00"), as.POSIXct("2051-01-15 00:00:00")))
 
 p1 <- df_hourly %>% 
   filter(year == 2025, 
@@ -875,9 +891,10 @@ p1 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2025, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = paste0("(", er, ")")), 
-            size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = er), 
+            size = 5, 
+            show.legend = FALSE) +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(expand = c(0, 0),
                      breaks = seq(0, 500, by = 100), 
                      labels = c("0", "100", "200", "300", "400", "500")) +
@@ -910,9 +927,11 @@ p2 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), 
+                   labels = date_format("%b"), 
+                   date_breaks = "3 months") +
   scale_y_continuous(expand = c(0, 0),
                      breaks = seq(0, 300, by = 100), 
                      labels = c("0", "100", "200", "300")) +
@@ -945,9 +964,11 @@ p3 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "LowRECost_HighNGPrice"), 
-            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), 
+                   labels = date_format("%b"), 
+                   date_breaks = "3 months") +
   scale_y_continuous(expand = c(0, 0),
                      breaks = seq(0, 300, by = 100), 
                      labels = c("0", "100", "200", "300")) +
@@ -975,7 +996,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -1287,7 +1308,7 @@ avg_annot <- df_annual %>%
   filter(gea == gea_example, 
          year %in% c(2025, 2050), 
          scenario %in% c("MidCase", "LowRECost_HighNGPrice")) %>% 
-  mutate(x_pos = if_else(year == 2025, as.POSIXct("2025-05-01 00:00:00"), as.POSIXct("2050-05-01 00:00:00")))
+  mutate(x_pos = if_else(year == 2025, as.POSIXct("2026-01-15 00:00:00"), as.POSIXct("2051-01-15 00:00:00")))
 
 p1 <- df_hourly %>% 
   filter(year == 2025, 
@@ -1305,9 +1326,10 @@ p1 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2025, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = paste0("(", er, ")")), 
-            size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = er), 
+            size = 5, 
+            show.legend = FALSE) +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(expand = c(0, 0),
                      breaks = seq(0, 800, by = 200), 
                      labels = c("0", "200", "400", "600", "800")) +
@@ -1340,9 +1362,10 @@ p2 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = paste0("(", er, ")")), 
-            size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = er), 
+            size = 5, 
+            show.legend = FALSE) +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(expand = c(0, 0),
                      breaks = seq(0, 400, by = 100), 
                      labels = c("0", "100", "200", "300", "400")) +
@@ -1374,9 +1397,10 @@ p3 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "LowRECost_HighNGPrice"), 
-            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = paste0("(", er, ")")), 
-            size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = er), 
+            size = 5, 
+            show.legend = FALSE) +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(expand = c(0, 0),
                      breaks = seq(0, 400, by = 100), 
                      labels = c("0", "100", "200", "300", "400")) +
@@ -1405,7 +1429,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -1715,7 +1739,7 @@ avg_annot <- df_annual %>%
   filter(gea == gea_example, 
          year %in% c(2025, 2050), 
          scenario %in% c("MidCase", "LowRECost_HighNGPrice")) %>% 
-  mutate(x_pos = if_else(year == 2025, as.POSIXct("2025-05-01 00:00:00"), as.POSIXct("2050-05-01 00:00:00")))
+  mutate(x_pos = if_else(year == 2025, as.POSIXct("2026-01-15 00:00:00"), as.POSIXct("2051-01-15 00:00:00")))
 
 p1 <- df_hourly %>% 
   filter(year == 2025, 
@@ -1733,9 +1757,10 @@ p1 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2025, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = paste0("(", er, ")")), 
-            size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = er), 
+            size = 5, 
+            show.legend = FALSE) +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 600, by = 200)) +
   coord_cartesian(ylim = c(0, 650)) +
   scale_color_manual(values = ls_colors) +
@@ -1766,9 +1791,10 @@ p2 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = paste0("(", er, ")")), 
-            size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = er), 
+            size = 5, 
+            show.legend = FALSE) +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 600, by = 200)) +
   coord_cartesian(ylim = c(0, 600)) +
   scale_color_manual(values = ls_colors) +
@@ -1799,9 +1825,9 @@ p3 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "LowRECost_HighNGPrice"), 
-            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 600, by = 200)) +
   coord_cartesian(ylim = c(0, 600)) +
   scale_color_manual(values = ls_colors) +
@@ -1827,7 +1853,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -2136,7 +2162,7 @@ avg_annot <- df_annual %>%
   filter(gea == gea_example, 
          year %in% c(2025, 2050), 
          scenario %in% c("MidCase", "LowRECost_HighNGPrice")) %>% 
-  mutate(x_pos = if_else(year == 2025, as.POSIXct("2025-05-01 00:00:00"), as.POSIXct("2050-05-01 00:00:00")))
+  mutate(x_pos = if_else(year == 2025, as.POSIXct("2026-01-15 00:00:00"), as.POSIXct("2051-01-15 00:00:00")))
 
 p1 <- df_hourly %>% 
   filter(year == 2025, 
@@ -2154,9 +2180,10 @@ p1 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2025, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = paste0("(", er, ")")), 
-            size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = er), 
+            size = 5, 
+            show.legend = FALSE) +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 400, by = 200)) +
   coord_cartesian(ylim = c(0, 450)) +
   scale_color_manual(values = ls_colors) +
@@ -2187,9 +2214,9 @@ p2 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 200, by = 100)) +
   coord_cartesian(ylim = c(0, 200)) +
   scale_color_manual(values = ls_colors) +
@@ -2220,9 +2247,9 @@ p3 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "LowRECost_HighNGPrice"), 
-            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 200, by = 100)) +
   coord_cartesian(ylim = c(0, 200)) +
   scale_color_manual(values = ls_colors) +
@@ -2248,7 +2275,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -2558,7 +2585,7 @@ avg_annot <- df_annual %>%
   filter(gea == gea_example, 
          year %in% c(2025, 2050), 
          scenario %in% c("MidCase", "LowRECost_HighNGPrice")) %>% 
-  mutate(x_pos = if_else(year == 2025, as.POSIXct("2025-05-01 00:00:00"), as.POSIXct("2050-05-01 00:00:00")))
+  mutate(x_pos = if_else(year == 2025, as.POSIXct("2026-01-15 00:00:00"), as.POSIXct("2051-01-15 00:00:00")))
 
 p1 <- df_hourly %>% 
   filter(year == 2025, 
@@ -2576,9 +2603,10 @@ p1 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2025, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = paste0("(", er, ")")), 
-            size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = er), 
+            size = 5, 
+            show.legend = FALSE) +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 800, by = 200)) +
   coord_cartesian(ylim = c(0, 850)) +
   scale_color_manual(values = ls_colors) +
@@ -2609,9 +2637,9 @@ p2 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 300, by = 100)) +
   coord_cartesian(ylim = c(0, 300)) +
   scale_color_manual(values = ls_colors) +
@@ -2642,9 +2670,9 @@ p3 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "LowRECost_HighNGPrice"), 
-            aes(x = x_pos, y = er * 1.5, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 1.5, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 200, by = 100)) +
   coord_cartesian(ylim = c(0, 200)) +
   scale_color_manual(values = ls_colors) +
@@ -2670,7 +2698,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -2979,7 +3007,7 @@ avg_annot <- df_annual %>%
   filter(gea == gea_example, 
          year %in% c(2025, 2050), 
          scenario %in% c("MidCase", "LowRECost_HighNGPrice")) %>% 
-  mutate(x_pos = if_else(year == 2025, as.POSIXct("2025-05-01 00:00:00"), as.POSIXct("2050-05-01 00:00:00")))
+  mutate(x_pos = if_else(year == 2025, as.POSIXct("2026-01-15 00:00:00"), as.POSIXct("2051-01-15 00:00:00")))
 
 p1 <- df_hourly %>% 
   filter(year == 2025, 
@@ -2997,9 +3025,10 @@ p1 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2025, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = paste0("(", er, ")")), 
-            size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = er), 
+            size = 5, 
+            show.legend = FALSE) +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 800, by = 200)) +
   coord_cartesian(ylim = c(0, 800)) +
   scale_color_manual(values = ls_colors) +
@@ -3030,9 +3059,9 @@ p2 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 500, by = 200)) +
   coord_cartesian(ylim = c(0, 450)) +
   scale_color_manual(values = ls_colors) +
@@ -3063,9 +3092,9 @@ p3 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "LowRECost_HighNGPrice"), 
-            aes(x = x_pos, y = er * 1.5, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 1.5, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 500, by = 200)) +
   coord_cartesian(ylim = c(0, 450)) +
   scale_color_manual(values = ls_colors) +
@@ -3091,7 +3120,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -3400,7 +3429,7 @@ avg_annot <- df_annual %>%
   filter(gea == gea_example, 
          year %in% c(2025, 2050), 
          scenario %in% c("MidCase", "LowRECost_HighNGPrice")) %>% 
-  mutate(x_pos = if_else(year == 2025, as.POSIXct("2025-05-01 00:00:00"), as.POSIXct("2050-05-01 00:00:00")))
+  mutate(x_pos = if_else(year == 2025, as.POSIXct("2026-01-15 00:00:00"), as.POSIXct("2051-01-15 00:00:00")))
 
 p1 <- df_hourly %>% 
   filter(year == 2025, 
@@ -3418,9 +3447,10 @@ p1 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2025, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = paste0("(", er, ")")), 
-            size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = er), 
+            size = 5, 
+            show.legend = FALSE) +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 600, by = 200)) +
   coord_cartesian(ylim = c(0, 650)) +
   scale_color_manual(values = ls_colors) +
@@ -3451,9 +3481,9 @@ p2 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 400, by = 200)) +
   coord_cartesian(ylim = c(0, 450)) +
   scale_color_manual(values = ls_colors) +
@@ -3484,9 +3514,9 @@ p3 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "LowRECost_HighNGPrice"), 
-            aes(x = x_pos, y = er * 1.5, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 1.5, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 400, by = 200)) +
   coord_cartesian(ylim = c(0, 450)) +
   scale_color_manual(values = ls_colors) +
@@ -3512,7 +3542,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -3822,7 +3852,7 @@ avg_annot <- df_annual %>%
   filter(gea == gea_example, 
          year %in% c(2025, 2050), 
          scenario %in% c("MidCase", "LowRECost_HighNGPrice")) %>% 
-  mutate(x_pos = if_else(year == 2025, as.POSIXct("2025-05-01 00:00:00"), as.POSIXct("2050-05-01 00:00:00")))
+  mutate(x_pos = if_else(year == 2025, as.POSIXct("2026-01-15 00:00:00"), as.POSIXct("2051-01-15 00:00:00")))
 
 p1 <- df_hourly %>% 
   filter(year == 2025, 
@@ -3840,9 +3870,10 @@ p1 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2025, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = paste0("(", er, ")")), 
-            size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = er), 
+            size = 5, 
+            show.legend = FALSE) +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 600, by = 200)) +
   coord_cartesian(ylim = c(0, 650)) +
   scale_color_manual(values = ls_colors) +
@@ -3873,9 +3904,9 @@ p2 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 400, by = 200)) +
   coord_cartesian(ylim = c(0, 450)) +
   scale_color_manual(values = ls_colors) +
@@ -3906,9 +3937,9 @@ p3 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "LowRECost_HighNGPrice"), 
-            aes(x = x_pos, y = er * 1.5, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 1.5, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 400, by = 200)) +
   coord_cartesian(ylim = c(0, 450)) +
   scale_color_manual(values = ls_colors) +
@@ -3934,7 +3965,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -4244,7 +4275,7 @@ avg_annot <- df_annual %>%
   filter(gea == gea_example, 
          year %in% c(2025, 2050), 
          scenario %in% c("MidCase", "LowRECost_HighNGPrice")) %>% 
-  mutate(x_pos = if_else(year == 2025, as.POSIXct("2025-05-01 00:00:00"), as.POSIXct("2050-05-01 00:00:00")))
+  mutate(x_pos = if_else(year == 2025, as.POSIXct("2026-01-15 00:00:00"), as.POSIXct("2051-01-15 00:00:00")))
 
 p1 <- df_hourly %>% 
   filter(year == 2025, 
@@ -4262,9 +4293,10 @@ p1 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2025, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = paste0("(", er, ")")), 
-            size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = er), 
+            size = 5, 
+            show.legend = FALSE) +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 400, by = 200)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 450)) +
@@ -4295,9 +4327,9 @@ p2 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.5, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 1.5, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 400, by = 100)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 450)) +
@@ -4327,9 +4359,9 @@ p3 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "LowRECost_HighNGPrice"), 
-            aes(x = x_pos, y = er * 2, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 2, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 400, by = 100)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 420)) +
@@ -4356,7 +4388,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -4666,7 +4698,7 @@ avg_annot <- df_annual %>%
   filter(gea == gea_example, 
          year %in% c(2025, 2050), 
          scenario %in% c("MidCase", "LowRECost_HighNGPrice")) %>% 
-  mutate(x_pos = if_else(year == 2025, as.POSIXct("2025-05-01 00:00:00"), as.POSIXct("2050-05-01 00:00:00")))
+  mutate(x_pos = if_else(year == 2025, as.POSIXct("2026-01-15 00:00:00"), as.POSIXct("2051-01-15 00:00:00")))
 
 p1 <- df_hourly %>% 
   filter(year == 2025, 
@@ -4684,9 +4716,10 @@ p1 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2025, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = paste0("(", er, ")")), 
-            size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = er), 
+            size = 5, 
+            show.legend = FALSE) +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 600, by = 200)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 600)) +
@@ -4714,7 +4747,7 @@ p2 <- df_hourly %>%
              aes(yintercept = er, color = "Annual avg."), 
              lty = "dashed", 
              linewidth = 1.2) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 300, by = 100)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 350)) +
@@ -4725,7 +4758,7 @@ p2 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = er), 
             size = 5) +
   theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.1),
         axis.text = element_text(size = 12), 
@@ -4749,9 +4782,9 @@ p3 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "LowRECost_HighNGPrice"), 
-            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 300, by = 100)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 350)) +
@@ -4778,7 +4811,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -5088,7 +5121,7 @@ avg_annot <- df_annual %>%
   filter(gea == gea_example, 
          year %in% c(2025, 2050), 
          scenario %in% c("MidCase", "LowRECost_HighNGPrice")) %>% 
-  mutate(x_pos = if_else(year == 2025, as.POSIXct("2025-05-01 00:00:00"), as.POSIXct("2050-05-01 00:00:00")))
+  mutate(x_pos = if_else(year == 2025, as.POSIXct("2026-01-15 00:00:00"), as.POSIXct("2051-01-15 00:00:00")))
 
 p1 <- df_hourly %>% 
   filter(year == 2025, 
@@ -5106,9 +5139,10 @@ p1 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2025, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = paste0("(", er, ")")), 
-            size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = er), 
+            size = 5, 
+            show.legend = FALSE) +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 800, by = 200)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 850)) +
@@ -5139,9 +5173,9 @@ p2 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 2, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 2, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 200, by = 100)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 250)) +
@@ -5171,9 +5205,9 @@ p3 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "LowRECost_HighNGPrice"), 
-            aes(x = x_pos, y = er * 2, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 2, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 100, by = 50)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 150)) +
@@ -5200,7 +5234,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -5510,7 +5544,7 @@ avg_annot <- df_annual %>%
   filter(gea == gea_example, 
          year %in% c(2025, 2050), 
          scenario %in% c("MidCase", "LowRECost_HighNGPrice")) %>% 
-  mutate(x_pos = if_else(year == 2025, as.POSIXct("2025-05-01 00:00:00"), as.POSIXct("2050-05-01 00:00:00")))
+  mutate(x_pos = if_else(year == 2025, as.POSIXct("2026-01-15 00:00:00"), as.POSIXct("2051-01-15 00:00:00")))
 
 p1 <- df_hourly %>% 
   filter(year == 2025, 
@@ -5528,9 +5562,10 @@ p1 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2025, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = paste0("(", er, ")")), 
-            size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = er), 
+            size = 5, 
+            show.legend = FALSE) +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 800, by = 200)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 800)) +
@@ -5561,9 +5596,9 @@ p2 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 2, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 2, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 300, by = 100)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 350)) +
@@ -5593,9 +5628,9 @@ p3 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "LowRECost_HighNGPrice"), 
-            aes(x = x_pos, y = er * 2, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 2, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 200, by = 100)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 250)) +
@@ -5622,7 +5657,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -5932,7 +5967,7 @@ avg_annot <- df_annual %>%
   filter(gea == gea_example, 
          year %in% c(2025, 2050), 
          scenario %in% c("MidCase", "LowRECost_HighNGPrice")) %>% 
-  mutate(x_pos = if_else(year == 2025, as.POSIXct("2025-05-01 00:00:00"), as.POSIXct("2050-05-01 00:00:00")))
+  mutate(x_pos = if_else(year == 2025, as.POSIXct("2026-01-15 00:00:00"), as.POSIXct("2051-01-15 00:00:00")))
 
 p1 <- df_hourly %>% 
   filter(year == 2025, 
@@ -5950,9 +5985,10 @@ p1 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2025, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = paste0("(", er, ")")), 
-            size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = er), 
+            size = 5, 
+            show.legend = FALSE) +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 800, by = 200)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 850)) +
@@ -5983,9 +6019,9 @@ p2 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 2, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 2, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 200, by = 100)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 250)) +
@@ -6015,9 +6051,9 @@ p3 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "LowRECost_HighNGPrice"), 
-            aes(x = x_pos, y = er * 2, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 2, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 100, by = 50)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 150)) +
@@ -6044,7 +6080,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -6354,7 +6390,7 @@ avg_annot <- df_annual %>%
   filter(gea == gea_example, 
          year %in% c(2025, 2050), 
          scenario %in% c("MidCase", "LowRECost_HighNGPrice")) %>% 
-  mutate(x_pos = if_else(year == 2025, as.POSIXct("2025-05-01 00:00:00"), as.POSIXct("2050-05-01 00:00:00")))
+  mutate(x_pos = if_else(year == 2025, as.POSIXct("2026-01-15 00:00:00"), as.POSIXct("2051-01-15 00:00:00")))
 
 p1 <- df_hourly %>% 
   filter(year == 2025, 
@@ -6372,9 +6408,10 @@ p1 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2025, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = paste0("(", er, ")")), 
-            size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = er), 
+            size = 5, 
+            show.legend = FALSE) +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 600, by = 200)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 600)) +
@@ -6405,9 +6442,9 @@ p2 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 300, by = 100)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 350)) +
@@ -6437,9 +6474,9 @@ p3 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "LowRECost_HighNGPrice"), 
-            aes(x = x_pos, y = er * 2, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 2, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 200, by = 100)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 250)) +
@@ -6466,7 +6503,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -6775,7 +6812,7 @@ avg_annot <- df_annual %>%
   filter(gea == gea_example, 
          year %in% c(2025, 2050), 
          scenario %in% c("MidCase", "LowRECost_HighNGPrice")) %>% 
-  mutate(x_pos = if_else(year == 2025, as.POSIXct("2025-05-01 00:00:00"), as.POSIXct("2050-05-01 00:00:00")))
+  mutate(x_pos = if_else(year == 2025, as.POSIXct("2026-01-15 00:00:00"), as.POSIXct("2051-01-15 00:00:00")))
 
 p1 <- df_hourly %>% 
   filter(year == 2025, 
@@ -6793,9 +6830,10 @@ p1 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2025, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = paste0("(", er, ")")), 
-            size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = er), 
+            size = 5, 
+            show.legend = FALSE) +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 800, by = 200)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 850)) +
@@ -6826,9 +6864,9 @@ p2 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 2, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 2, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 200, by = 100)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 250)) +
@@ -6858,9 +6896,9 @@ p3 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "LowRECost_HighNGPrice"), 
-            aes(x = x_pos, y = er * 2, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 2, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 100, by = 50)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 150)) +
@@ -6887,7 +6925,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -7196,7 +7234,7 @@ avg_annot <- df_annual %>%
   filter(gea == gea_example, 
          year %in% c(2025, 2050), 
          scenario %in% c("MidCase", "LowRECost_HighNGPrice")) %>% 
-  mutate(x_pos = if_else(year == 2025, as.POSIXct("2025-05-01 00:00:00"), as.POSIXct("2050-05-01 00:00:00")))
+  mutate(x_pos = if_else(year == 2025, as.POSIXct("2026-01-15 00:00:00"), as.POSIXct("2051-01-15 00:00:00")))
 
 p1 <- df_hourly %>% 
   filter(year == 2025, 
@@ -7211,7 +7249,7 @@ p1 <- df_hourly %>%
              aes(yintercept = er, color = "Annual avg."), 
              lty = "dashed", 
              linewidth = 1.2) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 800, by = 200)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 850)) +
@@ -7222,8 +7260,9 @@ p1 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2025, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = paste0("(", er, ")")), 
-            size = 5) +
+            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = er), 
+            size = 5, 
+            show.legend = FALSE) +
   theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.1),
         axis.text = element_text(size = 12), 
         legend.direction = "horizontal",
@@ -7247,9 +7286,9 @@ p2 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 400, by = 100)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 400)) +
@@ -7279,9 +7318,9 @@ p3 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "LowRECost_HighNGPrice"), 
-            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 1.4, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 400, by = 100)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 400)) +
@@ -7308,7 +7347,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -7618,7 +7657,7 @@ avg_annot <- df_annual %>%
   filter(gea == gea_example, 
          year %in% c(2025, 2050), 
          scenario %in% c("MidCase", "LowRECost_HighNGPrice")) %>% 
-  mutate(x_pos = if_else(year == 2025, as.POSIXct("2025-05-01 00:00:00"), as.POSIXct("2050-05-01 00:00:00")))
+  mutate(x_pos = if_else(year == 2025, as.POSIXct("2026-01-15 00:00:00"), as.POSIXct("2051-01-15 00:00:00")))
 
 p1 <- df_hourly %>% 
   filter(year == 2025, 
@@ -7636,9 +7675,10 @@ p1 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2025, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = paste0("(", er, ")")), 
-            size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+            aes(x = x_pos, y = er * 1.2, color = "Annual avg.", label = er), 
+            size = 5, 
+            show.legend = FALSE) +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 200, by = 50)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 200)) +
@@ -7669,9 +7709,9 @@ p2 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "MidCase"), 
-            aes(x = x_pos, y = er * 2, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 2, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 100, by = 50)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 100)) +
@@ -7701,9 +7741,9 @@ p3 <- df_hourly %>%
   geom_text(data = avg_annot %>% 
               filter(year == 2050, 
                      scenario == "LowRECost_HighNGPrice"), 
-            aes(x = x_pos, y = er * 2, color = "Annual avg.", label = paste0("(", er, ")")), 
+            aes(x = x_pos, y = er * 2, color = "Annual avg.", label = er), 
             size = 5) +
-  scale_x_datetime(labels = date_format("%b"), date_breaks = "3 months") +
+  scale_x_datetime(expand = c(0.05, 0), labels = date_format("%b"), date_breaks = "3 months") +
   scale_y_continuous(breaks = seq(0, 100, by = 50)) +
   scale_color_manual(values = ls_colors) +
   coord_cartesian(ylim = c(0, 100)) +
@@ -7730,7 +7770,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
