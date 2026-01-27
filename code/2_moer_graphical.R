@@ -136,6 +136,8 @@ all_year <- df_annual %>%
 
 all_region <- unique(df_annual %>% .$gea)
 
+df_error_avd <- data.frame(matrix(ncol = 4, nrow = 0))
+
 
 
 
@@ -568,6 +570,8 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
+    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    
   }
   
   
@@ -856,6 +860,8 @@ for (perc in c(25, 100)){
     plot_list[[z_index]] <- p
     
     z_index <- z_index + 1
+    
+    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
     
   }
   
@@ -1151,6 +1157,8 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
+    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    
   }
   
   
@@ -1166,6 +1174,7 @@ ggarrange(plotlist = plot_list,
                   subtitle = str_glue("{gea_example}"))
 
 ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+
 
 
 
@@ -1434,6 +1443,8 @@ for (perc in c(25, 100)){
     plot_list[[z_index]] <- p
     
     z_index <- z_index + 1
+    
+    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
     
   }
   
@@ -1718,6 +1729,8 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
+    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    
   }
   
   
@@ -2001,6 +2014,8 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
+    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    
   }
   
   
@@ -2016,6 +2031,7 @@ ggarrange(plotlist = plot_list,
                   subtitle = str_glue("{gea_example}"))
 
 ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+
 
 
 
@@ -2284,6 +2300,8 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
+    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    
   }
   
   
@@ -2299,6 +2317,7 @@ ggarrange(plotlist = plot_list,
                   subtitle = str_glue("{gea_example}"))
 
 ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+
 
 
 
@@ -2566,6 +2585,8 @@ for (perc in c(25, 100)){
     plot_list[[z_index]] <- p
     
     z_index <- z_index + 1
+    
+    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
     
   }
   
@@ -2852,6 +2873,8 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
+    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    
   }
   
   
@@ -2867,6 +2890,7 @@ ggarrange(plotlist = plot_list,
                   subtitle = str_glue("{gea_example}"))
 
 ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+
 
 
 
@@ -3135,6 +3159,8 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
+    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    
   }
   
   
@@ -3150,6 +3176,7 @@ ggarrange(plotlist = plot_list,
                   subtitle = str_glue("{gea_example}"))
 
 ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+
 
 
 
@@ -3418,6 +3445,8 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
+    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    
   }
   
   
@@ -3433,6 +3462,7 @@ ggarrange(plotlist = plot_list,
                   subtitle = str_glue("{gea_example}"))
 
 ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+
 
 
 
@@ -3701,6 +3731,8 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
+    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    
   }
   
   
@@ -3716,6 +3748,7 @@ ggarrange(plotlist = plot_list,
                   subtitle = str_glue("{gea_example}"))
 
 ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+
 
 
 
@@ -3983,6 +4016,8 @@ for (perc in c(25, 100)){
     plot_list[[z_index]] <- p
     
     z_index <- z_index + 1
+    
+    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
     
   }
   
@@ -4266,6 +4301,8 @@ for (perc in c(25, 100)){
     plot_list[[z_index]] <- p
     
     z_index <- z_index + 1
+    
+    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
     
   }
   
@@ -4552,6 +4589,8 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
+    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    
   }
   
   
@@ -4567,6 +4606,7 @@ ggarrange(plotlist = plot_list,
                   subtitle = str_glue("{gea_example}"))
 
 ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+
 
 
 
@@ -4836,6 +4876,8 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
+    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    
   }
   
   
@@ -4851,6 +4893,7 @@ ggarrange(plotlist = plot_list,
                   subtitle = str_glue("{gea_example}"))
 
 ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+
 
 
 
@@ -5119,6 +5162,8 @@ for (perc in c(25, 100)){
     plot_list[[z_index]] <- p
     
     z_index <- z_index + 1
+    
+    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
     
   }
   
@@ -5403,6 +5448,8 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
+    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    
   }
   
   
@@ -5418,3 +5465,94 @@ ggarrange(plotlist = plot_list,
                   subtitle = str_glue("{gea_example}"))
 
 ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+
+
+
+
+
+#### ALL ####
+z_index <- 1
+plot_list <- list()
+for (perc in c(25, 100)){
+  
+  
+  for (z in sce_example){
+    
+    p <- df_error_avd %>% 
+      filter(scenario == z, 
+             percentage == perc) %>% 
+      mutate(scenario = as.factor(scenario), 
+             type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg.")), 
+             year = as.factor(year)) %>% 
+      group_by(scenario, type, year) %>% 
+      summarise(med = median(error, na.rm = T)) %>% 
+      ungroup() %>% 
+      ggplot(aes(x = year, y = med)) +
+      geom_col(aes(fill = type), position = "dodge", stat = "identity") +
+      scale_y_continuous(expand = c(0, 0), 
+                         breaks = seq(0, 80, by = 20), 
+                         labels = number_format(suffix = " %")) +
+      scale_x_discrete(expand = c(-0.1, 0)) +
+      coord_cartesian(ylim = c(0, 80)) +
+      geom_hline(yintercept = 5, color = "red", lty = "dashed") +
+      annotate(geom = "text", x = 1.4, y = 8, size = 4, label = "5 %", color = "red") +
+      scale_fill_manual(values = ls_colors) +
+      labs(x = NULL, 
+           y = NULL, 
+           color = NULL, 
+           fill = NULL, 
+           subtitle = str_glue("{z}\n{perc}% PV offset")) +
+      theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+            legend.direction = "horizontal",
+            legend.position = "bottom",
+            plot.margin = margin(t = 1, r = 1, b = 10, l = 1, unit = "mm"))
+    
+    if (z_index %% 2 == 1){
+      
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              plot.margin = margin(t = 1, r = 1, b = 10, l = 1, unit = "mm"))
+      
+      
+    } else {
+      
+      p <- p + 
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              axis.text.y = element_blank(), 
+              plot.margin = margin(t = 1, r = 1, b = 10, l = 1, unit = "mm"))
+      
+    }
+    
+    plot_list[[z_index]] <- p
+    
+    z_index <- z_index + 1
+    
+  }
+  
+}
+
+ggarrange(plotlist = plot_list, 
+          ncol = 2, nrow = 2,
+          align = "hv",
+          common.legend = TRUE,
+          labels = c("a)", "b)", "c)", "d)"),
+          legend = "bottom") +
+  plot_annotation(title = "Median error of quantifying avoided carbon emissions\nfrom exported utilities", 
+                  subtitle = "Aggregated for all regions")
+
+ggsave(filename = str_glue("All_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
