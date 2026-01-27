@@ -8268,8 +8268,8 @@ for (perc in c(25, 100)){
                          labels = number_format(suffix = " %")) +
       scale_x_discrete(expand = c(-0.1, 0)) +
       coord_cartesian(ylim = c(0, 320)) +
-      geom_hline(yintercept = 5, color = "red", lty = "dashed") +
-      annotate(geom = "text", x = 1.4, y = 20, size = 4, label = "5 %", color = "red") +
+      geom_hline(yintercept = 10, color = "red", lty = "dashed") +
+      annotate(geom = "text", x = 1.4, y = 22, size = 4, label = "10 %", color = "red") +
       scale_fill_manual(values = ls_colors) +
       labs(x = NULL, 
            y = NULL, 
@@ -8281,7 +8281,7 @@ for (perc in c(25, 100)){
             legend.position = "bottom",
             plot.margin = margin(t = 1, r = 1, b = 10, l = 1, unit = "mm"))
     
-    if (z_index %% 2 == 1){
+    if (z_index == 1){
       
       
       p <- p + 
@@ -8296,9 +8296,34 @@ for (perc in c(25, 100)){
               plot.margin = margin(t = 1, r = 1, b = 10, l = 1, unit = "mm"))
       
       
-    } else {
+    } else if (z_index == 3) {
       
       p <- p + 
+        scale_y_continuous(expand = c(0, 0), 
+                           breaks = seq(0, 180, by = 50), 
+                           labels = number_format(suffix = " %")) +
+        scale_x_discrete(expand = c(-0.1, 0)) +
+        coord_cartesian(ylim = c(0, 180)) +
+        labs(x = NULL, 
+             y = NULL, 
+             color = NULL, 
+             fill = NULL, 
+             subtitle = str_glue("{z}\n{perc}% PV offset")) +
+        theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+              legend.direction = "horizontal",
+              legend.position = "bottom",
+              plot.margin = margin(t = 1, r = 1, b = 10, l = 1, unit = "mm"))
+      
+    }
+    
+    else if (z_index == 4) {
+      
+      p <- p + 
+        scale_y_continuous(expand = c(0, 0), 
+                           breaks = seq(0, 180, by = 50), 
+                           labels = number_format(suffix = " %")) +
+        scale_x_discrete(expand = c(-0.1, 0)) +
+        coord_cartesian(ylim = c(0, 180)) +
         labs(x = NULL, 
              y = NULL, 
              color = NULL, 
@@ -8309,7 +8334,6 @@ for (perc in c(25, 100)){
               legend.position = "bottom",
               axis.text.y = element_blank(), 
               plot.margin = margin(t = 1, r = 1, b = 10, l = 1, unit = "mm"))
-      
     }
     
     plot_list[[z_index]] <- p
@@ -8329,5 +8353,5 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Median error of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = "Aggregated for all regions")
 
-ggsave(filename = str_glue("All_{emissions}_avoided.png"), path = figs_path, units = "in", height = 7, width = 8, dpi = 300)
+ggsave(filename = str_glue("All_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
 

@@ -5494,8 +5494,8 @@ for (perc in c(25, 100)){
                          labels = number_format(suffix = " %")) +
       scale_x_discrete(expand = c(-0.1, 0)) +
       coord_cartesian(ylim = c(0, 80)) +
-      geom_hline(yintercept = 5, color = "red", lty = "dashed") +
-      annotate(geom = "text", x = 1.4, y = 8, size = 4, label = "5 %", color = "red") +
+      geom_hline(yintercept = 10, color = "red", lty = "dashed") +
+      annotate(geom = "text", x = 1.4, y = 15, size = 4, label = "10 %", color = "red") +
       scale_fill_manual(values = ls_colors) +
       labs(x = NULL, 
            y = NULL, 
