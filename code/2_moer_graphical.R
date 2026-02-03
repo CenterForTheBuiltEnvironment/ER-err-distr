@@ -427,7 +427,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly LRMER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # Summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -570,7 +570,12 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
-    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    df_error_avd <- rbind(df_error_avd, df_error %>% 
+                            group_by(year, type, scenario) %>% 
+                            summarize(error = median(error, na.rm = T)) %>% 
+                            ungroup() %>% 
+                            mutate(percentage = perc, 
+                                   gea = gea_example))
     
   }
   
@@ -586,7 +591,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided emissions\nfrom exported utilities using LRMER", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -717,7 +722,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly LRMER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -861,7 +866,12 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
-    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    df_error_avd <- rbind(df_error_avd, df_error %>% 
+                            group_by(year, type, scenario) %>% 
+                            summarize(error = median(error, na.rm = T)) %>% 
+                            ungroup() %>% 
+                            mutate(percentage = perc, 
+                                   gea = gea_example))
     
   }
   
@@ -877,7 +887,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided emissions\nfrom exported utilities using LRMER", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -1014,7 +1024,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly LRMER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -1157,7 +1167,12 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
-    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    df_error_avd <- rbind(df_error_avd, df_error %>% 
+                            group_by(year, type, scenario) %>% 
+                            summarize(error = median(error, na.rm = T)) %>% 
+                            ungroup() %>% 
+                            mutate(percentage = perc, 
+                                   gea = gea_example))
     
   }
   
@@ -1173,7 +1188,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided emissions\nfrom exported utilities using LRMER", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -1302,7 +1317,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly LRMER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -1444,7 +1459,12 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
-    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    df_error_avd <- rbind(df_error_avd, df_error %>% 
+                            group_by(year, type, scenario) %>% 
+                            summarize(error = median(error, na.rm = T)) %>% 
+                            ungroup() %>% 
+                            mutate(percentage = perc, 
+                                   gea = gea_example))
     
   }
   
@@ -1460,7 +1480,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -1587,7 +1607,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly LRMER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -1729,7 +1749,12 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
-    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    df_error_avd <- rbind(df_error_avd, df_error %>% 
+                            group_by(year, type, scenario) %>% 
+                            summarize(error = median(error, na.rm = T)) %>% 
+                            ungroup() %>% 
+                            mutate(percentage = perc, 
+                                   gea = gea_example))
     
   }
   
@@ -1745,7 +1770,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -1872,7 +1897,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly LRMER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -2014,7 +2039,12 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
-    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    df_error_avd <- rbind(df_error_avd, df_error %>% 
+                            group_by(year, type, scenario) %>% 
+                            summarize(error = median(error, na.rm = T)) %>% 
+                            ungroup() %>% 
+                            mutate(percentage = perc, 
+                                   gea = gea_example))
     
   }
   
@@ -2030,7 +2060,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -2158,7 +2188,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly LRMER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -2300,7 +2330,12 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
-    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    df_error_avd <- rbind(df_error_avd, df_error %>% 
+                            group_by(year, type, scenario) %>% 
+                            summarize(error = median(error, na.rm = T)) %>% 
+                            ungroup() %>% 
+                            mutate(percentage = perc, 
+                                   gea = gea_example))
     
   }
   
@@ -2316,7 +2351,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -2444,7 +2479,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly LRMER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -2586,7 +2621,12 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
-    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    df_error_avd <- rbind(df_error_avd, df_error %>% 
+                            group_by(year, type, scenario) %>% 
+                            summarize(error = median(error, na.rm = T)) %>% 
+                            ungroup() %>% 
+                            mutate(percentage = perc, 
+                                   gea = gea_example))
     
   }
   
@@ -2602,7 +2642,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -2731,7 +2771,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly LRMER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -2873,7 +2913,12 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
-    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    df_error_avd <- rbind(df_error_avd, df_error %>% 
+                            group_by(year, type, scenario) %>% 
+                            summarize(error = median(error, na.rm = T)) %>% 
+                            ungroup() %>% 
+                            mutate(percentage = perc, 
+                                   gea = gea_example))
     
   }
   
@@ -2889,7 +2934,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -3017,7 +3062,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly LRMER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -3159,7 +3204,12 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
-    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    df_error_avd <- rbind(df_error_avd, df_error %>% 
+                            group_by(year, type, scenario) %>% 
+                            summarize(error = median(error, na.rm = T)) %>% 
+                            ungroup() %>% 
+                            mutate(percentage = perc, 
+                                   gea = gea_example))
     
   }
   
@@ -3175,7 +3225,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -3303,7 +3353,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly LRMER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -3445,7 +3495,12 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
-    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    df_error_avd <- rbind(df_error_avd, df_error %>% 
+                            group_by(year, type, scenario) %>% 
+                            summarize(error = median(error, na.rm = T)) %>% 
+                            ungroup() %>% 
+                            mutate(percentage = perc, 
+                                   gea = gea_example))
     
   }
   
@@ -3461,7 +3516,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -3589,7 +3644,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly LRMER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -3731,7 +3786,12 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
-    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    df_error_avd <- rbind(df_error_avd, df_error %>% 
+                            group_by(year, type, scenario) %>% 
+                            summarize(error = median(error, na.rm = T)) %>% 
+                            ungroup() %>% 
+                            mutate(percentage = perc, 
+                                   gea = gea_example))
     
   }
   
@@ -3747,7 +3807,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -3875,7 +3935,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly LRMER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -4017,7 +4077,12 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
-    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    df_error_avd <- rbind(df_error_avd, df_error %>% 
+                            group_by(year, type, scenario) %>% 
+                            summarize(error = median(error, na.rm = T)) %>% 
+                            ungroup() %>% 
+                            mutate(percentage = perc, 
+                                   gea = gea_example))
     
   }
   
@@ -4033,7 +4098,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -4160,7 +4225,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly LRMER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -4302,7 +4367,12 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
-    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    df_error_avd <- rbind(df_error_avd, df_error %>% 
+                            group_by(year, type, scenario) %>% 
+                            summarize(error = median(error, na.rm = T)) %>% 
+                            ungroup() %>% 
+                            mutate(percentage = perc, 
+                                   gea = gea_example))
     
   }
   
@@ -4318,7 +4388,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -4447,7 +4517,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly LRMER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -4589,7 +4659,12 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
-    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    df_error_avd <- rbind(df_error_avd, df_error %>% 
+                            group_by(year, type, scenario) %>% 
+                            summarize(error = median(error, na.rm = T)) %>% 
+                            ungroup() %>% 
+                            mutate(percentage = perc, 
+                                   gea = gea_example))
     
   }
   
@@ -4605,7 +4680,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -4734,7 +4809,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly LRMER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -4876,7 +4951,12 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
-    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    df_error_avd <- rbind(df_error_avd, df_error %>% 
+                            group_by(year, type, scenario) %>% 
+                            summarize(error = median(error, na.rm = T)) %>% 
+                            ungroup() %>% 
+                            mutate(percentage = perc, 
+                                   gea = gea_example))
     
   }
   
@@ -4892,7 +4972,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -5021,7 +5101,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly LRMER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -5163,7 +5243,12 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
-    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    df_error_avd <- rbind(df_error_avd, df_error %>% 
+                            group_by(year, type, scenario) %>% 
+                            summarize(error = median(error, na.rm = T)) %>% 
+                            ungroup() %>% 
+                            mutate(percentage = perc, 
+                                   gea = gea_example))
     
   }
   
@@ -5179,7 +5264,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -5306,7 +5391,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly LRMER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -5448,7 +5533,12 @@ for (perc in c(25, 100)){
     
     z_index <- z_index + 1
     
-    df_error_avd <- rbind(df_error_avd, df_error %>% mutate(percentage = perc))
+    df_error_avd <- rbind(df_error_avd, df_error %>% 
+                            group_by(year, type, scenario) %>% 
+                            summarize(error = median(error, na.rm = T)) %>% 
+                            ungroup() %>% 
+                            mutate(percentage = perc, 
+                                   gea = gea_example))
     
   }
   
@@ -5464,5 +5554,60 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+
+
+
+
+
+#### ALL ####
+breaks <- c(0.1, 1, 10, 100, 1000)
+df_error_avd %>% 
+  filter(scenario == "MidCase") %>% 
+  mutate(scenario = as.factor(scenario), 
+         type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg.")), 
+         year = as.factor(year), 
+         percentage = recode_factor(percentage, "25" = "25 % PV offset", "100" = "100 % PV offset")) %>% 
+  ggplot(aes(x = year, y = error)) +
+  geom_boxplot(aes(fill = type), alpha = 0.5, outliers = F, width = 0.75) +
+  geom_hline(yintercept = 10, color = "red", lty = "dashed") +
+  geom_point(data = . %>% 
+               filter(gea == "CAISO"), 
+             aes(group = type, shape = "CAISO"),  
+             position = position_dodge(width = 0.75), 
+             size = 3, 
+             alpha = 0.7) +
+  geom_point(data = . %>% 
+               filter(gea == "ERCOT"), 
+             aes(group = type, shape = "ERCOT"),  
+             position = position_dodge(width = 0.75), 
+             size = 3, 
+             alpha = 0.7) +
+  geom_point(data = . %>% 
+               filter(gea == "PJM_East"), 
+             aes(group = type, shape = "PJM_East"),  
+             position = position_dodge(width = 0.75), 
+             size = 3, 
+             alpha = 0.7) +
+  scale_y_continuous(expand = c(0, 0), 
+                     trans = "log10", 
+                     breaks = breaks, 
+                     labels = c("0.1 %", "1 %", "10 %", "100 %", "1000 %")) +
+  scale_x_discrete(expand = c(0, 0)) +
+  facet_wrap(~percentage, nrow = 1) +
+  coord_cartesian(ylim = c(0.1, 5000)) +
+  scale_fill_manual(values = ls_colors) +
+  labs(x = NULL, 
+       y = NULL, 
+       color = NULL, 
+       fill = NULL, 
+       shape = NULL, 
+       title = "Distribution of median fractional errors across all grid regions", 
+       subtitle = "Avoided emissions quantification") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+        legend.direction = "horizontal",
+        legend.position = "bottom",
+        plot.margin = margin(t = 1, r = 1, b = 10, l = 1, unit = "mm"))
+
+ggsave(filename = str_glue("All_moer_agg.jpg"), path = figs_path, units = "in", height = 6, width = 12, dpi = 300)
 

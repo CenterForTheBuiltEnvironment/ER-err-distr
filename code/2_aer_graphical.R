@@ -266,7 +266,7 @@ annotate_figure(final_plot,
                                  rot = 90, vjust = 1, size = 12),
                 top = text_grob("Energy generation by different sources from the grid", size = 14))
 
-ggsave(filename = "gen.png", path = figs_path, units = "in", height = 8, width = 6, dpi = 300)
+ggsave(filename = "gen.jpg", path = figs_path, units = "in", height = 8, width = 6, dpi = 300)
 
 
 
@@ -566,7 +566,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # Summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -715,7 +715,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of operational carbon emissions accounting", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_operational.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 # avoided
 z_index <- 1
@@ -875,7 +875,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -1013,7 +1013,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -1162,7 +1162,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of operational carbon emissions accounting", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_operational.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 # ggsave(filename = str_glue("{gea_example}_{emissions}_operational.svg"), units = "in", height = 8, width = 14, dpi = 300)
 
 
@@ -1324,7 +1324,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -1459,7 +1459,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -1608,7 +1608,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of operational carbon emissions accounting", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_operational.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -1770,7 +1770,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -1898,7 +1898,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -2046,7 +2046,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of operational carbon emissions accounting", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_operational.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 # avoided
@@ -2207,7 +2207,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -2335,7 +2335,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -2484,7 +2484,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of operational carbon emissions accounting", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_operational.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 # avoided
@@ -2645,7 +2645,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -2772,7 +2772,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -2921,7 +2921,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of operational carbon emissions accounting", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_operational.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 # avoided
@@ -3082,7 +3082,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -3209,7 +3209,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -3358,7 +3358,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of operational carbon emissions accounting", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_operational.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 # avoided
@@ -3519,7 +3519,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -3646,7 +3646,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -3795,7 +3795,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of operational carbon emissions accounting", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_operational.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 # avoided
@@ -3956,7 +3956,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -4083,7 +4083,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -4232,7 +4232,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of operational carbon emissions accounting", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_operational.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 # avoided
@@ -4393,7 +4393,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -4521,7 +4521,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -4670,7 +4670,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of operational carbon emissions accounting", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_operational.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 # avoided
@@ -4831,7 +4831,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -4958,7 +4958,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -5107,7 +5107,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of operational carbon emissions accounting", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_operational.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 # avoided
@@ -5268,7 +5268,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -5396,7 +5396,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -5545,7 +5545,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of operational carbon emissions accounting", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_operational.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 # avoided
@@ -5706,7 +5706,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -5833,7 +5833,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -5981,7 +5981,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of operational carbon emissions accounting", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_operational.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 # avoided
@@ -6142,7 +6142,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -6269,7 +6269,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -6418,7 +6418,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of operational carbon emissions accounting", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_operational.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 # avoided
@@ -6579,7 +6579,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -6706,7 +6706,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -6855,7 +6855,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of operational carbon emissions accounting", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_operational.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 # avoided
@@ -7016,7 +7016,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -7144,7 +7144,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -7293,7 +7293,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of operational carbon emissions accounting", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_operational.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 # avoided
@@ -7454,7 +7454,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -7581,7 +7581,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -7730,7 +7730,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of operational carbon emissions accounting", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_operational.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 # avoided
@@ -7891,7 +7891,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -8019,7 +8019,7 @@ annotate_figure(final_plot,
                 left = text_grob(y_axis, rot = 90, vjust = 1, size = 12),
                 top = text_grob(str_glue("Hourly AER at {gea_example}"), size = 14))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.png"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_hourly.jpg"), path = figs_path, units = "in", height = 8, width = 10, dpi = 300)
 
 # summary
 sce_example <- c("MidCase", "LowRECost_HighNGPrice")
@@ -8168,7 +8168,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of operational carbon emissions accounting", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_operational.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_operational.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 # avoided
@@ -8329,7 +8329,7 @@ ggarrange(plotlist = plot_list,
   plot_annotation(title = "Error distribution of quantifying avoided carbon emissions\nfrom exported utilities", 
                   subtitle = str_glue("{gea_example}"))
 
-ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.png"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
+ggsave(filename = str_glue("{gea_example}_{emissions}_avoided.jpg"), path = figs_path, units = "in", height = 8, width = 14, dpi = 300)
 
 
 
@@ -8438,5 +8438,5 @@ ggarrange(p1, p2,
           legend = "bottom") +
   plot_annotation(title = "Distribution of median fractional errors across all grid regions")
 
-ggsave(filename = str_glue("All_agg.png"), path = figs_path, units = "in", height = 9, width = 12, dpi = 300)
+ggsave(filename = str_glue("All_agg.jpg"), path = figs_path, units = "in", height = 9, width = 12, dpi = 300)
 
