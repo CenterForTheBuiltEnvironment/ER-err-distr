@@ -8,7 +8,7 @@ Accurately quantifying operational carbon emissions from buildings is essential 
 *	Coarse-resolution emission factors risk underestimating the true impact of retrofits such as efficiency upgrades or thermal storage strategies.
 
 ## Graphical summary ##
-<img width="2000" height="1125" alt="image" src="<img width="2000" height="1125" alt="image" src="https://github.com/user-attachments/assets/be4cc11c-8cd0-40eb-95d1-0818aa895449" />
+<img width="2000" height="1125" alt="image" src="https://github.com/user-attachments/assets/be4cc11c-8cd0-40eb-95d1-0818aa895449" />
 
 ## Emission factors
 <img width="2000" height="1125" alt="image" src="https://github.com/user-attachments/assets/ae2d40a4-f912-4c59-9c3a-e26389de9f38" />
