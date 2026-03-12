@@ -296,7 +296,7 @@ df_hourly %>%
   labs(x = NULL,
        y = "Emission rates",
        fill = NULL,
-       title = "Time-of-day averaged emission rates") +
+       title = "Hourly averaged emission rates") +
   theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.25),
         axis.text = element_text(size = 12), 
         legend.direction = "horizontal",
@@ -306,6 +306,31 @@ df_hourly %>%
 ggsave(filename = str_glue("{gea_example}_{emissions}_hour.svg"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)
 
 
+# df_hourly %>% 
+#   filter(gea == gea_example, 
+#          scenario == sce_example) %>% 
+#   mutate(type = as.factor("Hourly avg."), 
+#          year = as.factor(year), 
+#          dt = date(datetime)) %>% 
+#   filter(dt == as.Date("2025-01-10")) %>% 
+#   ggplot() +
+#   geom_line(aes(x = datetime, y = er, color = type), linewidth = 2) +
+#   scale_color_manual(values = ls_colors) +
+#   scale_y_continuous(expand = c(0, 0),
+#                      breaks = breaks_pretty(n = 5)) +
+#   labs(x = NULL,
+#        y = "Emission rates",
+#        fill = NULL,
+#        title = "Hourly averaged emission rates") +
+#   theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.25),
+#         axis.text = element_text(size = 12), 
+#         legend.direction = "horizontal",
+#         legend.position = "bottom",
+#         plot.margin = margin(t = 2, r = 7, b = 2, l = 2, unit = "mm"))
+# 
+# ggsave(filename = str_glue("{gea_example}_{emissions}_hour.svg"), path = figs_path, units = "in", height = 8, width = 8, dpi = 300)  
+#   
+  
 # all scenarios at hourly resolution at 2050
 avg_annot <- df_annual %>% 
   filter(gea == gea_example, 
@@ -5571,23 +5596,23 @@ df_error_avd %>%
   ggplot(aes(x = year, y = error)) +
   geom_boxplot(aes(fill = type), alpha = 0.5, outliers = F, width = 0.75) +
   geom_hline(yintercept = 10, color = "red", lty = "dashed") +
-  geom_point(data = . %>% 
-               filter(gea == "CAISO"), 
-             aes(group = type, shape = "CAISO"),  
-             position = position_dodge(width = 0.75), 
-             size = 3, 
+  geom_point(data = . %>%
+               filter(gea == "CAISO"),
+             aes(group = type, shape = "CAISO"),
+             position = position_dodge(width = 0.75),
+             size = 3,
              alpha = 0.7) +
-  geom_point(data = . %>% 
-               filter(gea == "ERCOT"), 
-             aes(group = type, shape = "ERCOT"),  
-             position = position_dodge(width = 0.75), 
-             size = 3, 
+  geom_point(data = . %>%
+               filter(gea == "ERCOT"),
+             aes(group = type, shape = "ERCOT"),
+             position = position_dodge(width = 0.75),
+             size = 3,
              alpha = 0.7) +
-  geom_point(data = . %>% 
-               filter(gea == "PJM_East"), 
-             aes(group = type, shape = "PJM_East"),  
-             position = position_dodge(width = 0.75), 
-             size = 3, 
+  geom_point(data = . %>%
+               filter(gea == "PJM_East"),
+             aes(group = type, shape = "PJM_East"),
+             position = position_dodge(width = 0.75),
+             size = 3,
              alpha = 0.7) +
   scale_y_continuous(expand = c(0, 0), 
                      trans = "log10", 
@@ -5610,4 +5635,34 @@ df_error_avd %>%
         plot.margin = margin(t = 1, r = 1, b = 10, l = 1, unit = "mm"))
 
 ggsave(filename = str_glue("All_moer_agg.jpg"), path = figs_path, units = "in", height = 6, width = 12, dpi = 300)
+
+
+df_error_avd %>% 
+  filter(scenario == "MidCase", 
+         year == 2025, 
+         percentage == 25) %>% 
+  mutate(scenario = as.factor(scenario), 
+         type = factor(type, levels = c("Annual avg.", "Season avg.", "Time-of-day avg.", "Season-hour avg.", "Month-hour avg.")), 
+         year = as.factor(year), 
+         percentage = recode_factor(percentage, "25" = "25 % PV offset", "100" = "100 % PV offset")) %>% 
+  ggplot(aes(x = type, y = error)) +
+  geom_boxplot(aes(fill = type), alpha = 0.5, outliers = F, width = 0.5) +
+  scale_y_continuous(expand = c(0, 0), 
+                     breaks = seq(0, 40, by = 10), 
+                     labels = c("0 %", "10 %", "20 %", "30 %", "40 %")) +
+  scale_fill_manual(values = ls_colors) +
+  coord_cartesian(ylim = c(0, 40)) +
+  labs(x = NULL, 
+       y = NULL, 
+       color = NULL, 
+       fill = NULL, 
+       shape = NULL, 
+       title = "Distribution of median fractional errors across 18 U.S. grid regions", 
+       subtitle = "Avoided emissions quantification using hourly emission factor as reference benchmark
+") +
+  theme(panel.grid.major.y = element_line(color = "grey80", linewidth = 0.2),
+        legend.position = "none",
+        plot.margin = margin(t = 1, r = 1, b = 10, l = 1, unit = "mm"))
+
+ggsave(filename = str_glue("All_moer_agg.svg"), path = figs_path, units = "in", height = 4, width = 10, dpi = 300)
 
